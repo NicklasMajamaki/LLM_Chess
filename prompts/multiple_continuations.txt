@@ -1,0 +1,9 @@
+Here is the FEN for a chess board, where we start with the 8th row and go down to the 1st row: <FEN>
+
+Here are three continuations of 5 plies:
+
+<best continuation>
+<worst continuation>
+<random continuation>
+
+Figure out which one leads to the best board for the player (<player>) and then suggest the first move from that continuation as the move to play.

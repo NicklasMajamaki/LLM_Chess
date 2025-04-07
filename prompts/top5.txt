@@ -1,0 +1,7 @@
+Here is the FEN for a chess board, where we start with the 8th row and go down to the 1st row:
+<FEN>
+
+The top continuation for the next 5 moves is:
+<continuation>
+
+The evaluation of the board at the end of the continuation is <eval>. Give a two sentence explanation for each move, and then explain at the end why <move> is <player>'s best move.
