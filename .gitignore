@@ -1,0 +1,7 @@
+# Various local dirs / files to ignore
+/colab_data.zip
+/local_testing
+
+# Jupyter notebook specific files
+/.virtual_documents
+/.ipynb_checkpoints
