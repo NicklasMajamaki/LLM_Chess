@@ -1,35 +1,17 @@
 import os
 import ast
 import pandas as pd
-from vllm import LLM, SamplingParams
 from exceptions import ParseException, IllegalMoveException
 from generation import extract_solution, coerce_response
 
 
-# Predefine map from filename to allow for flexible processing 
-EVAL_MAP = {
-    'bestmove': "choose_from_n",
-    'worstmove': "choose_from_n",
-    'legalmoves': "produce_list",
-    'predictmove': "predict_singlemove",
-}
-
-SAMPLING_PARAMS = SamplingParams(
-    max_tokens=2000,
-    temperature=0.7,
-    top_p=0.9,
-    min_p=0.0,
-    top_k=40,
-    repetition_penalty=1.1
-)
-
 
 class EvaluationDataframe():
-    def __init__(self, datafolder, filename):
+    def __init__(self, datafolder, filename, filename_map):
         """ Load the dataset and store useful metadata associated with it. """
         self.filename = filename
         self.filepath = os.joinpath(datafolder, filename)
-        self.eval_type = next(v for k, v in EVAL_MAP.items() if filename.startswith(k))
+        self.eval_type = next(v for k, v in filename_map.items() if filename.startswith(k))
         self.df = self._load_parquets(self.filepath)
 
     def _load_parquets(filename):
@@ -158,10 +140,10 @@ class ResultsDict():
 
 
 class Evaluator():
-    def __init__(self, eval_files, batch_size=4, max_evals=None):
+    def __init__(self, datafolder_fp, eval_files, filename_map, batch_size=4, max_evals=None):
         """ Given a set of eval_files instantiate an evaluator object to analyze the evals. """
         self.eval_files = eval_files
-        self.eval_dfs = [EvaluationDataframe(f) for f in eval_files]
+        self.eval_dfs = [EvaluationDataframe(datafolder_fp, f, filename_map) for f in eval_files]
         self.max_evals = max_evals
         self.batch_size = batch_size
 
@@ -173,23 +155,27 @@ class Evaluator():
         result_dicts = []
 
         for eval_df in self.eval_dfs:
+            print(f"{'='*50}\n Evaluating: {df.filename}\n{'='*50}")
             df = eval_df.df
             results = ResultsDict(eval_df.eval_type)
             for start_idx in enumerate(range(0, len(df), self.batch_size)):
                 batch_df = df.iloc[start_idx:start_idx+self.batch_size]
                 prompts = [row['prompt'] for _, row in batch_df.iterrows()]
-                batch_responses = model.generate(prompts, SAMPLING_PARAMS)   # Doing this synchronously for now
+                batch_responses = model.generate(prompts)
 
                 for (index, row), result in zip(batch_df.iterrows(), batch_responses):
                     
-                    print(f"Model Response:\n{'='*60}\n{result.outputs[0].text}\n{'='*60}\nAnswer:\n{'='*60}\n{row['answer']}\n{'='*60}")
+                    if verbose:
+                        print(f"{'-'*10}\nPrompt:\n{row['prompt']}\n")
+                        print(f"Model Response:\n{result.outputs[0].text}\nGround Truth Answer:\n'{row['answer']}'\n")
 
                     results.add_result(result.outputs[0].text, row['answer'])
 
             result_dicts.append(results.get_final_dict())
-            if verbose:
-                print(f"Results for {eval_df.filename}:")
-                for key, value in results.get_final_dict().items():
-                    print(f"{key}: {value}")
+            
+            print(f"{'-'*50}\nResults for {eval_df.filename}:")
+            for key, value in results.get_final_dict().items():
+                print(f"{key}: {value}")
+            print(f"{'-'*50}\n\n")
 
         return result_dicts

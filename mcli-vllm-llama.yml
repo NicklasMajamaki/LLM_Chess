@@ -1,0 +1,82 @@
+name: chess-reasoner-llama3_3-70b
+# image: update this if we want to use a specific image
+compute:
+    gpus: 8
+    cluster: r15z1p1
+scheduling:
+  priority: lowest
+  resumable: false
+  preemptible: false
+command: |-
+  # URL to check
+  URL="http://0.0.0.0:8000/v1/completions"
+
+  # Time to wait between checks (in seconds)
+  WAIT_TIME=10
+
+  echo "Waiting for ${URL} to become available..."
+
+  # Loop until the URL is available
+  until curl http://localhost:8000/v1/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "meta-llama/Llama-3.3-70B-Instruct",
+        "prompt": "San Francisco is a",
+        "max_tokens": 7,
+        "temperature": 0
+    }'> /dev/null; do       echo -n ".";       sleep "$WAIT_TIME";   done
+
+  curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "meta-llama/Llama-3.3-70B-Instruct",
+    "messages": [
+      {"role": "system", "content": "You are a helpful assistant."},
+      {"role": "user", "content": "What is the capital of France?"}
+    ],
+    "max_tokens": 100,
+    "temperature": 0.7,
+    "stream": false
+  }'
+
+  echo ""
+  echo "Service is up. Starting the job..."
+  echo 'TODO: Create a script that waits for http://0.0.0.0:8000/v1 to become available, and then queries it'
+  sleep 5
+  git pull
+  sleep 100
+
+  # UPDATE THIS
+  python3 evaluation_script.py --api vllm --model meta-llama/Llama-3.3-70B-Instruct \
+  --num_parallel 1 --num_exp 1 --s3 --bucket_name izzy-mindcraft \
+  --exp_name crafting_3_agents --task_path tasks/crafting_tasks/test_tasks/filtered_tasks_3_agents.json \
+  --template_profile ./profiles/tasks/collab_profile.json --num_agents 3 --max_messages 15
+  tmux attach -t 0
+  # Need to buiold out an entire automated session that load data from github, connects to the s3 bucket, runs the script, then writes back to the s3 bucket
+
+  total_intervals=$(( 12 * 60 * 60 / 60 ))
+
+  # Loop to print a dot every 60 seconds
+  for (( i=0; i<total_intervals; i++ )); do
+      echo -n "."
+      sleep 60
+  done
+
+  echo
+
+# # Optional: main run config
+#   env_variables:
+#     KEY: VALUE
+
+dependent_deployment:
+  image: vllm/vllm-openai:latest
+  model: {}
+  command: |-
+    echo 'TODO: a bash command that downloads a model and then launches the server'
+    vllm serve "meta-llama/Llama-3.3-70B-Instruct" --tensor-parallel-size 8 \
+    --trust-remote-code
+
+
+# Optional: dependent_deployment config
+env_variables:
+    HUGGING_FACE_HUB_TOKEN: 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
