@@ -1,6 +1,9 @@
 import os
 import ast
+import time
+import json
 import pandas as pd
+
 from exceptions import ParseException, IllegalMoveException
 from generation import extract_solution, coerce_response
 
@@ -10,6 +13,7 @@ class EvaluationDataframe():
     def __init__(self, datafolder, filename, filename_map):
         """ Load the dataset and store useful metadata associated with it. """
         self.filename = filename
+        self.datafolder = datafolder
         self.filepath = os.joinpath(datafolder, filename)
         self.eval_type = next(v for k, v in filename_map.items() if filename.startswith(k))
         self.df = self._load_parquets(self.filepath)
@@ -147,12 +151,13 @@ class Evaluator():
         self.max_evals = max_evals
         self.batch_size = batch_size
 
-    def evaluate(self, model, verbose=False):
+    def evaluate(self, model, verbose=False, save_verbose=False):
         """ 
         Evaluate the model on the eval files. 
         model: The vLLM model to evaluate.
         """
         result_dicts = []
+        verbose_generations = []
 
         for eval_df in self.eval_dfs:
             print(f"{'='*50}\n Evaluating: {df.filename}\n{'='*50}")
@@ -165,11 +170,17 @@ class Evaluator():
 
                 for (index, row), result in zip(batch_df.iterrows(), batch_responses):
                     
+                    results.add_result(result.outputs[0].text, row['answer'])
+                    
                     if verbose:
                         print(f"{'-'*10}\nPrompt:\n{row['prompt']}\n")
                         print(f"Model Response:\n{result.outputs[0].text}\nGround Truth Answer:\n'{row['answer']}'\n")
-
-                    results.add_result(result.outputs[0].text, row['answer'])
+                    if save_verbose:
+                        verbose_generations.append({
+                            "prompt": row['prompt'],
+                            "model_response": result.outputs[0].text,
+                            "ground_truth": row['answer']
+                        })
 
             result_dicts.append(results.get_final_dict())
             
@@ -177,5 +188,11 @@ class Evaluator():
             for key, value in results.get_final_dict().items():
                 print(f"{key}: {value}")
             print(f"{'-'*50}\n\n")
+
+            if save_verbose:
+                timestamp = time.strftime("%Y%m%d-%H%M%S")
+                save_path = os.path.join(df.datafolder, '..', 'saved_data', f"{df.filename}_{timestamp}.json") 
+                with open(save_path, 'w') as f:
+                    json.dump(verbose_generations, f, indent=4)
 
         return result_dicts
