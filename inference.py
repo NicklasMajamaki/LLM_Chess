@@ -5,7 +5,7 @@ import utils
 def parse_args():
     parser = argparse.ArgumentParser(description="Run vLLM evaluation.")
 
-    parser.add_argument("--data_dir", type=str, default="data", help="Path to the data directory")
+    parser.add_argument("--data_dir", type=str, default="data/evals", help="Path to the data directory")
     parser.add_argument("--eval_files", nargs="+", default=["bestmove_50.parquet", "legalmoves_50.parquet", "predictmove_100.parquet", "worstmove_50.parquet"], help="List of evaluation files")
 
     parser.add_argument("--model", type=str, default="meta-llama/Llama-3.1-8B-Instruct", help="Model name or path")

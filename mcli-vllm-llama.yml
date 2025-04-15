@@ -1,5 +1,5 @@
-name: chess-reasoner-llama3_3-70b
-# image: update this if we want to use a specific image
+name: chess-reasoner-llama3_1-8b-instruct
+# image: update this if we want to use a specific image which we will need to do
 compute:
     gpus: 8
     cluster: r15z1p1
@@ -20,7 +20,7 @@ command: |-
   until curl http://localhost:8000/v1/completions \
     -H "Content-Type: application/json" \
     -d '{
-        "model": "meta-llama/Llama-3.3-70B-Instruct",
+        "model": "meta-llama/Llama-3.1-8B-Instruct",
         "prompt": "San Francisco is a",
         "max_tokens": 7,
         "temperature": 0
@@ -29,7 +29,7 @@ command: |-
   curl http://localhost:8000/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "meta-llama/Llama-3.3-70B-Instruct",
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
     "messages": [
       {"role": "system", "content": "You are a helpful assistant."},
       {"role": "user", "content": "What is the capital of France?"}
@@ -47,11 +47,16 @@ command: |-
   sleep 100
 
   # UPDATE THIS
+  python3 inference.py --model meta-llama/Llama-3.1-8B-Instruct \
+  --base_url http://localhost:8000/v1 --batch_size 4 --max_evals None
+  tmux attach -t 0
+  # STILL NEED TO ADD IN THE FUNCTIONALITY TO SAVE DOWN TO THE S3 BUCKET
+
+
   python3 evaluation_script.py --api vllm --model meta-llama/Llama-3.3-70B-Instruct \
   --num_parallel 1 --num_exp 1 --s3 --bucket_name izzy-mindcraft \
   --exp_name crafting_3_agents --task_path tasks/crafting_tasks/test_tasks/filtered_tasks_3_agents.json \
   --template_profile ./profiles/tasks/collab_profile.json --num_agents 3 --max_messages 15
-  tmux attach -t 0
   # Need to buiold out an entire automated session that load data from github, connects to the s3 bucket, runs the script, then writes back to the s3 bucket
 
   total_intervals=$(( 12 * 60 * 60 / 60 ))
@@ -73,10 +78,9 @@ dependent_deployment:
   model: {}
   command: |-
     echo 'TODO: a bash command that downloads a model and then launches the server'
-    vllm serve "meta-llama/Llama-3.3-70B-Instruct" --tensor-parallel-size 8 \
+    vllm serve "meta-llama/Llama-3.1-8B-Instruct" --tensor-parallel-size 8 \
     --trust-remote-code
 
-
 # Optional: dependent_deployment config
-env_variables:
-    HUGGING_FACE_HUB_TOKEN: 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
+# env_variables:
+#     KEY: VALUE
