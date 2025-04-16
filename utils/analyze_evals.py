@@ -5,7 +5,7 @@ import json
 import pandas as pd
 
 from exceptions import ParseException, IllegalMoveException
-from generation import extract_solution, coerce_response
+from utils.parsing import extract_solution, coerce_response
 
 
 
@@ -14,7 +14,7 @@ class EvaluationDataframe():
         """ Load the dataset and store useful metadata associated with it. """
         self.filename = filename
         self.datafolder = datafolder
-        self.filepath = os.joinpath(datafolder, filename)
+        self.filepath = os.joinpath(datafolder, "evals", filename)
         self.eval_type = next(v for k, v in filename_map.items() if filename.startswith(k))
         self.df = self._load_parquets(self.filepath)
 
@@ -191,7 +191,7 @@ class Evaluator():
 
             if save_verbose:
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
-                save_path = os.path.join(df.datafolder, '..', 'saved_data', f"{df.filename}_{timestamp}.json") 
+                save_path = os.path.join(df.datafolder, 'saved_data', f"{df.filename}_{timestamp}.json") 
                 with open(save_path, 'w') as f:
                     json.dump(verbose_generations, f, indent=4)
 

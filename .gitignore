@@ -1,3 +1,6 @@
+# Docker setup files (Lucas will just do)
+setup_docker.ps1
+
 # Various local dirs / files to ignore
 /colab_data.zip
 /local_testing
