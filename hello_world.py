@@ -21,9 +21,9 @@ def main():
         "http://localhost:8000/v1/completions",
         headers={"Content-Type": "application/json"},
         json={
-            "model": "meta-llama/Llama-3.1-8B-Instruct",
-            "prompt": "San Francisco is a",
-            "max_tokens": 10,
+            "model": "meta-llama/Llama-3.2-3B",
+            "prompt": "Tell me a whimsical bedtime story.",
+            "max_tokens": 2048,
             "temperature": 0.7,
         },
     )
