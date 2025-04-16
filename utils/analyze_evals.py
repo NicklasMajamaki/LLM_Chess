@@ -18,7 +18,7 @@ class EvaluationDataframe():
         self.eval_type = next(v for k, v in filename_map.items() if filename.startswith(k))
         self.df = self._load_parquets(self.filepath)
 
-    def _load_parquets(filename):
+    def _load_parquets(self, filename):
         """ Load the parquet file and return the dataframe. """
         df = pd.read_parquet(filename)
 
@@ -63,7 +63,7 @@ class ResultsDict():
             return {
                 "Total Samples": 0,
                 "Legal Moves Provided": 0,
-                "Avg. Rank of Move Provided": 0,
+                "Cumulative Rank of Moves Provided": 0,
                 "Error: Parsing": 0,
                 "Error: Illegal Move": 0,
                 "Error: Other": 0,
@@ -119,9 +119,9 @@ class ResultsDict():
                 print(f"Predicted: {predicted_answer}, Answer: {answer_dict['legal_moves']} -- got rank {predicted_move_idx}/{len(sorted_moves)}")
                 
         except Exception as e:
-            if e is ParseException:
+            if isinstance(e, ParseException):
                 self.results["Error: Parsing"] += 1
-            elif e is IllegalMoveException:
+            elif isinstance(e, IllegalMoveException):
                 self.results["Error: Illegal Move"] += 1
             else:
                 self.results["Error: Other"] += 1
@@ -158,10 +158,11 @@ class Evaluator():
         verbose_generations = []
 
         for eval_df in self.eval_dfs:
-            print(f"{'='*50}\n Evaluating: {df.filename}\n{'='*50}")
             df = eval_df.df
+            print(f"{'='*50}\n Evaluating: {df.filename}\n{'='*50}")
             results = ResultsDict(eval_df.eval_type)
-            for start_idx in enumerate(range(0, len(df), self.batch_size)):
+
+            for start_idx in range(0, len(df), self.batch_size):
                 batch_df = df.iloc[start_idx:start_idx+self.batch_size]
                 prompts = [row['prompt'] for _, row in batch_df.iterrows()]
                 batch_responses = model.generate(prompts)
