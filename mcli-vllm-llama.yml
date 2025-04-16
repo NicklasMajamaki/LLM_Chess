@@ -24,11 +24,19 @@ command: |-
   until curl http://localhost:8000/v1/completions \
     -H "Content-Type: application/json" \
     -d '{
-        "model": "meta-llama/Llama-3.2-3B",
+        "model": "meta-llama/Llama-3.1-8B-Instruct",
         "prompt": "San Francisco is a",
         "max_tokens": 7,
         "temperature": 0
     }'> /dev/null; do       echo -n ".";       sleep "$WAIT_TIME";   done
+
+
+
+  # Pull from git -- make sure we always just use the latest version online
+  sleep 5
+  git reset --hard HEAD
+  git pull origin main
+  sleep 20
 
   echo "Service is live. Starting the job..."
 
@@ -38,7 +46,6 @@ command: |-
   # --data_dir ./data
   # tmux attach -t 0
   python3 hello_world.py --data_dir ./data
-  tmux attach -t 0
 
   total_intervals=$(( 12 * 60 * 60 / 60 ))
 
@@ -60,7 +67,7 @@ dependent_deployment:
   command: |-
     echo 'A bash command that downloads a model and then launches the server'
     set -x
-    vllm serve "meta-llama/Llama-3.2-3B" --tensor-parallel-size 8 \
+    vllm serve "meta-llama/Llama-3.1-8B-Instruct" --tensor-parallel-size 8 \
     --trust-remote-code
 
 # Optional: dependent_deployment config
