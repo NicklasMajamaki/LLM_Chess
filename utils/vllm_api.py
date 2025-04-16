@@ -29,7 +29,10 @@ class vLLMClient:
     async def _chat_single(self, prompt: str) -> str:
         response = await self.client.chat.completions.create(
             model=self.model,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": "You are a helpful chess assistant."},
+                {"role": "user", "content": prompt}
+                ],
             max_tokens=self.max_tokens,
             temperature=self.temperature,
             top_p=self.top_p,
