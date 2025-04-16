@@ -48,7 +48,6 @@ def main():
             "max_tokens": args.max_tokens,
             "temperature": args.temperature,
             "top_p": args.top_p,
-            "min_p": args.min_p,
             "top_k": args.top_k,
             "repetition_penalty": args.repetition_penalty
         }
