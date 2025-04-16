@@ -2,6 +2,7 @@ import os
 import ast
 import time
 import json
+import asyncio
 import pandas as pd
 
 from .exceptions import ParseException, IllegalMoveException
@@ -29,9 +30,6 @@ class EvaluationDataframe():
             pass
         
         print(f"Loaded {filename} with {len(df)} rows and {len(df.columns)} columns. Answer column type: {df['answer'].dtype}")
-        for col in df.columns:
-            print(f"Col {col} is of type: {df[col].dtype}")
-
         return df
 
 
@@ -187,7 +185,7 @@ class Evaluator():
             for start_idx in range(0, len(df), self.batch_size):
                 batch_df = df.iloc[start_idx:start_idx+self.batch_size]
                 prompts = [row['prompt'] for _, row in batch_df.iterrows()]
-                batch_responses = model.chat(prompts)
+                batch_responses = asyncio.run(model.chat(prompts))
 
                 for (index, row), result in zip(batch_df.iterrows(), batch_responses):
                     
