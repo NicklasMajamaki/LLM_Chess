@@ -35,7 +35,7 @@ def main():
     else:
         print("OpenAI API call failed:", response.text)
 
-    cmd = f"aws s3 cp {args.data_dir}/saved_data s3://llm_chess/saved_data --recursive"
+    cmd = f"aws s3 cp {args.data_dir}/saved_data s3://llm-chess/saved_data --recursive"
     subprocess.run(cmd.split())
 
 if __name__ == "__main__":

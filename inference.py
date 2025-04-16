@@ -60,7 +60,7 @@ def main():
     print(f"Evaluation Completed. Final Results:\n{results}")
 
     # Save to s3 bucket
-    cmd = f"aws s3 cp {args.data_dir}/saved_data s3://llm_chess/saved_data --recursive"
+    cmd = f"aws s3 cp {args.data_dir}/saved_data s3://llm-chess/saved_data --recursive"
     print(cmd)
     subprocess.run(cmd.split())
 

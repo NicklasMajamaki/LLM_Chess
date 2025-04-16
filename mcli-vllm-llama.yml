@@ -30,11 +30,7 @@ command: |-
         "temperature": 0
     }'> /dev/null; do       echo -n ".";       sleep "$WAIT_TIME";   done
 
-  echo ""
-  echo "Service is up. Starting the job..."
-  sleep 5
-  git pull
-  sleep 100
+  echo "Service is live. Starting the job..."
 
   # Run out main inference function
   # python3 inference.py --model meta-llama/Llama-3.1-8B-Instruct \
