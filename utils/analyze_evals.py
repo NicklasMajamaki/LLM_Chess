@@ -91,8 +91,10 @@ class ResultsDict():
                 self.results["Total Ground Truth Legal Moves"] += len(answer)
 
                 num_right = 0
+                already_guessed = set()
                 for move in predicted_answer:
-                    if move in answer:
+                    if move in answer and move not in already_guessed:
+                        already_guessed.add(move)
                         num_right += 1
                         self.results["Predicted Ground Truth Legal Moves"] += 1
                     else:
@@ -128,16 +130,36 @@ class ResultsDict():
                 
     def get_final_dict(self):
         if self.eval_type == "choose_from_n":
-            self.results["Accuracy"] = self.results["Correct"] / self.results["Total Samples"]
-            self.results["Error Rate"] = (self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other']) / self.results["Total Samples"]
+            total = self.results["Total Samples"]
+            self.results["Accuracy"] = self.results["Correct"] / total if total else 0
+            self.results["Error Rate"] = (
+                self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other']
+            ) / total if total else 0
+
         elif self.eval_type == "produce_list":
-            self.results["Percent Legal Moves Predicted"] = self.results["Predicted Ground Truth Legal Moves"] / self.results["Total Ground Truth Legal Moves"]
-            self.results["Ratio of Legal to Illegal Moves"] = self.results["Predicted Ground Truth Legal Moves"] / self.results["Illegal Moves"]
-            self.results["Error Rate"] = (self.results['Error: Parsing'] + self.results['Error: Other']) / self.results["Total Samples"]
+            gt_total = self.results["Total Ground Truth Legal Moves"]
+            illegal = self.results["Illegal Moves"]
+            total = self.results["Total Samples"]
+            self.results["Percent Legal Moves Predicted"] = (
+                self.results["Predicted Ground Truth Legal Moves"] / gt_total if gt_total else 0
+            )
+            self.results["Ratio of Legal to Illegal Moves"] = (
+                self.results["Predicted Ground Truth Legal Moves"] / illegal if illegal else 0
+            )
+            self.results["Error Rate"] = (
+                self.results['Error: Parsing'] + self.results['Error: Other']
+            ) / total if total else 0
+
         elif self.eval_type == "predict_singlemove":
-            self.results["Avg. Rank of Move Provided"] = self.results["Cumulative Rank of Moves Provided"] / self.results["Legal Moves Provided"]
-            self.results["Error Rate"] = (self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other']) / self.results["Total Samples"]
-        
+            legal = self.results["Legal Moves Provided"]
+            total = self.results["Total Samples"]
+            self.results["Avg. Rank of Move Provided"] = (
+                self.results["Cumulative Rank of Moves Provided"] / legal if legal else 0
+            )
+            self.results["Error Rate"] = (
+                self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other']
+            ) / total if total else 0
+
         return self.results
 
 
@@ -158,39 +180,39 @@ class Evaluator():
         verbose_generations = []
 
         for eval_df in self.eval_dfs:
+            print(f"{'='*50}\n Evaluating: {eval_df.filename}\n{'='*50}")
             df = eval_df.df
-            print(f"{'='*50}\n Evaluating: {df.filename}\n{'='*50}")
             results = ResultsDict(eval_df.eval_type)
 
             for start_idx in range(0, len(df), self.batch_size):
                 batch_df = df.iloc[start_idx:start_idx+self.batch_size]
                 prompts = [row['prompt'] for _, row in batch_df.iterrows()]
-                batch_responses = model.generate(prompts)
+                batch_responses = model.chat(prompts)
 
                 for (index, row), result in zip(batch_df.iterrows(), batch_responses):
                     
-                    results.add_result(result.outputs[0].text, row['answer'])
+                    results.add_result(result, row['answer'])
                     
                     if verbose:
                         print(f"{'-'*10}\nPrompt:\n{row['prompt']}\n")
-                        print(f"Model Response:\n{result.outputs[0].text}\nGround Truth Answer:\n'{row['answer']}'\n")
+                        print(f"Model Response:\n{result}\nGround Truth Answer:\n'{row['answer']}'\n")
                     if save_verbose:
                         verbose_generations.append({
                             "prompt": row['prompt'],
-                            "model_response": result.outputs[0].text,
+                            "model_response": result,
                             "ground_truth": row['answer']
                         })
 
             result_dicts.append(results.get_final_dict())
             
             print(f"{'-'*50}\nResults for {eval_df.filename}:")
-            for key, value in results.get_final_dict().items():
+            for key, value in result_dicts[-1].items():
                 print(f"{key}: {value}")
             print(f"{'-'*50}\n\n")
 
             if save_verbose:
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
-                save_path = os.path.join(df.datafolder, 'saved_data', f"{df.filename}_{timestamp}.json") 
+                save_path = os.path.join(eval_df.datafolder, 'saved_data', f"{eval_df.filename}_{timestamp}.json") 
                 with open(save_path, 'w') as f:
                     json.dump(verbose_generations, f, indent=4)
 
