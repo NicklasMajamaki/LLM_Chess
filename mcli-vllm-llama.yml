@@ -2,7 +2,7 @@ name: chess-reasoner-llama3_1-8b-instruct
 image: lucasdino/llm_chess
 compute:
     gpus: 8
-    cluster: r15z1p1
+    cluster: r7z23p1
 scheduling:
   priority: lowest
   resumable: false
@@ -12,7 +12,7 @@ integrations:
     git_repo: NicklasMajamaki/LLM_Chess
 command: |-
   # URL to check
-  URL="http://0.0.0.0:8000/v1/llm_chess/completions"
+  URL="http://0.0.0.0:8000/v1/completions"
 
   # Time to wait between checks (in seconds)
   WAIT_TIME=10
@@ -20,19 +20,20 @@ command: |-
   echo "Waiting for ${URL} to become available..."
 
   # Loop until the URL is available
-  until curl http://localhost:8000/v1/llm_chess/completions \
+  sleep 60
+  until curl http://localhost:8000/v1/completions \
     -H "Content-Type: application/json" \
     -d '{
-        "model": "meta-llama/Llama-3.1-8B-Instruct",
+        "model": "meta-llama/Llama-3.2-3B",
         "prompt": "San Francisco is a",
         "max_tokens": 7,
         "temperature": 0
     }'> /dev/null; do       echo -n ".";       sleep "$WAIT_TIME";   done
 
-  curl http://localhost:8000/v1/llm_chess/chat/completions \
+  curl http://localhost:8000/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "model": "meta-llama/Llama-3.2-3B",
     "messages": [
       {"role": "system", "content": "You are a helpful assistant."},
       {"role": "user", "content": "What is the capital of France?"}
@@ -49,9 +50,11 @@ command: |-
   sleep 100
 
   # Run out main inference function
-  python3 inference.py --model meta-llama/Llama-3.1-8B-Instruct \
-  --base_url http://localhost:8000/v1/llm_chess --batch_size 4 --max_evals None \
-  --data_dir ./data
+  # python3 inference.py --model meta-llama/Llama-3.1-8B-Instruct \
+  # --base_url http://localhost:8000/v1 --batch_size 4 --max_evals None \
+  # --data_dir ./data
+  # tmux attach -t 0
+  python3 hello_world.py --data_dir ./data
   tmux attach -t 0
 
   total_intervals=$(( 12 * 60 * 60 / 60 ))
@@ -73,8 +76,9 @@ dependent_deployment:
   model: {}
   command: |-
     echo 'A bash command that downloads a model and then launches the server'
-    vllm serve "meta-llama/Llama-3.1-8B-Instruct" --tensor-parallel-size 8 \
-    --trust-remote-code --api-prefix /v1/llm_chess
+    set -x
+    vllm serve "meta-llama/Llama-3.2-3B" --tensor-parallel-size 8 \
+    --trust-remote-code
 
 # Optional: dependent_deployment config
 # env_variables:

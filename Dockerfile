@@ -1,6 +1,13 @@
 # Use Miniconda base image
 FROM continuumio/miniconda3
 
+# Install system-level deps
+RUN apt-get update && apt-get install -y curl unzip && \
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm -rf awscliv2.zip aws
+
 # Set environment variables
 ENV CONDA_ENV_NAME=llm_chess
 
