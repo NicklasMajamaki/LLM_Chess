@@ -15,6 +15,7 @@ def parse_args():
     parser.add_argument("--max_tokens", type=int, default=2048)
     parser.add_argument("--temperature", type=float, default=0.7)
     parser.add_argument("--top_p", type=float, default=0.9)
+    parser.add_argument("--min_p", type=float, default=0.02)
     parser.add_argument("--top_k", type=int, default=40)
     parser.add_argument("--repetition_penalty", type=float, default=1.1)
 
@@ -48,6 +49,7 @@ def main():
             "max_tokens": args.max_tokens,
             "temperature": args.temperature,
             "top_p": args.top_p,
+            "min_p": args.min_p,
             "top_k": args.top_k,
             "repetition_penalty": args.repetition_penalty
         }
