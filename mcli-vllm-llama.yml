@@ -11,6 +11,9 @@ integrations:
   - integration_type: git_repo
     git_repo: NicklasMajamaki/LLM_Chess
 command: |-
+  # Activate the conda env
+  source /opt/conda/etc/profile.d/conda.sh && conda activate llm_chess
+
   # URL to check
   URL="http://0.0.0.0:8000/v1/completions"
 
