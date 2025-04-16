@@ -73,10 +73,10 @@ class ResultsDict():
 
     def add_result(self, model_response, ground_truth):
         try:
+            self.results["Total Samples"] += 1
             predicted_answer = coerce_response(extract_solution(model_response), self.eval_type)
             if self.eval_type == "choose_from_n":
                 answer, provided_moves = ground_truth
-                self.results["Total Samples"] += 1
 
                 # Print for checking performance
                 print(f"Predicted: {predicted_answer}, Answer: {answer}, Correct? {predicted_answer == answer}")
@@ -88,7 +88,6 @@ class ResultsDict():
                     raise IllegalMoveException("Predicted move is not in the provided moves.")
             elif self.eval_type == 'produce_list':   # We know that 'predicted_answer' will be a list
                 answer = ground_truth
-                self.results["Total Samples"] += 1
                 self.results["Total Ground Truth Legal Moves"] += len(answer)
 
                 num_right = 0
@@ -104,7 +103,6 @@ class ResultsDict():
                 
             elif self.eval_type == 'predict_singlemove':
                 answer_dict = ground_truth
-                self.results["Total Samples"] += 1
                 
                 if predicted_answer in answer_dict['legal_moves']:
                     self.results["Legal Moves Provided"] += 1
