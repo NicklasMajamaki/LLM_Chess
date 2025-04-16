@@ -4,8 +4,8 @@ import time
 import json
 import pandas as pd
 
-from exceptions import ParseException, IllegalMoveException
-from utils.parsing import extract_solution, coerce_response
+from .exceptions import ParseException, IllegalMoveException
+from .parsing import extract_solution, coerce_response
 
 
 

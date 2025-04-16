@@ -4,7 +4,9 @@ setup_docker.ps1
 # Various local dirs / files to ignore
 /colab_data.zip
 /local_testing
+testbook.ipynb
 
 # Jupyter notebook specific files
 /.virtual_documents
 /.ipynb_checkpoints
+__pycache__/

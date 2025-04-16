@@ -1,6 +1,6 @@
 import re
 import ast
-from exceptions import ParseException, IllegalMoveException
+from .exceptions import ParseException, IllegalMoveException
 
 
 def extract_solution(text: str) -> str:
