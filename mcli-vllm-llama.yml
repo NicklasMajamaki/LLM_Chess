@@ -47,12 +47,6 @@ command: |-
   # tmux attach -t 0
   python3 hello_world.py --data_dir ./data
 
-  total_intervals=$(( 12 * 60 * 60 / 60 ))
-
-  # Loop to print a dot every 60 seconds
-  for (( i=0; i<total_intervals; i++ )); do
-      echo -n "."
-      sleep 60
   done
 
   echo
