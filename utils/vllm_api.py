@@ -20,7 +20,6 @@ class vLLMClient:
         self.max_tokens = generation_args.get("max_tokens", 2048)
         self.temperature = generation_args.get("temperature", 0.7)
         self.top_p = generation_args.get("top_p", 0.9)
-        self.min_p = generation_args.get("min_p", 0.0)
         self.top_k = generation_args.get("top_k", 40)
         self.repetition_penalty = generation_args.get("repetition_penalty", 1.1)
 
@@ -36,7 +35,6 @@ class vLLMClient:
             max_tokens=self.max_tokens,
             temperature=self.temperature,
             top_p=self.top_p,
-            min_p=self.min_p,
             top_k=self.top_k,
             repetition_penalty=self.repetition_penalty
         )
