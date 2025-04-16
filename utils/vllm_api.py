@@ -35,7 +35,6 @@ class vLLMClient:
             max_tokens=self.max_tokens,
             temperature=self.temperature,
             top_p=self.top_p,
-            top_k=self.top_k,
             repetition_penalty=self.repetition_penalty
         )
         return response.choices[0].message.content.strip()
