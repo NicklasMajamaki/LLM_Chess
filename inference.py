@@ -1,15 +1,16 @@
 # Main file we'll run from mcli to set up a vllm endpoint and run parquets through it
 import argparse
 import utils
+import subprocess
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run vLLM evaluation.")
 
-    parser.add_argument("--data_dir", type=str, default="data/evals", help="Path to the data directory")
+    parser.add_argument("--data_dir", type=str, default="./data", help="Path to the data directory")
     parser.add_argument("--eval_files", nargs="+", default=["bestmove_50.parquet", "legalmoves_50.parquet", "predictmove_100.parquet", "worstmove_50.parquet"], help="List of evaluation files")
 
     parser.add_argument("--model", type=str, default="meta-llama/Llama-3.1-8B-Instruct", help="Model name or path")
-    parser.add_argument("--base_url", type=str, default="http://localhost:8000/v1", help="Base URL for the model endpoint")
+    parser.add_argument("--base_url", type=str, default="http://localhost:8000/v1/llm_chess", help="Base URL for the model endpoint")
 
     parser.add_argument("--max_tokens", type=int, default=2048)
     parser.add_argument("--temperature", type=float, default=0.7)
@@ -55,8 +56,13 @@ def main():
     )
 
     print("Starting Evaluation...")
-    results = evaluator.evaluate(client, verbose=True)
+    results = evaluator.evaluate(client, verbose=True, save_verbose=True)
     print(f"Evaluation Completed. Final Results:\n{results}")
+
+    # Save to s3 bucket
+    cmd = f"aws s3 cp {args.data_dir}/saved_data s3://llm_chess/saved_data --recursive"
+    print(cmd)
+    subprocess.run(cmd.split())
 
 if __name__ == "__main__":
     main()

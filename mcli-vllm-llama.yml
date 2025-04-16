@@ -1,5 +1,5 @@
 name: chess-reasoner-llama3_1-8b-instruct
-# image: update this if we want to use a specific image which we will need to do
+image: lucasdino/llm_chess
 compute:
     gpus: 8
     cluster: r15z1p1
@@ -7,9 +7,12 @@ scheduling:
   priority: lowest
   resumable: false
   preemptible: false
+integrations:
+  - integration_type: git_repo
+    git_repo: NicklasMajamaki/LLM_Chess
 command: |-
   # URL to check
-  URL="http://0.0.0.0:8000/v1/completions"
+  URL="http://0.0.0.0:8000/v1/llm_chess/completions"
 
   # Time to wait between checks (in seconds)
   WAIT_TIME=10
@@ -17,7 +20,7 @@ command: |-
   echo "Waiting for ${URL} to become available..."
 
   # Loop until the URL is available
-  until curl http://localhost:8000/v1/completions \
+  until curl http://localhost:8000/v1/llm_chess/completions \
     -H "Content-Type: application/json" \
     -d '{
         "model": "meta-llama/Llama-3.1-8B-Instruct",
@@ -26,7 +29,7 @@ command: |-
         "temperature": 0
     }'> /dev/null; do       echo -n ".";       sleep "$WAIT_TIME";   done
 
-  curl http://localhost:8000/v1/chat/completions \
+  curl http://localhost:8000/v1/llm_chess/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "meta-llama/Llama-3.1-8B-Instruct",
@@ -41,23 +44,15 @@ command: |-
 
   echo ""
   echo "Service is up. Starting the job..."
-  echo 'TODO: Create a script that waits for http://0.0.0.0:8000/v1 to become available, and then queries it'
   sleep 5
   git pull
   sleep 100
 
-  # UPDATE THIS
+  # Run out main inference function
   python3 inference.py --model meta-llama/Llama-3.1-8B-Instruct \
-  --base_url http://localhost:8000/v1 --batch_size 4 --max_evals None
+  --base_url http://localhost:8000/v1/llm_chess --batch_size 4 --max_evals None \
+  --data_dir ./data
   tmux attach -t 0
-  # STILL NEED TO ADD IN THE FUNCTIONALITY TO SAVE DOWN TO THE S3 BUCKET
-
-
-  python3 evaluation_script.py --api vllm --model meta-llama/Llama-3.3-70B-Instruct \
-  --num_parallel 1 --num_exp 1 --s3 --bucket_name izzy-mindcraft \
-  --exp_name crafting_3_agents --task_path tasks/crafting_tasks/test_tasks/filtered_tasks_3_agents.json \
-  --template_profile ./profiles/tasks/collab_profile.json --num_agents 3 --max_messages 15
-  # Need to buiold out an entire automated session that load data from github, connects to the s3 bucket, runs the script, then writes back to the s3 bucket
 
   total_intervals=$(( 12 * 60 * 60 / 60 ))
 
@@ -77,9 +72,9 @@ dependent_deployment:
   image: vllm/vllm-openai:latest
   model: {}
   command: |-
-    echo 'TODO: a bash command that downloads a model and then launches the server'
+    echo 'A bash command that downloads a model and then launches the server'
     vllm serve "meta-llama/Llama-3.1-8B-Instruct" --tensor-parallel-size 8 \
-    --trust-remote-code
+    --trust-remote-code --api-prefix /v1/llm_chess
 
 # Optional: dependent_deployment config
 # env_variables:
