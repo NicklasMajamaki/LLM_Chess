@@ -21,10 +21,14 @@ def main():
         "http://localhost:8000/v1/completions",
         headers={"Content-Type": "application/json"},
         json={
-            "model": "meta-llama/Llama-3.2-3B",
+            "model": "meta-llama/Llama-3.1-8B-Instruct",
             "prompt": "Tell me a whimsical bedtime story.",
             "max_tokens": 2048,
             "temperature": 0.7,
+            "top_p": 0.9,
+            "min_p": 0.01,
+            "top_k": 40,
+            "repetition_penalty": 1.1,
         },
     )
 
