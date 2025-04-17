@@ -48,7 +48,15 @@ def main():
 
     if args.use_wandb:
         wandb_run = wandb.init(
-        
+            config={
+                "model": args.model,
+                "experiment": args.experiment_name,
+                "temperature": args.temperature,
+                "top_p": args.top_p,
+                "min_p": args.min_p,
+                "top_k": args.top_k,
+                "repetition_penalty": args.repetition_penalty,
+            }
         )
     else:
         wandb_run = None
