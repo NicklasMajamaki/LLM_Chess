@@ -1,19 +1,35 @@
 # Main file we'll run from mcli to set up a vllm endpoint and run parquets through it
 import time
+import wandb
 import argparse
 import subprocess
 
 import utils
 
+# Defining defaults here
+FILENAME_MAP = {
+    'bestmove': "choose_from_n",
+    'worstmove': "choose_from_n",
+    'legalmoves': "produce_list",
+    'predictmove': "predict_singlemove",
+}
+EVAL_FILES = [
+    "bestmove_100.parquet",
+    "legalmoves_100.parquet",
+    "predictmove_100.parquet",
+    "worstmove_100.parquet"
+]
+# Parsing functionality for CLI args
 def parse_args():
     parser = argparse.ArgumentParser(description="Run vLLM evaluation.")
 
     parser.add_argument("--data_dir", type=str, default="./data", help="Path to the data directory")
-    parser.add_argument("--eval_files", nargs="+", default=["bestmove_50.parquet", "legalmoves_50.parquet", "predictmove_100.parquet", "worstmove_50.parquet"], help="List of evaluation files")
+    parser.add_argument("--eval_files", nargs="+", default=EVAL_FILES, help="List of evaluation files")
 
     parser.add_argument("--model", type=str, default="meta-llama/Llama-3.1-8B-Instruct", help="Model name or path")
     parser.add_argument("--base_url", type=str, default="http://localhost:8000/v1/llm_chess", help="Base URL for the model endpoint")
-    parser.add_argument("--wandb_project", default=None)
+    parser.add_argument("--experiment_name", default=None)
+    parser.add_argument("--use_wandb", default=False, action="store_true", help="Use wandb for logging")
 
     parser.add_argument("--max_tokens", type=int, default=2048)
     parser.add_argument("--temperature", type=float, default=0.7)
@@ -30,19 +46,12 @@ def parse_args():
 def main():
     args = parse_args()
 
-    exp_info = {
-        "model": args.model,
-        "exp_time": time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime()),
-        "wandb_entity": "lucasdino-ucsd",
-        "wandb_project": args.wandb_project
-    }
-
-    FILENAME_MAP = {
-        'bestmove': "choose_from_n",
-        'worstmove': "choose_from_n",
-        'legalmoves': "produce_list",
-        'predictmove': "predict_singlemove",
-    }
+    if args.use_wandb:
+        wandb_run = wandb.init(
+        
+        )
+    else:
+        wandb_run = None
 
     evaluator = utils.Evaluator(
         datafolder_fp=args.data_dir,
@@ -50,7 +59,7 @@ def main():
         filename_map=FILENAME_MAP,
         batch_size=args.batch_size,
         max_evals=args.max_evals,
-        exp_info=exp_info
+        wandb=wandb_run,
     )
 
     client = utils.vLLMClient(

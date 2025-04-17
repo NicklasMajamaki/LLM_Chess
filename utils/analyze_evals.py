@@ -2,6 +2,7 @@ import os
 import ast
 import time
 import json
+import wandb
 import asyncio
 import pandas as pd
 
@@ -34,9 +35,10 @@ class EvaluationDataframe():
 
 
 class ResultsDict():
-    def __init__(self, eval_type, filename, exp_info):
+    def __init__(self, eval_type, filename, wandb_run):
         self.filename = filename
-        self.exp_info = exp_info
+        self.trimmed_filename = filename.rsplit("_", 1)[0]
+        self.wandb_run = wandb_run
         self.eval_type = eval_type
         self.results = self._instantiate_dict()
 
@@ -130,47 +132,54 @@ class ResultsDict():
                 self.results["Error: Illegal Move"] += 1
             else:
                 self.results["Error: Other"] += 1
-                
+        
     def get_final_dict(self):
+        def safe_div(x, y): return x / y if y else 0
+    
         if self.eval_type == "choose_from_n":
             total = self.results["Total Samples"]
-            self.results["Accuracy"] = self.results["Correct"] / total if total else 0
-            self.results["Error Rate"] = (
-                self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other']
-            ) / total if total else 0
-            
+            self.results["Accuracy"] = safe_div(self.results["Correct"], total)
+            self.results["Error Rate"] = safe_div(self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other'], total)
+            if self.wandb_run:
+                self.wandb_run.log({
+                    f"[{self.trimmed_filename}] Accuracy": self.results["Accuracy"],
+                    f"[{self.trimmed_filename}] Error Rate": self.results["Error Rate"],
+                })
+
         elif self.eval_type == "produce_list":
             gt_total = self.results["Total Ground Truth Legal Moves"]
             illegal = self.results["Illegal Moves"]
             total = self.results["Total Samples"]
-            self.results["Percent Legal Moves Predicted"] = (
-                self.results["Predicted Ground Truth Legal Moves"] / gt_total if gt_total else 0
-            )
-            self.results["Ratio of Legal to Illegal Moves"] = (
-                self.results["Predicted Ground Truth Legal Moves"] / illegal if illegal else 0
-            )
-            self.results["Error Rate"] = (
-                self.results['Error: Parsing'] + self.results['Error: Other']
-            ) / total if total else 0
+            self.results["Percent Legal Moves Predicted"] = safe_div(self.results["Predicted Ground Truth Legal Moves"], gt_total)
+            self.results["Ratio of Legal to Illegal Moves"] = safe_div(self.results["Predicted Ground Truth Legal Moves"], illegal)
+            self.results["Error Rate"] = safe_div(self.results['Error: Parsing'] + self.results['Error: Other'], total)
+            if self.wandb_run:
+                self.wandb_run.log({
+                    f"[{self.trimmed_filename}] Percent Legal Moves Predicted": self.results["Percent Legal Moves Predicted"],
+                    f"[{self.trimmed_filename}] Ratio of Legal to Illegal Moves": self.results["Ratio of Legal to Illegal Moves"],
+                    f"[{self.trimmed_filename}] Error Rate": self.results["Error Rate"]
+                })
 
         elif self.eval_type == "predict_singlemove":
             legal = self.results["Legal Moves Provided"]
             total = self.results["Total Samples"]
-            self.results["Avg. Rank of Move Provided"] = (
-                self.results["Cumulative Rank of Moves Provided"] / legal if legal else 0
-            )
-            self.results["Error Rate"] = (
-                self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other']
-            ) / total if total else 0
+            self.results["Avg. Rank of Move Provided"] = safe_div(self.results["Cumulative Rank of Moves Provided"], legal)
+            self.results["Error Rate"] = safe_div(self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other'], total)
+            if self.wandb_run:
+                self.wandb_run.log({
+                    f"[{self.trimmed_filename}] Avg. Rank of Move Provided": self.results["Avg. Rank of Move Provided"],
+                    f"[{self.trimmed_filename}] Error Rate": self.results["Error Rate"]
+                })
 
         return self.results
 
 
+
 class Evaluator():
-    def __init__(self, datafolder_fp, eval_files, filename_map, batch_size, max_evals, exp_info=None):
+    def __init__(self, datafolder_fp, eval_files, filename_map, batch_size, max_evals, wandb_run):
         """ Given a set of eval_files instantiate an evaluator object to analyze the evals. """
         self.eval_files = eval_files
-        self.exp_info = exp_info
+        self.wandb_run = wandb_run
         self.eval_dfs = [EvaluationDataframe(datafolder_fp, f, filename_map) for f in eval_files]
         self.max_evals = max_evals
         self.batch_size = batch_size
@@ -188,7 +197,7 @@ class Evaluator():
 
             print(f"{'='*50}\n Evaluating: {filename_no_ext}\n{'='*50}")
             df = eval_df.df
-            results = ResultsDict(eval_df.eval_type, filename_no_ext, self.exp_info)
+            results = ResultsDict(eval_df.eval_type, filename_no_ext, self.wandb_run)
 
             max_len = len(df) if self.max_evals is None else min(len(df), self.max_evals)
             for start_idx in range(0, max_len, self.batch_size):

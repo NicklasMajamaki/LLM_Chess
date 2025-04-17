@@ -10,6 +10,9 @@ scheduling:
 integrations:
   - integration_type: git_repo
     git_repo: NicklasMajamaki/LLM_Chess
+  - integration_type: wandb
+    wandb_project: llm-chess
+    wandb_entity: lucasdino-ucsd
 command: |-
   # Activate the conda env
   source /opt/conda/etc/profile.d/conda.sh && conda activate llm_chess
@@ -46,7 +49,7 @@ command: |-
   # Run out main inference function
   python3 inference.py --model meta-llama/Llama-3.2-3B-Instruct \
   --base_url http://localhost:8000/v1 --batch_size 4 --max_evals None \
-  --data_dir ./data --wandb_project llm-chess
+  --data_dir ./data --use_wandb True --experiment_name Llama-3.2-3B-Instruct
   # tmux attach -t 0
   # python3 hello_world.py --data_dir ./data
 
