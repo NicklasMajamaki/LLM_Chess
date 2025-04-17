@@ -164,7 +164,7 @@ class ResultsDict():
         elif self.eval_type == "predict_singlemove":
             legal = self.results["Legal Moves Provided"]
             total = self.results["Total Samples"]
-            self.results["Avg. Rank of Move Provided"] = safe_div(self.results["Cumulative Rank of Moves Provided"], legal, 1)
+            self.results["Avg. Rank of Move Provided"] = safe_div(self.results["Cumulative Rank of Moves Provided"], legal)
             self.results["Error Rate"] = safe_div(self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other'], total)
             if self.wandb_run:
                 self.wandb_run.log({
