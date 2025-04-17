@@ -84,10 +84,10 @@ class ResultsDict():
                 answer, provided_moves = ground_truth
 
                 # Print for checking performance
-                print(f"Predicted: {predicted_answer}, Answer: {answer}, Correct? {predicted_answer == answer}")
+                # print(f"Predicted: {predicted_answer}, Answer: {answer}, Correct? {predicted_answer == answer}")
 
                 self.results["Correct"] += int(predicted_answer == answer)
-                if predicted_answer in provided_moves:
+                if predicted_answer in provided_moves and predicted_answer != answer:
                     self.results["Incorrect"] += 1
                 else:
                     raise IllegalMoveException("Predicted move is not in the provided moves.")
@@ -106,24 +106,24 @@ class ResultsDict():
                         self.results["Illegal Moves"] += 1
                 
                 # Print for checking performance
-                print(f"Predicted: {predicted_answer}, Answer: {answer} -- got {num_right} correct")
+                # print(f"Predicted: {predicted_answer}, Answer: {answer} -- got {num_right} correct")
                 
             elif self.eval_type == 'predict_singlemove':
                 answer_dict = ground_truth
                 
-                if predicted_answer in answer_dict['legal_moves']:
+                if predicted_answer in answer_dict:
                     self.results["Legal Moves Provided"] += 1
-                    sorted_moves = sorted(answer_dict['legal_moves'].items(), key=lambda x: x[1])
+                    sorted_moves = sorted(answer_dict.items(), key=lambda x: x[1])
                     predicted_move_idx = next(i for i, (move, _) in enumerate(sorted_moves) if move == predicted_answer)
                     self.results["Cumulative Rank of Moves Provided"] += predicted_move_idx/len(sorted_moves)
                 else:
                     # Print for checking performance
-                    print(f"Predicted: {predicted_answer}, Answer: {answer_dict['legal_moves']} -- answer not in legal moves")
+                    print(f"Predicted: {predicted_answer}, Answer: {answer_dict} -- answer not in legal moves")
                     
                     raise IllegalMoveException("Predicted move is not in the legal moves.")
                 
                 # Print for checking performance
-                print(f"Predicted: {predicted_answer}, Answer: {answer_dict['legal_moves']} -- got rank {predicted_move_idx}/{len(sorted_moves)}")
+                print(f"Predicted: {predicted_answer}, Answer: {answer_dict} -- got rank {predicted_move_idx}/{len(sorted_moves)}")
                 
         except Exception as e:
             if isinstance(e, ParseException):
