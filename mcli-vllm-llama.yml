@@ -1,4 +1,4 @@
-name: chess-reasoner-llama3_2-3b-instruct
+name: chess-reasoner-llama3-2-3b-instruct
 image: lucasdino/llm_chess
 compute:
     gpus: 8
@@ -11,8 +11,8 @@ integrations:
   - integration_type: git_repo
     git_repo: NicklasMajamaki/LLM_Chess
   - integration_type: wandb
-    wandb_project: llm-chess
-    wandb_entity: lucasdino-ucsd
+    project: llm-chess
+    entity: lucasdino-ucsd
 command: |-
   # Activate the conda env
   source /opt/conda/etc/profile.d/conda.sh && conda activate llm_chess
