@@ -134,7 +134,7 @@ class ResultsDict():
                 self.results["Error: Other"] += 1
         
     def get_final_dict(self):
-        def safe_div(x, y): return x / y if y else 0
+        def safe_div(x, y, default=0): return x / y if y else default
     
         if self.eval_type == "choose_from_n":
             total = self.results["Total Samples"]
@@ -142,8 +142,8 @@ class ResultsDict():
             self.results["Error Rate"] = safe_div(self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other'], total)
             if self.wandb_run:
                 self.wandb_run.log({
-                    f"[{self.trimmed_filename}] Accuracy": self.results["Accuracy"],
-                    f"[{self.trimmed_filename}] Error Rate": self.results["Error Rate"],
+                    f"Evals/{self.trimmed_filename}/Accuracy": self.results["Accuracy"],
+                    f"Evals/{self.trimmed_filename}/Error Rate": self.results["Error Rate"],
                 })
 
         elif self.eval_type == "produce_list":
@@ -155,20 +155,20 @@ class ResultsDict():
             self.results["Error Rate"] = safe_div(self.results['Error: Parsing'] + self.results['Error: Other'], total)
             if self.wandb_run:
                 self.wandb_run.log({
-                    f"[{self.trimmed_filename}] Percent Legal Moves Predicted": self.results["Percent Legal Moves Predicted"],
-                    f"[{self.trimmed_filename}] Ratio of Legal to Illegal Moves": self.results["Ratio of Legal to Illegal Moves"],
-                    f"[{self.trimmed_filename}] Error Rate": self.results["Error Rate"]
+                    f"Evals/{self.trimmed_filename}/Percent Legal Moves Predicted": self.results["Percent Legal Moves Predicted"],
+                    f"Evals/{self.trimmed_filename}/Ratio of Legal to Illegal Moves": self.results["Ratio of Legal to Illegal Moves"],
+                    f"Evals/{self.trimmed_filename}/Error Rate": self.results["Error Rate"]
                 })
 
         elif self.eval_type == "predict_singlemove":
             legal = self.results["Legal Moves Provided"]
             total = self.results["Total Samples"]
-            self.results["Avg. Rank of Move Provided"] = safe_div(self.results["Cumulative Rank of Moves Provided"], legal)
+            self.results["Avg. Rank of Move Provided"] = safe_div(self.results["Cumulative Rank of Moves Provided"], legal, 1)
             self.results["Error Rate"] = safe_div(self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other'], total)
             if self.wandb_run:
                 self.wandb_run.log({
-                    f"[{self.trimmed_filename}] Avg. Rank of Move Provided": self.results["Avg. Rank of Move Provided"],
-                    f"[{self.trimmed_filename}] Error Rate": self.results["Error Rate"]
+                    f"Evals/{self.trimmed_filename}/Avg. Rank of Move Provided": 1-self.results["Avg. Rank of Move Provided"],
+                    f"Evals/{self.trimmed_filename}/Error Rate": self.results["Error Rate"]
                 })
 
         return self.results
@@ -228,6 +228,7 @@ class Evaluator():
 
             if save_verbose:
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
+                os.makedirs(os.path.join(eval_df.datafolder, 'saved_data'), exist_ok=True)
                 save_path = os.path.join(eval_df.datafolder, 'saved_data', f"{filename_no_ext}_{timestamp}.json")
                 with open(save_path, 'w') as f:
                     json.dump(verbose_generations, f, indent=4)
