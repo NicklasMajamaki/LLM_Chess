@@ -3,6 +3,7 @@ import ast
 import time
 import json
 import asyncio
+import numpy as np
 import pandas as pd
 
 from .exceptions import ParseException, IllegalMoveException
@@ -197,7 +198,7 @@ class Evaluator():
                     if save_verbose:
                         verbose_generations.append({
                             "prompt": row['prompt'],
-                            "model_response": result,
+                            "model_response": result.tolist() if isinstance(result, np.ndarray) else result,
                             "ground_truth": row['answer']
                         })
 
