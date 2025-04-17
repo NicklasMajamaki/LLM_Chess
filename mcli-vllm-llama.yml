@@ -45,14 +45,12 @@ command: |-
 
   # Run out main inference function
   python3 inference.py --model meta-llama/Llama-3.2-3B-Instruct \
-  --base_url http://localhost:8000/v1 --batch_size 4 --max_evals 8 \
+  --base_url http://localhost:8000/v1 --batch_size 4 --max_evals 20 \
   --data_dir ./data
   # tmux attach -t 0
   # python3 hello_world.py --data_dir ./data
 
-  done
-
-  echo
+  echo "Finished the job."
 
 dependent_deployment:
   image: vllm/vllm-openai:latest
