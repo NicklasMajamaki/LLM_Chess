@@ -90,7 +90,7 @@ def main():
 
     # Save to s3 bucket
     cmd = f"aws s3 cp {args.data_dir}/saved_data s3://llm-chess/saved_data --recursive"
-    print(cmd)
+    print(f"S3 save command: {cmd}")
     subprocess.run(cmd.split())
 
 if __name__ == "__main__":
