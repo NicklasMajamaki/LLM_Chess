@@ -86,10 +86,11 @@ class ResultsDict():
                 # print(f"Predicted: {predicted_answer}, Answer: {answer}, Correct? {predicted_answer == answer}")
 
                 self.results["Correct"] += int(predicted_answer == answer)
-                if predicted_answer in provided_moves and predicted_answer != answer:
-                    self.results["Incorrect"] += 1
-                else:
-                    raise IllegalMoveException("Predicted move is not in the provided moves.")
+                if predicted_answer != answer:
+                    if predicted_answer in provided_moves:
+                        self.results["Incorrect"] += 1
+                    else:
+                        raise IllegalMoveException("Predicted move is not in the provided moves.")
             elif self.eval_type == 'produce_list':   # We know that 'predicted_answer' will be a list
                 self.results["Total Ground Truth Legal Moves"] += len(answer)
                 predicted_answer = coerce_response(extract_solution(model_response), self.eval_type)
