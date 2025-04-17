@@ -28,7 +28,6 @@ def parse_args():
 
     parser.add_argument("--model", type=str, default="meta-llama/Llama-3.1-8B-Instruct", help="Model name or path")
     parser.add_argument("--base_url", type=str, default="http://localhost:8000/v1/llm_chess", help="Base URL for the model endpoint")
-    parser.add_argument("--experiment_name", default=None)
     parser.add_argument("--use_wandb", default=False, action="store_true", help="Use wandb for logging")
 
     parser.add_argument("--max_tokens", type=int, default=2048)
@@ -50,7 +49,6 @@ def main():
         wandb_run = wandb.init(
             config={
                 "model": args.model,
-                "experiment": args.experiment_name,
                 "temperature": args.temperature,
                 "top_p": args.top_p,
                 "min_p": args.min_p,
@@ -67,7 +65,7 @@ def main():
         filename_map=FILENAME_MAP,
         batch_size=args.batch_size,
         max_evals=args.max_evals,
-        wandb=wandb_run,
+        wandb_run=wandb_run,
     )
 
     client = utils.vLLMClient(

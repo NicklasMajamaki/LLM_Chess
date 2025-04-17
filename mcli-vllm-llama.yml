@@ -49,7 +49,7 @@ command: |-
   # Run out main inference function
   python3 inference.py --model meta-llama/Llama-3.2-3B-Instruct \
   --base_url http://localhost:8000/v1 --batch_size 4 --max_evals None \
-  --data_dir ./data --use_wandb True --experiment_name Llama-3.2-3B-Instruct
+  --data_dir ./data --use_wandb
   # tmux attach -t 0
   # python3 hello_world.py --data_dir ./data
 
