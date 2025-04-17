@@ -198,8 +198,8 @@ class Evaluator():
                     if save_verbose:
                         verbose_generations.append({
                             "prompt": row['prompt'],
-                            "model_response": result.tolist() if isinstance(result, np.ndarray) else result,
-                            "ground_truth": row['answer']
+                            "model_response": result,
+                            "ground_truth": str(row['answer'])
                         })
 
             result_dicts.append(results.get_final_dict())
