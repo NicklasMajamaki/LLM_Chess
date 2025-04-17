@@ -184,7 +184,7 @@ class Evaluator():
             print(f"{'='*50}\n Evaluating: {filename_no_ext}\n{'='*50}")
             df = eval_df.df
             results = ResultsDict(eval_df.eval_type)
-            results["Filename"] = filename_no_ext
+            results.results["Filename"] = filename_no_ext
 
             max_len = len(df) if self.max_evals is None else min(len(df), self.max_evals)
             for start_idx in range(0, max_len, self.batch_size):
