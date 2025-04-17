@@ -2,7 +2,6 @@ import os
 import ast
 import time
 import json
-import wandb
 import asyncio
 import pandas as pd
 
@@ -118,12 +117,14 @@ class ResultsDict():
                     self.results["Cumulative Rank of Moves Provided"] += predicted_move_idx/len(sorted_moves)
                 else:
                     # Print for checking performance
-                    print(f"Predicted: {predicted_answer}, Answer: {answer_dict} -- answer not in legal moves")
+                    formatted_answer = {k: round(v, 3) if isinstance(v, float) else v for k, v in answer_dict.items()}
+                    print(f"Predicted: {predicted_answer}, Answer: {formatted_answer} -- answer not in legal moves")
                     
                     raise IllegalMoveException("Predicted move is not in the legal moves.")
                 
                 # Print for checking performance
-                print(f"Predicted: {predicted_answer}, Answer: {answer_dict} -- got rank {predicted_move_idx}/{len(sorted_moves)}")
+                formatted_answer = {k: round(v, 3) if isinstance(v, float) else v for k, v in answer_dict.items()}
+                print(f"Predicted: {predicted_answer}, Answer: {formatted_answer} -- got rank {predicted_move_idx}/{len(sorted_moves)}")
                 
         except Exception as e:
             if isinstance(e, ParseException):
@@ -142,8 +143,8 @@ class ResultsDict():
             self.results["Error Rate"] = safe_div(self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other'], total)
             if self.wandb_run:
                 self.wandb_run.log({
-                    f"Evals/{self.trimmed_filename}/Accuracy": self.results["Accuracy"],
-                    f"Evals/{self.trimmed_filename}/Error Rate": self.results["Error Rate"],
+                    f"Eval - {self.trimmed_filename}/Accuracy": self.results["Accuracy"],
+                    f"Eval - {self.trimmed_filename}/Error Rate": self.results["Error Rate"],
                 })
 
         elif self.eval_type == "produce_list":
@@ -155,9 +156,9 @@ class ResultsDict():
             self.results["Error Rate"] = safe_div(self.results['Error: Parsing'] + self.results['Error: Other'], total)
             if self.wandb_run:
                 self.wandb_run.log({
-                    f"Evals/{self.trimmed_filename}/Percent Legal Moves Predicted": self.results["Percent Legal Moves Predicted"],
-                    f"Evals/{self.trimmed_filename}/Ratio of Legal to Illegal Moves": self.results["Ratio of Legal to Illegal Moves"],
-                    f"Evals/{self.trimmed_filename}/Error Rate": self.results["Error Rate"]
+                    f"Eval - {self.trimmed_filename}/Percent Legal Moves Predicted": self.results["Percent Legal Moves Predicted"],
+                    f"Eval - {self.trimmed_filename}/Ratio of Legal to Illegal Moves": self.results["Ratio of Legal to Illegal Moves"],
+                    f"Eval - {self.trimmed_filename}/Error Rate": self.results["Error Rate"]
                 })
 
         elif self.eval_type == "predict_singlemove":
@@ -167,8 +168,8 @@ class ResultsDict():
             self.results["Error Rate"] = safe_div(self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other'], total)
             if self.wandb_run:
                 self.wandb_run.log({
-                    f"Evals/{self.trimmed_filename}/Avg. Rank of Move Provided": 1-self.results["Avg. Rank of Move Provided"],
-                    f"Evals/{self.trimmed_filename}/Error Rate": self.results["Error Rate"]
+                    f"Eval - {self.trimmed_filename}/Avg. Rank of Move Provided": self.results["Avg. Rank of Move Provided"],
+                    f"Eval - {self.trimmed_filename}/Error Rate": self.results["Error Rate"]
                 })
 
         return self.results
