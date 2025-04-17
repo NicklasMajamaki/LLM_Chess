@@ -176,12 +176,15 @@ class Evaluator():
         model: The vLLM model to evaluate.
         """
         result_dicts = []
-        verbose_generations = []
 
         for eval_df in self.eval_dfs:
-            print(f"{'='*50}\n Evaluating: {eval_df.filename}\n{'='*50}")
+            verbose_generations = []
+            filename_no_ext = os.path.splitext(eval_df.filename)[0]
+
+            print(f"{'='*50}\n Evaluating: {filename_no_ext}\n{'='*50}")
             df = eval_df.df
             results = ResultsDict(eval_df.eval_type)
+            results["Filename"] = filename_no_ext
 
             max_len = len(df) if self.max_evals is None else min(len(df), self.max_evals)
             for start_idx in range(0, max_len, self.batch_size):
@@ -209,10 +212,9 @@ class Evaluator():
             for key, value in result_dicts[-1].items():
                 print(f"{key}: {value}")
             print(f"{'-'*50}\n\n")
-            
+
             if save_verbose:
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
-                filename_no_ext = os.path.splitext(eval_df.filename)[0]
                 save_path = os.path.join(eval_df.datafolder, 'saved_data', f"{filename_no_ext}_{timestamp}.json")
                 with open(save_path, 'w') as f:
                     json.dump(verbose_generations, f, indent=4)
