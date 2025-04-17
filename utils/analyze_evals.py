@@ -165,10 +165,12 @@ class ResultsDict():
             legal = self.results["Legal Moves Provided"]
             total = self.results["Total Samples"]
             self.results["Avg. Rank of Move Provided"] = safe_div(self.results["Cumulative Rank of Moves Provided"], legal)
+            self.results["Percent Legal Moves Provided"] = safe_div(legal, total)
             self.results["Error Rate"] = safe_div(self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other'], total)
             if self.wandb_run:
                 self.wandb_run.log({
                     f"Eval - {self.trimmed_filename}/Avg. Rank of Move Provided": self.results["Avg. Rank of Move Provided"],
+                    f"Eval - {self.trimmed_filename}/Percent Legal Moves Provided": self.results["Percent Legal Moves Provided"],
                     f"Eval - {self.trimmed_filename}/Error Rate": self.results["Error Rate"]
                 })
 
