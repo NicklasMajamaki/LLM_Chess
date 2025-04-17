@@ -3,7 +3,6 @@ import ast
 import time
 import json
 import asyncio
-import numpy as np
 import pandas as pd
 
 from .exceptions import ParseException, IllegalMoveException
@@ -35,13 +34,16 @@ class EvaluationDataframe():
 
 
 class ResultsDict():
-    def __init__(self, eval_type):
+    def __init__(self, eval_type, filename, exp_info):
+        self.filename = filename
+        self.exp_info = exp_info
         self.eval_type = eval_type
         self.results = self._instantiate_dict()
 
     def _instantiate_dict(self):
         if self.eval_type == "choose_from_n":
             return {
+                "Filename": self.filename,
                 "Total Samples": 0,
                 "Correct": 0,
                 "Incorrect": 0,
@@ -51,6 +53,7 @@ class ResultsDict():
             }
         elif self.eval_type == "produce_list":
             return {
+                "Filename": self.filename,
                 "Total Samples": 0,
                 "Total Ground Truth Legal Moves": 0,
                 "Predicted Ground Truth Legal Moves": 0,
@@ -60,6 +63,7 @@ class ResultsDict():
             }
         elif self.eval_type == "predict_singlemove":
             return {
+                "Filename": self.filename,
                 "Total Samples": 0,
                 "Legal Moves Provided": 0,
                 "Cumulative Rank of Moves Provided": 0,
@@ -134,7 +138,7 @@ class ResultsDict():
             self.results["Error Rate"] = (
                 self.results['Error: Parsing'] + self.results['Error: Illegal Move'] + self.results['Error: Other']
             ) / total if total else 0
-
+            
         elif self.eval_type == "produce_list":
             gt_total = self.results["Total Ground Truth Legal Moves"]
             illegal = self.results["Illegal Moves"]
@@ -163,9 +167,10 @@ class ResultsDict():
 
 
 class Evaluator():
-    def __init__(self, datafolder_fp, eval_files, filename_map, batch_size=4, max_evals=None):
+    def __init__(self, datafolder_fp, eval_files, filename_map, batch_size, max_evals, exp_info=None):
         """ Given a set of eval_files instantiate an evaluator object to analyze the evals. """
         self.eval_files = eval_files
+        self.exp_info = exp_info
         self.eval_dfs = [EvaluationDataframe(datafolder_fp, f, filename_map) for f in eval_files]
         self.max_evals = max_evals
         self.batch_size = batch_size
@@ -183,8 +188,7 @@ class Evaluator():
 
             print(f"{'='*50}\n Evaluating: {filename_no_ext}\n{'='*50}")
             df = eval_df.df
-            results = ResultsDict(eval_df.eval_type)
-            results.results["Filename"] = filename_no_ext
+            results = ResultsDict(eval_df.eval_type, filename_no_ext, self.exp_info)
 
             max_len = len(df) if self.max_evals is None else min(len(df), self.max_evals)
             for start_idx in range(0, max_len, self.batch_size):
