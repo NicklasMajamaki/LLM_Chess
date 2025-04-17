@@ -1,7 +1,9 @@
 # Main file we'll run from mcli to set up a vllm endpoint and run parquets through it
+import time
 import argparse
-import utils
 import subprocess
+
+import utils
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run vLLM evaluation.")
@@ -11,6 +13,7 @@ def parse_args():
 
     parser.add_argument("--model", type=str, default="meta-llama/Llama-3.1-8B-Instruct", help="Model name or path")
     parser.add_argument("--base_url", type=str, default="http://localhost:8000/v1/llm_chess", help="Base URL for the model endpoint")
+    parser.add_argument("--wandb_project", default=None)
 
     parser.add_argument("--max_tokens", type=int, default=2048)
     parser.add_argument("--temperature", type=float, default=0.7)
@@ -20,12 +23,19 @@ def parse_args():
     parser.add_argument("--repetition_penalty", type=float, default=1.1)
 
     parser.add_argument("--batch_size", type=int, default=4)
-    parser.add_argument("--max_evals", type=int, default=1)
+    parser.add_argument("--max_evals", default=None)
 
     return parser.parse_args()
 
 def main():
     args = parse_args()
+
+    exp_info = {
+        "model": args.model,
+        "exp_time": time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime()),
+        "wandb_entity": "lucasdino-ucsd",
+        "wandb_project": args.wandb_project
+    }
 
     FILENAME_MAP = {
         'bestmove': "choose_from_n",
@@ -35,11 +45,12 @@ def main():
     }
 
     evaluator = utils.Evaluator(
-        args.data_dir,
-        args.eval_files,
-        FILENAME_MAP,
+        datafolder_fp=args.data_dir,
+        eval_files=args.eval_files,
+        filename_map=FILENAME_MAP,
         batch_size=args.batch_size,
-        max_evals=args.max_evals
+        max_evals=args.max_evals,
+        exp_info=exp_info
     )
 
     client = utils.vLLMClient(
