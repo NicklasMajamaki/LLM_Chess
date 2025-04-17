@@ -183,8 +183,9 @@ class Evaluator():
             df = eval_df.df
             results = ResultsDict(eval_df.eval_type)
 
-            for start_idx in range(0, len(df), self.batch_size):
-                batch_df = df.iloc[start_idx:start_idx+self.batch_size]
+            max_len = len(df) if self.max_evals is None else min(len(df), self.max_evals)
+            for start_idx in range(0, max_len, self.batch_size):
+                batch_df = df.iloc[start_idx:min(start_idx+self.batch_size, max_len)]
                 prompts = [row['prompt'] for _, row in batch_df.iterrows()]
                 batch_responses = asyncio.run(model.chat(prompts))
 
