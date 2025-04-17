@@ -20,6 +20,9 @@ EVAL_FILES = [
     "worstmove_100.parquet"
 ]
 # Parsing functionality for CLI args
+def none_or_int(val):
+    return None if val.lower() == "none" else int(val)
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Run vLLM evaluation.")
 
@@ -38,7 +41,7 @@ def parse_args():
     parser.add_argument("--repetition_penalty", type=float, default=1.1)
 
     parser.add_argument("--batch_size", type=int, default=4)
-    parser.add_argument("--max_evals", default=None)
+    parser.add_argument("--max_evals", type=none_or_int, default=None)
 
     return parser.parse_args()
 
