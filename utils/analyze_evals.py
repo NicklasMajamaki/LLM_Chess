@@ -209,10 +209,11 @@ class Evaluator():
             for key, value in result_dicts[-1].items():
                 print(f"{key}: {value}")
             print(f"{'-'*50}\n\n")
-
+            
             if save_verbose:
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
-                save_path = os.path.join(eval_df.datafolder, 'saved_data', f"{eval_df.filename}_{timestamp}.json") 
+                filename_no_ext = os.path.splitext(eval_df.filename)[0]
+                save_path = os.path.join(eval_df.datafolder, 'saved_data', f"{filename_no_ext}_{timestamp}.json")
                 with open(save_path, 'w') as f:
                     json.dump(verbose_generations, f, indent=4)
 
