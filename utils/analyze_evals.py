@@ -78,8 +78,8 @@ class ResultsDict():
     def add_result(self, model_response, ground_truth):
         try:
             self.results["Total Samples"] += 1
-            predicted_answer = coerce_response(extract_solution(model_response), self.eval_type)
             if self.eval_type == "choose_from_n":
+                predicted_answer = coerce_response(extract_solution(model_response), self.eval_type)
                 answer, provided_moves = ground_truth
 
                 # Print for checking performance
@@ -91,8 +91,9 @@ class ResultsDict():
                 else:
                     raise IllegalMoveException("Predicted move is not in the provided moves.")
             elif self.eval_type == 'produce_list':   # We know that 'predicted_answer' will be a list
-                answer = ground_truth
                 self.results["Total Ground Truth Legal Moves"] += len(answer)
+                predicted_answer = coerce_response(extract_solution(model_response), self.eval_type)
+                answer = ground_truth
 
                 num_right = 0
                 already_guessed = set()
@@ -108,6 +109,7 @@ class ResultsDict():
                 # print(f"Predicted: {predicted_answer}, Answer: {answer} -- got {num_right} correct")
                 
             elif self.eval_type == 'predict_singlemove':
+                predicted_answer = coerce_response(extract_solution(model_response), self.eval_type)
                 answer_dict = ground_truth
                 
                 if predicted_answer in answer_dict:
@@ -117,14 +119,14 @@ class ResultsDict():
                     self.results["Cumulative Rank of Moves Provided"] += predicted_move_idx/len(sorted_moves)
                 else:
                     # Print for checking performance
-                    formatted_answer = {k: round(v, 3) if isinstance(v, float) else v for k, v in answer_dict.items()}
-                    print(f"Predicted: {predicted_answer}, Answer: {formatted_answer} -- answer not in legal moves")
+                    # formatted_answer = {k: round(v, 3) if isinstance(v, float) else v for k, v in answer_dict.items()}
+                    # print(f"Predicted: {predicted_answer}, Answer: {formatted_answer} -- answer not in legal moves")
                     
                     raise IllegalMoveException("Predicted move is not in the legal moves.")
                 
                 # Print for checking performance
-                formatted_answer = {k: round(v, 3) if isinstance(v, float) else v for k, v in answer_dict.items()}
-                print(f"Predicted: {predicted_answer}, Answer: {formatted_answer} -- got rank {predicted_move_idx}/{len(sorted_moves)}")
+                # formatted_answer = {k: round(v, 3) if isinstance(v, float) else v for k, v in answer_dict.items()}
+                # print(f"Predicted: {predicted_answer}, Answer: {formatted_answer} -- got rank {predicted_move_idx}/{len(sorted_moves)}")
                 
         except Exception as e:
             if isinstance(e, ParseException):
