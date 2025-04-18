@@ -14,10 +14,10 @@ FILENAME_MAP = {
     'predictmove': "predict_singlemove",
 }
 EVAL_FILES = [
-    "bestmove_100.parquet",
-    "legalmoves_100.parquet",
+    # "bestmove_100.parquet",
+    # "legalmoves_100.parquet",
     "predictmove_100.parquet",
-    "worstmove_100.parquet"
+    # "worstmove_100.parquet"
 ]
 # Parsing functionality for CLI args
 def none_or_int(val):

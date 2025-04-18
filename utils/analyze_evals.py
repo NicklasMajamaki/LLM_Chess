@@ -92,9 +92,9 @@ class ResultsDict():
                     else:
                         raise IllegalMoveException("Predicted move is not in the provided moves.")
             elif self.eval_type == 'produce_list':   # We know that 'predicted_answer' will be a list
+                answer = ground_truth
                 self.results["Total Ground Truth Legal Moves"] += len(answer)
                 predicted_answer = coerce_response(extract_solution(model_response), self.eval_type)
-                answer = ground_truth
 
                 num_right = 0
                 already_guessed = set()
