@@ -36,7 +36,7 @@ class EvaluationDataframe():
 class ResultsDict():
     def __init__(self, eval_type, filename, wandb_run):
         self.filename = filename
-        self.trimmed_filename = filename.rsplit("_", 1)[0]
+        self.trimmed_filename = filename.split("_", 1)[0]
         self.wandb_run = wandb_run
         self.eval_type = eval_type
         self.results = self._instantiate_dict()
