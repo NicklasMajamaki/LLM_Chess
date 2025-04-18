@@ -85,7 +85,7 @@ def main():
     )
 
     print("Starting Evaluation...")
-    results = evaluator.evaluate(client, verbose=False, save_verbose=True)
+    results = evaluator.evaluate(client, verbose=True, save_verbose=True)
     print(f"Evaluation Completed. Final Results:\n{results}")
 
     # Save to s3 bucket
