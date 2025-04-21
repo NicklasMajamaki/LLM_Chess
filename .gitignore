@@ -12,3 +12,7 @@ runscripts/
 /.virtual_documents
 /.ipynb_checkpoints
 __pycache__/
+
+# Chess Engine Files
+stockfish/
+prog_data/
