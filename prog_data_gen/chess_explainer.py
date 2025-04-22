@@ -1,12 +1,16 @@
 from __future__ import annotations
-
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+import os
 import random
+import numpy as np
 
 import chess
 import chess.engine
+
+from move_explanation import MoveExplanation
 
 ###############################################################################
 # Data structures
@@ -18,6 +22,7 @@ class VariationNode:
 
     move: chess.Move
     score: int                     # Static evaluation **after** this move
+    delta_score: Optional[int]     # Change in static evaluation from parent node
     minimax: int                   # Result of minimax (+αβ) below this node
     is_mate: bool = False          # Engine says position is forced mate
     mate_in: Optional[int] = None  # Moves until mate (sign ‑ for us to move)
@@ -34,7 +39,8 @@ class VariationNode:
     def visualize(self, depth: int = 0) -> str:
         """Pretty‑print subtree for debugging."""
         indent = "  " * depth
-        line = f"{indent}{self.uci()} (score={self.score}, minimax={self.minimax})"
+        delta_str = f" (Δ={self.delta_score:+})" if self.delta_score is not None else ""
+        line = f"{indent}{self.uci()} (score={self.score}{delta_str}, minimax={self.minimax})"
         if self.is_mate:
             line += f" (mate in {self.mate_in})"
         for child in self.children:
@@ -42,23 +48,45 @@ class VariationNode:
         return line
 
 ###############################################################################
-# Main driver
+# Main driver class
 ###############################################################################
 
 class ChessExplainer:
-    """Light‑weight wrapper around Stockfish to build explanation trees."""
+    """Light‑weight wrapper around Stockfish to build explanation trees and generate prose."""
 
     # Tunables – tweak for speed/quality trade‑off --------------------------
-    INITIAL_MOVES_SAMPLED = 3        # How many root moves to explain
-    KEEP_WINDOW_CENTI = 200          # Alt moves within this window are kept
+    ROOT_SAMPLING = {
+        "min_k": 2,
+        "max_k": 5,
+        "min_p": 0.05,
+        "cum_p": 0.9,
+        "temp": 100
+    }
 
-    CLEAR_BEST_THRESH = 60           # Δcp to bother exploring 2nd/3rd reply
-    MAX_TREE_NODES = 12              # Hard cap to keep engine calls bounded
-    MAX_TREE_DEPTH = 3               # Plies *after* the root move
-    MAX_BRANCHING = 3                # Reply lines per node (PV + alternates)
+    TREE_PLAYER_SAMPLING = {
+        "min_k": 1,
+        "max_k": 3,
+        "min_p": 0.2,
+        "cum_p": 0.8,
+        "temp": 20
+    }
 
+    TREE_OPP_SAMPLING = {
+        "min_k": 1,
+        "max_k": 2,
+        "min_p": 0.2,
+        "cum_p": 0.8,
+        "temp": 10
+    }
+
+    TREE_NODES_MAX = 12              # Hard cap to keep engine calls bounded
+    TREE_DEPTH_MAX = 4               # Plies *after* the root move
+    
     INF = 10_000_000                 # Sentinel for minimax initialisation
     MATE_SCORE = 10_000              # Normalised mate value (≫ any cp score)
+
+    # Default engine path finding
+    STOCKFISH_PATH = os.environ.get("STOCKFISH_EXECUTABLE") or "stockfish"
 
     # ------------------------------------------------------------------
     # Construction / teardown
@@ -66,61 +94,112 @@ class ChessExplainer:
 
     def __init__(
         self,
-        engine_path: str | Path,
+        engine_path: str | Path | None = None,
         depth: int = 15,
-        multipv: int = 8,
-        think_time: float = 0.4,
+        multipv: int = 15,
+        think_time: float = 0.2,
     ) -> None:
-        self._engine = chess.engine.SimpleEngine.popen_uci(str(engine_path))
+        resolved_engine_path = str(engine_path or self.STOCKFISH_PATH)
+        try:
+            self._engine = chess.engine.SimpleEngine.popen_uci(resolved_engine_path)
+        except FileNotFoundError:
+             print(f"Error: Engine executable not found at '{resolved_engine_path}'.")
+             print("Please install Stockfish and ensure it's in your PATH or set STOCKFISH_EXECUTABLE env var.")
+             raise
+        except Exception as e:
+             print(f"Error starting engine '{resolved_engine_path}': {e}")
+             raise
+
+        # Store config used for root analysis and tree building defaults
         self._root_cfg: Dict[str, Any] = {
             "depth": depth,
             "multipv": multipv,
             "think_time": think_time,
         }
         self._nodes_created = 0
-        self._root_color: Optional[chess.Color] = None
-
-    # Public helpers --------------------------------------------------------
+        self._root_color: Optional[chess.Color] = None # Will be set in analyze_position
 
     def close(self) -> None:
         """Shut down Stockfish subprocess."""
-        self._engine.close()
+        self._engine.quit()
+
+    # Context manager support
+    def __enter__(self) -> ChessExplainer:
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.close()
 
     # ------------------------------------------------------------------
     # High level API
     # ------------------------------------------------------------------
 
-    def analyze_position(self, fen: str) -> List[Dict[str, Any]]:
-        """Return a list of explanation trees for *fen* root position."""
+    def analyze_position(
+        self, fen: str, generate_explanation: bool = True
+    ) -> List[Dict[str, Any]]:
+        """
+        Analyzes the top moves from a FEN position, builds variation trees,
+        and optionally generates natural language explanations.
+
+        Args:
+            fen: The FEN string of the board state.
+            generate_explanation: If True, generate prose using MoveExplanation.
+
+        Returns:
+            A list of dictionaries, each containing:
+             - 'uci': The move in UCI notation.
+             - 'score': The engine's evaluation of the move (static score after the move).
+             - 'tree': The VariationNode root of the calculated variation tree.
+             - 'explanation': (Optional) The natural language explanation string.
+        """
         board = chess.Board(fen)
         self._root_color = board.turn
+        self._eval_cache = dict()
 
+        # Return values for initial baseline analysis (using shallower approx.)
+        initial_baseline_analysis = self._analyze(
+            board,
+            depth=self._root_cfg['depth'],
+            multipv=1,
+            think_time=self._root_cfg['think_time'] / 2
+        )
+        initial_board_score = initial_baseline_analysis[0]['score']
+
+        # Get root moves to build off of
         root_lines = self._analyze(board, **self._root_cfg)
-        if not root_lines:
-            return []  # No legal moves – nothing to explain.
+        sampled_moves = self._sample_moves(
+            lines=root_lines,
+            **self.ROOT_SAMPLING,
+            opponent_turn=False,
+            shuffle=True
+        )
 
-        # Choose which candidate moves to expand.
-        best = root_lines[0]
-        alts = [l for l in root_lines[1:] if abs(best["score"] - l["score"]) <= self.KEEP_WINDOW_CENTI]
-        chosen = [best] + random.sample(alts, min(len(alts), self.INITIAL_MOVES_SAMPLED - 1))
-
-        trajectories: List[Dict[str, Any]] = []
-        for info in chosen:
-            self._nodes_created = 0
+        # Now generate trajectories and explanations for each sampled move
+        results: List[Dict[str, Any]] = []
+        for move_info in sampled_moves:
+            self._nodes_created = 0 # Reset counter for each tree
             tree = self._build_tree(
-                board.copy(stack=False),
-                move=info["move"],
-                ply_left=self.MAX_TREE_DEPTH - 1,
+                board.copy(),
+                move=move_info["move"],
+                parent_score=initial_board_score,
+                ply_left=self.TREE_DEPTH_MAX,
                 alpha=-self.INF,
                 beta=self.INF,
             )
+            
+            # Append our tree and optionally generate a natural language explanation for this trajectory
             if tree is not None:
-                trajectories.append({
-                    "uci": info["move"].uci(),
-                    "score": info["score"],
+                entry: Dict[str, Any] = {
+                    "uci": move_info["move"].uci(),
+                    "score": tree.score,
                     "tree": tree,
-                })
-        return trajectories
+                }
+                if generate_explanation:
+                     explainer = MoveExplanation(board, tree)
+                     entry["explanation"] = explainer.generate_explanation()
+                results.append(entry)
+
+        return results
 
     def visualize_tree(self, tree: VariationNode) -> str:
         """Utility for quick CLI inspection."""
@@ -129,190 +208,275 @@ class ChessExplainer:
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
-
-    # ----------   Stockfish wrappers   ---------------------------------
-
-    def _analyze(self, board: chess.Board, *, depth: int, multipv: int, think_time: float) -> List[Dict[str, Any]]:
+    
+    # -------- Stockfish Engine / sampling helpers ----------
+    def _analyze(
+        self, board: chess.Board, *, depth: int, multipv: int, think_time: float
+    ) -> List[Dict[str, Any]]:
         """Run Stockfish and structure its output (POV = *self._root_color*)."""
         limit = (
             chess.engine.Limit(time=think_time)
             if think_time > 0
             else chess.engine.Limit(depth=depth)
         )
-        # Ensure _root_color is set before calling _structure_analysis
         if self._root_color is None:
-             raise ValueError("Cannot analyze without _root_color being set.")
+            raise ValueError("Root color must be set before calling _analyze.")
 
-        raw = self._engine.analyse(board, limit=limit, multipv=multipv)
-        return self._structure_analysis(raw, self._root_color)
+        try:
+            raw = self._engine.analyse(board, limit=limit, multipv=multipv)
+            return self._structure_analysis(raw, self._root_color)
+        except chess.engine.EngineTerminatedError:
+            raise ValueError("Engine terminated unexpectedly during analysis.")
+        except Exception:
+            raise ValueError("Error during engine analysis.")
 
     @classmethod
-    def _structure_analysis(cls, raw: List[Dict[str, Any]], perspective: chess.Color) -> List[Dict[str, Any]]:
+    def _structure_analysis(
+        cls, raw: List[Dict[str, Any]], perspective: chess.Color
+    ) -> List[Dict[str, Any]]:
         """Convert engine JSON blobs → sorted move dictionaries."""
         moves: List[Dict[str, Any]] = []
         for entry in raw:
-            score_obj = entry["score"].pov(perspective)
-            if score_obj.is_mate():
-                score = cls.MATE_SCORE * (1 if score_obj.mate() > 0 else -1)
-                mate_in = score_obj.mate()
-            else:
-                score = score_obj.score(mate_score=cls.MATE_SCORE) or 0
-                mate_in = None
+             pv = entry.get("pv")
+             if not pv:
+                 move = entry.get("move")
+                 if move is None: continue
+             else:
+                 move = pv[0]
 
-            move = entry.get("pv", [entry.get("move")])[0]
-            if move is None:
-                continue
+             score_obj = entry["score"].pov(perspective)
+             if score_obj.is_mate():
+                 score = cls.MATE_SCORE * (1 if score_obj.mate() > 0 else -1)
+                 mate_in = score_obj.mate()
+             else:
+                 score = score_obj.score(mate_score=cls.MATE_SCORE) or 0
+                 mate_in = None
 
-            moves.append({
-                "move": move,
-                "score": score,
-                "is_mate": score_obj.is_mate(),
-                "mate_in": mate_in,
-            })
-
+             moves.append({
+                 "move": move,
+                 "score": score, # This is the static evaluation AFTER the move 'move'
+                 "is_mate": score_obj.is_mate(),
+                 "mate_in": mate_in,
+             })
+        
+        if len(moves) == 0:
+            raise ValueError("No moves found in analysis.")
         return sorted(moves, key=lambda d: d["score"], reverse=True)
 
-    # ----------   Leaf evaluation   -----------------------------------
+    def _sample_moves(
+        self, 
+        lines: List[Dict[str, Any]], 
+        min_k: int,
+        max_k: int,
+        min_p: float,
+        cum_p: float,
+        temp: float,
+        opponent_turn: bool,
+        shuffle: bool = True
+    ) -> List[Dict[str, Any]]:
+        """ Given a list of lines, sample a random number of moves from this. """
+        scores = np.array([line["score"] for line in lines])
+        # print(f"Opp Turn:{opponent_turn}\n{scores}")
+        
+        # Need to handle case when sampling for opponent (min is better)
+        if opponent_turn:
+            scores = -scores
+        normalized_scores = scores - np.max(scores)
+        
+        # Apply softmax
+        exp_scores = np.exp(normalized_scores / temp)
+        probabilities = exp_scores / np.sum(exp_scores)
+        # print(f"Ps: {probabilities}")
+        
+        # Sample moves based on probabilities
+        selected_indices = [i for i, p in enumerate(probabilities) if p > min_p]
+        if len(selected_indices) < min_k:
+            selected_indices = np.argsort(probabilities)[-min_k:]
+        elif len(selected_indices) > max_k:
+            selected_indices = np.random.choice(selected_indices, size=max_k, replace=False, p=probabilities[selected_indices] / probabilities[selected_indices].sum())
+        selected_indices = sorted(selected_indices, key=lambda i: probabilities[i], reverse=True)
 
+        # Ensure cumulative probability constraint
+        cumulative_prob = 0.0
+        final_indices = []
+        for i in selected_indices:
+            if cumulative_prob >= cum_p and len(final_indices) >= min_k:
+                break
+            final_indices.append(int(i))
+            cumulative_prob += probabilities[i]
+        # print(f"FI: {final_indices}")
+
+        # Return the sampled moves
+        samples = [lines[i] for i in final_indices]
+        if shuffle:
+            random.shuffle(samples)
+        # print(f"Samples:\n{samples}"")
+        return samples
+
+    # -------- Recursive tree creation helpers ----------
     def _leaf_score(self, board: chess.Board) -> int:
-        """Cheap fallback evaluation when we hit node/ply limits."""
-        # Ensure _root_color is set before calling _analyze
-        if self._root_color is None:
-             raise ValueError("Cannot get leaf score without _root_color being set.")
-        quick = self._analyze(board, depth=4, multipv=1, think_time=0.05)
-        return quick[0]["score"] if quick else 0
+        """Cheap fallback evaluation when node/ply limits hit."""
+        fen = board.fen()
+        if fen in self._eval_cache:
+            return self._eval_cache[fen][0]["score"]
+        quick_analysis = self._analyze(board, depth=6, multipv=1, think_time=0.05)
+        if quick_analysis:
+            self._eval_cache[fen] = quick_analysis
+            return quick_analysis[0]["score"]
+        if board.is_checkmate():
+            return self.MATE_SCORE if board.turn != self._root_color else -self.MATE_SCORE
+        # Standard evaluation for draws is 0 centipawns
+        elif board.is_stalemate() or board.is_insufficient_material() or board.can_claim_draw():
+            return 0
+        # Should not happen if called correctly, but return 0 as fallback
+        return 0
 
-    # ----------   Recursive tree construction   -----------------------
+    def _terminal_score(self, board: chess.Board) -> int:
+        """Return score for game-ending positions from root perspective."""
+        if self._root_color is None:
+            raise ValueError("Root color must be set before calling _terminal_score.")
+        if board.is_checkmate():
+            return self.MATE_SCORE if board.turn != self._root_color else -self.MATE_SCORE
+        return 0
 
     def _build_tree(
         self,
         board: chess.Board,
-        *,
         move: chess.Move,
+        parent_score: int,
         ply_left: int,
         alpha: int,
         beta: int,
+        child_eval: Optional[int] = None,
     ) -> Optional[VariationNode]:
-        """Depth‑limited α‑β with Stockfish leaf evaluations."""
+        """Depth-limited α-β search using Stockfish for evaluations."""
+        indent = "  " * (self.TREE_DEPTH_MAX - ply_left)
+        # print(f"{indent}➡️ ENTER _build_tree: move={move.uci()}, ply_left={ply_left}, nodes={self._nodes_created}, α={alpha}, β={beta}, child_eval={child_eval}")
+
+        # --- 1. Make the move ---
         board.push(move)
         self._nodes_created += 1
+        fen = board.fen()
 
+        # --- 2. Check for immediate game over ---
         if board.is_game_over(claim_draw=True):
-            is_checkmate = board.is_checkmate()
-            score = self._terminal_score(board)
-            mate_in = None
-            if is_checkmate:
-                 # Mate in 0 from opponent's perspective = mate in 1 for current player
-                 mate_in = 1 if score == self.MATE_SCORE else -1
-            node = VariationNode(move, score, score, is_checkmate, mate_in)
+            final_score = self._terminal_score(board)
+            delta_score = final_score - parent_score
+            is_mate = board.is_checkmate()
+            mate_in = 0 if is_mate else None
+            node = VariationNode(move, final_score, delta_score, final_score, is_mate, mate_in)
+            board.pop() # Pop the move that led to this game over state
+            return node
+
+        # --- 3. Get analysis lines (next moves) for current position ---
+        lines = self._eval_cache.get(fen)
+        if lines is None:
+            lines = self._analyze(board, **self._root_cfg)
+            self._eval_cache[fen] = lines # Store the analysis
+
+
+        # --- 4. Determine current static score ---
+        current_score: int
+        if child_eval is not None:
+            # Prefer the score passed from the parent analysis if available
+            current_score = child_eval
+        elif lines:
+            # If no child_eval, use the top move's score from the analysis results
+            current_score = lines[0]["score"]
+        else:
+            # If analysis returned no lines (e.g., unexpected terminal state) or cache contained empty list
+            # Use a fallback evaluation - this ideally shouldn't be reached often
+            current_score = self._leaf_score(board)
+
+
+        delta_score = current_score - parent_score
+
+        # --- 5. Check depth/node limits ---
+        if ply_left <= 0:
+            node = VariationNode(move, current_score, delta_score, current_score)
+            board.pop() # Pop the move that led to this leaf node
+            return node
+        if self._nodes_created >= self.TREE_NODES_MAX:
+            node = VariationNode(move, current_score, delta_score, current_score)
+            board.pop() # Pop the move that led to this leaf node
+            return node
+
+        # --- 6. Handle case where analysis yielded no moves ---
+        # This might happen if the position is terminal but wasn't caught by is_game_over
+        if not lines:
+            final_score = self._terminal_score(board) # Use definitive terminal score
+            delta_score = final_score - parent_score
+            is_mate = board.is_checkmate()
+            mate_in = 0 if is_mate else None
+            node = VariationNode(move, final_score, delta_score, final_score, is_mate, mate_in)
             board.pop()
             return node
 
-        if ply_left <= 0 or self._nodes_created >= self.MAX_TREE_NODES:
-            score = self._leaf_score(board)
-            node = VariationNode(move, score, score) # Minimax = static eval at leaf
-            board.pop()
-            return node
-
-        lines = self._analyze(board, **self._root_cfg)
-        if not lines: # Should be caught by is_game_over, but defensive check
-            score = self._leaf_score(board)
-            node = VariationNode(move, score, score)
-            board.pop()
-            return node
-
-        # Use score from analysis after the move for the node's static score
-        current_score = lines[0]["score"]
+        # --- 7. Check for distant mate ---
         current_is_mate = lines[0]["is_mate"]
         current_mate_in = lines[0]["mate_in"]
+        if current_is_mate and current_mate_in is not None and abs(current_mate_in) > ply_left:
+            current_is_mate = False
+            current_mate_in = None
 
-
+        # --- 8. Sample moves for recursion ---
         maximizing = board.turn == self._root_color
-        ordered = lines if maximizing else list(reversed(lines))
-        best_score = ordered[0]["score"]
+        sampling_params = self.TREE_OPP_SAMPLING if not maximizing else self.TREE_PLAYER_SAMPLING
+        sampled_moves = self._sample_moves(
+            lines=lines,
+            **sampling_params,
+            opponent_turn=not maximizing,
+            shuffle=True
+        )
 
-        candidates = [ordered[0]] + [
-            l for l in ordered[1:]
-            if abs(l["score"] - best_score) <= self.CLEAR_BEST_THRESH
-        ][: self.MAX_BRANCHING - 1]
-
-        best_val = -self.INF if maximizing else self.INF
+        # --- 9. Recursive calls ---
+        best_minimax_val = -self.INF if maximizing else self.INF
         children: List[VariationNode] = []
-        best_child: Optional[VariationNode] = None
-
         a, b = alpha, beta
-        for info in candidates:
-            child = self._build_tree(
-                board.copy(stack=False), # Use copy for parallel exploration if needed later
-                move=info["move"],
+        for i, move_info in enumerate(sampled_moves):
+            child_node = self._build_tree(
+                board,
+                move=move_info["move"],
+                parent_score=current_score, # Current node's static score is parent score for children
                 ply_left=ply_left - 1,
                 alpha=a,
                 beta=b,
+                child_eval=move_info["score"], # Pass the known evaluation *after* child move
             )
-            if child is None:
-                continue
-            children.append(child)
 
-            if maximizing:
-                if child.minimax > best_val:
-                    best_val = child.minimax
-                    best_child = child
-                a = max(a, best_val)
-            else: # Minimizing
-                if child.minimax < best_val:
-                    best_val = child.minimax
-                    best_child = child
-                b = min(b, best_val)
+            if child_node:
+                children.append(child_node)
+                child_minimax = child_node.minimax
 
-            if b <= a:
-                break
+                if maximizing:
+                    best_minimax_val = max(best_minimax_val, child_minimax)
+                    a = max(a, best_minimax_val)
+                else: # Minimizing
+                    best_minimax_val = min(best_minimax_val, child_minimax)
+                    b = min(b, best_minimax_val)
 
-            if self._nodes_created >= self.MAX_TREE_NODES:
-                break
-
-        # If all children pruned or no legal moves, use static eval
-        if not children or best_child is None:
-            best_val = current_score # Use static eval if no children explored
-            node_is_mate = current_is_mate
-            node_mate_in = current_mate_in
-        elif abs(best_val) == self.MATE_SCORE:
-             node_is_mate = True
-             # Propagate mate length from the best child
-             if best_child.is_mate and best_child.mate_in is not None:
-                 # Increment depth, preserve sign (positive = root wins, neg = opponent wins)
-                 node_mate_in = (abs(best_child.mate_in) + 1) * (1 if best_val > 0 else -1)
-             else:
-                 # Mate found at this depth (best child was terminal/leaf mate)
-                 node_mate_in = 1 if best_val > 0 else -1
-        else: # Not a mate
-             node_is_mate = False
-             node_mate_in = None
+                if a >= b:
+                    break
 
 
-        node = VariationNode(
-            move,
-            score=current_score, # Static score *after* this move
-            minimax=best_val,   # Minimax score below this node
-            is_mate=node_is_mate,
-            mate_in=node_mate_in,
-            children=sorted(children, key=lambda c: c.minimax, reverse=maximizing), # Sort children by their minimax value
+        # --- 10. Finalize node ---
+        board.pop() # Pop the move made in step 1
+
+        if not children and sampled_moves:
+             # This case means sampling returned moves, but all recursive calls failed or were pruned immediately.
+             # Fallback to static score.
+            best_minimax_val = current_score
+        elif not children and not sampled_moves:
+            # This case means sampling returned 0 moves. Should be rare if lines were valid.
+            best_minimax_val = current_score
+
+
+        return VariationNode(
+            move=move,
+            score=current_score, # The static score determined in step 4
+            delta_score=delta_score,
+            minimax=best_minimax_val, # The result of minimax search below this node
+            is_mate=current_is_mate,
+            mate_in=current_mate_in,
+            children=children,
         )
-        board.pop()
-        return node
-
-    # ----------   Terminal evaluation helpers   -----------------------
-
-    def _terminal_score(self, board: chess.Board) -> int:
-        """Exact score for positions with no legal moves (mate / draw)."""
-        # Ensure _root_color is set before calling _leaf_score
-        if self._root_color is None:
-             raise ValueError("Cannot get terminal score without _root_color being set.")
-
-        if board.is_checkmate():
-            # If it's opponent's turn after the move, root delivered mate
-            return self.MATE_SCORE if board.turn != self._root_color else -self.MATE_SCORE
-        # Check other draw conditions
-        if board.is_stalemate() or board.is_insufficient_material() or board.can_claim_fifty_moves() or board.is_repetition():
-            return 0
-        # Should not happen if is_game_over(claim_draw=True) is checked first, but fallback
-        return self._leaf_score(board)
