@@ -80,7 +80,7 @@ class ChessExplainer:
     }
 
     TREE_NODES_MAX = 12              # Hard cap to keep engine calls bounded
-    TREE_DEPTH_MAX = 4               # Plies *after* the root move
+    TREE_DEPTH_MAX = 3               # Plies *after* the root move
     
     INF = 10_000_000                 # Sentinel for minimax initialisation
     MATE_SCORE = 10_000              # Normalised mate value (≫ any cp score)
@@ -193,11 +193,13 @@ class ChessExplainer:
                     "uci": move_info["move"].uci(),
                     "score": tree.score,
                     "tree": tree,
+                    "explanation": None
                 }
-                if generate_explanation:
-                     explainer = MoveExplanation(board, tree)
-                     entry["explanation"] = explainer.generate_explanation()
-                results.append(entry)
+            results.append(entry)
+
+        if generate_explanation:
+            pass
+            #UPDATE THIS FUNCITON TO PROPERLY PASS THE LIST OF ENTRIES     
 
         return results
 
@@ -243,7 +245,7 @@ class ChessExplainer:
                  if move is None: continue
              else:
                  move = pv[0]
-
+    
              score_obj = entry["score"].pov(perspective)
              if score_obj.is_mate():
                  score = cls.MATE_SCORE * (1 if score_obj.mate() > 0 else -1)
@@ -351,7 +353,6 @@ class ChessExplainer:
     ) -> Optional[VariationNode]:
         """Depth-limited α-β search using Stockfish for evaluations."""
         indent = "  " * (self.TREE_DEPTH_MAX - ply_left)
-        # print(f"{indent}➡️ ENTER _build_tree: move={move.uci()}, ply_left={ply_left}, nodes={self._nodes_created}, α={alpha}, β={beta}, child_eval={child_eval}")
 
         # --- 1. Make the move ---
         board.push(move)
@@ -365,14 +366,14 @@ class ChessExplainer:
             is_mate = board.is_checkmate()
             mate_in = 0 if is_mate else None
             node = VariationNode(move, final_score, delta_score, final_score, is_mate, mate_in)
-            board.pop() # Pop the move that led to this game over state
+            board.pop()
             return node
 
         # --- 3. Get analysis lines (next moves) for current position ---
         lines = self._eval_cache.get(fen)
         if lines is None:
             lines = self._analyze(board, **self._root_cfg)
-            self._eval_cache[fen] = lines # Store the analysis
+            self._eval_cache[fen] = lines
 
 
         # --- 4. Determine current static score ---
