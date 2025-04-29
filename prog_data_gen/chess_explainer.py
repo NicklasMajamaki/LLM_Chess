@@ -330,7 +330,16 @@ class ChessExplainer:
             delta_score = final_score - parent_score
             is_mate = board.is_checkmate()
             mate_in = 0 if is_mate else None
-            node = VariationNode(move, final_score, delta_score, final_score, is_mate, mate_in)
+            node = VariationNode(
+                move=move,
+                score=final_score,
+                delta_score=delta_score,
+                minimax=final_score,
+                is_mate=is_mate,
+                mate_in=mate_in,
+                parent=None,
+                children=[]
+            )
             board.pop()
             return node
 
@@ -359,11 +368,25 @@ class ChessExplainer:
 
         # --- 5. Check depth/node limits ---
         if ply_left <= 0:
-            node = VariationNode(move, current_score, delta_score, current_score)
+            node = VariationNode(
+                move=move,
+                score=current_score,
+                delta_score=delta_score,
+                minimax=current_score,
+                parent=None,
+                children=[]
+            )
             board.pop() # Pop the move that led to this leaf node
             return node
         if self._nodes_created >= self.TREE_NODES_MAX:
-            node = VariationNode(move, current_score, delta_score, current_score)
+            node = VariationNode(
+                move=move,
+                score=current_score,
+                delta_score=delta_score,
+                minimax=current_score,
+                parent=None,
+                children=[]
+            )
             board.pop() # Pop the move that led to this leaf node
             return node
 
@@ -374,7 +397,16 @@ class ChessExplainer:
             delta_score = final_score - parent_score
             is_mate = board.is_checkmate()
             mate_in = 0 if is_mate else None
-            node = VariationNode(move, final_score, delta_score, final_score, is_mate, mate_in)
+            node = VariationNode(
+                move=move,
+                score=final_score,
+                delta_score=delta_score,
+                minimax=final_score,
+                is_mate=is_mate,
+                mate_in=mate_in,
+                parent=None,
+                children=[]
+            )
             board.pop()
             return node
 
@@ -436,13 +468,20 @@ class ChessExplainer:
             # This case means sampling returned 0 moves. Should be rare if lines were valid.
             best_minimax_val = current_score
 
-
-        return VariationNode(
+        # Create the parent node
+        node = VariationNode(
             move=move,
             score=current_score, # The static score determined in step 4
             delta_score=delta_score,
             minimax=best_minimax_val, # The result of minimax search below this node
             is_mate=current_is_mate,
             mate_in=current_mate_in,
+            parent=None,
             children=children,
         )
+        
+        # Set parent reference for all child nodes
+        for child in children:
+            child.parent = node
+            
+        return node
