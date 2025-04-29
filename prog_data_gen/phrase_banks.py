@@ -1,37 +1,39 @@
 root_consider_phrases = [
-    "We could consider {move_description}.",
-    "Let's think about playing {move_description}.",
-    "What if we do {move_description}.",
+    "Ok let's consider starting with {move_description}.",
+    "Hm, what if we played {move_description}?",
+    "Let's rollout what would happen starting with {move_description}.",
     "Let's think through {move_description}.",
-    "Consider {move_description}.",
+    "What if we consider {move_description}.",
+    "We could try playing {move_description}.",
     "We could play {move_description}.",
-    "Let's think about the line starting with {move_description}.",
-    "Ok, consider {move_description}.",
+    "Ok let's analyze the line starting with {move_description}."
+    "What if we start with {move_description}?"
 ]
 
 write_off_root_phrases = [
     "Hold that, this seems like a bad direction.",
-    "This isn't the best line to consider.",
+    "No, not it."
+    "No, this actually isn't the best line to consider.",
     "No, this doesn't seem like a good idea.",
-    "Nope nevermind, let's consider something else.",
-    "Bad idea, not worth exploring.",
-    "This doesn't seem promising at all.",
+    "Nevermind - let's consider something else.",
+    "Bad idea. Not worth exploring.",
+    "Eh this doesn't seem promising at all.",
     "Actually, not a good idea.",
-    "Nevermind, this isn't a good move."
+    "Nope, this isn't a good move."
 ]
 
 excellent_move_phrases = [
     "That looks like a really strong move.",
-    "Seems to really tilt the board in my favor.",
+    "Hm this seems like a very move for me.",
     "Looks like it could be an excellent move.",
     "May be a brilliant move!",
-    "I think that's a super strong move!"
+    "I think that's a super strong move."
 ]
 
 good_move_phrases = [
     "Looks to be a good move.", 
     "Seems like a strong move.",
-    "I think this is a positive line to consider.", 
+    "I think this is a positive line to consider.",
     "This feels like a good direction.",
     "Just thinking out loud, seems like a good move.",
     "Good move - I like this."
@@ -46,52 +48,51 @@ bad_move_phrases = [
 ]
 
 blunder_phrases = [
-    "Seems like a total blunder.",
+    "Bleh, may be a blunder.",
     "Nope this seems like a very bad direction.",
-    "Not this - I don't like this at all.",
+    "That seems lke a very bad move.",
     "Hm, seems like a big mistake.",
-    "We'd definitely be in trouble here."
+    "Oh no we'd definitely be in trouble here."
 ]
 
 our_move_first_child_phrases = [
-    "Let's first consider {move_description}.",
+    "We could then respond with {move_description}.",
+    "Ok then we could play {move_description}."
     "We could follow with {move_description}.",
-    "What if we played {move_description}.",
-    "We could play {move_description}.",
-    "We could move {move_description}.",
-    "What might we play? Let's start with {move_description}.",
-    "Consider {move_description}."
+    "What if we then played {move_description}?",
+    "Then we might play {move_description}.",
+    "We could then move {move_description}.",
+    "Consider following with {move_description}."
 ]
 
 our_move_sibling_phrases = [
-    "We could also consider {move_description}.",
-    "What if instead we did {move_description}.",
-    "Instead we could play {move_description}.",
-    "We could also play {move_description}.",
-    "What about if we responded with {move_description}.",
-    "Ok or we could move {move_description}.",
-    "We could also try {move_description}.",
+    "Ok we could instead play {move_description}.",
+    "Instead we could move {move_description}.",
+    "Alternatively, we could do {move_description}.",
+    "Another possible move for us could be {move_description}.",
     "Or we could try playing {move_description}.",
-    "Considering alternatives, {move_description}.",
+    "What if instead we did {move_description}?",
+    "We could also play {move_description}.",
+    "We could also try {move_description}.",
     "Another option would be {move_description}."
 ]
 
 opponent_move_first_child_phrases = [
     "They might think about responding with {move_description}.",
-    "They may consider playing {move_description}.",
-    "Let's think about their response, starting with {move_description}.",
+    "They could consider then playing {move_description}.",
+    "Then they could respond with {move_description}.",
     "Ok considering their moves, they may play {move_description}.",
-    "From their side they may want to play {move_description}.",
-    "They could consider playing {move_description}."
+    "They might hit back with {move_description}."
+    "They could consider replying with {move_description}."
 ]
 
 opponent_move_sibling_phrases = [
     "They could also answer with {move_description}.",
     "They might also consider {move_description}.",
     "As an alternative, they could play {move_description}.",
-    "Or, they could move {move_description}.",
+    "Or they could move {move_description}.",
     "Also they might think about {move_description}.",
-    "The opponent could also consider {move_description}."
+    "They could also consider {move_description}."
 ]
 
 us_best_move_phrases = [
@@ -103,6 +104,7 @@ us_best_move_phrases = [
 ]
 
 opponent_best_move_phrases = [
+    "They would probably choose {move_description} of all the options."
     "I expect they would choose {move_description}.",
     "They would likely choose {move_description}.",
     "I think they would play {move_description}.",

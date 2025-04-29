@@ -66,8 +66,8 @@ class MoveExplanation:
     # ------------------------------------------------------------------ #
     #                        TUNABLE HYPERPARAMETERS                      #
     # ------------------------------------------------------------------ #
-    ROOT_WRITE_OFF_CP   = 150     # "bad strategy" threshold at root (cp)
-    BRANCH_WRITE_OFF_CP = 100     # same idea for sub‑branches   (cp)
+    ROOT_WRITE_OFF_CP   = 100     # "bad strategy" threshold at root (cp)
+    BRANCH_WRITE_OFF_CP = 60      # same idea for sub‑branches   (cp)
     GOOD_MOVE_CP = 50
     BAD_MOVE_CP = 50
     EXCELLENT_MOVE_CP = 100
@@ -184,6 +184,7 @@ class MoveExplanation:
             )
             children_considered += 0 if is_writeoff else 1
             explanation_parts.extend(narrations)
+        
         _ = depth_values.pop()
         _ = board.pop()
 
@@ -196,6 +197,24 @@ class MoveExplanation:
         return explanation_parts, False
 
     # ................................................................. #    
+    def _narrate_root(self, board: chess.Board, root: VariationNode) -> Tuple[List[str], bool]:
+        """Narrate the root node and its children."""
+        root_narration = []
+        # First narrate the first move.
+        move_description, _ = self._describe_move(board, root)
+        root_narration.extend([
+            random.choice(root_consider_phrases).format(
+            move_description = move_description)
+        ])
+
+        # Now check if the root is a write-off
+        if root.minimax < self.best_root_value - self.ROOT_WRITE_OFF_CP:
+            root_narration.append(random.choice(write_off_root_phrases))
+            return root_narration, True
+        
+        return root_narration, False
+    
+
     def _narrate_branch(self, board, node, depth_values, our_move) -> Tuple[List[str, Any], bool]:
         """ Helper function to generate text for a branch node. """
         branch_text = []
@@ -283,38 +302,20 @@ class MoveExplanation:
 
         return [best_move_narration]
 
-    
-    def _narrate_root(self, board: chess.Board, root: VariationNode) -> Tuple[List[str], bool]:
-        """Narrate the root node and its children."""
-        root_narration = []
-        # First narrate the first move.
-        move_description, _ = self._describe_move(board, root)
-        root_narration.extend([
-            random.choice(root_consider_phrases).format(
-            move_description = move_description)
-        ])
-
-        # Now check if the root is a write-off
-        if root.minimax < self.best_root_value - self.ROOT_WRITE_OFF_CP:
-            root_narration.append(random.choice(write_off_root_phrases))
-            return root_narration, True
-        
-        return root_narration, False
-
 
     def _describe_move(
             self, 
             board: chess.Board, 
             node: VariationNode, 
             depth_values: List[int] = None
-        ) -> str:
+        ) -> Tuple[str, bool]:
         """ Function to, given a move, describe the move (and optionally narrate move value). """
         color = "white" if board.turn == chess.WHITE else "black"
 
         # Castling
         if board.is_castling(node.move):
             side = "kingside" if chess.square_file(node.move.to_square) == 6 else "queenside"
-            return f"{color} castles {side} ({node.move.uci()})"
+            return f"{color} castles {side} ({node.move.uci()})", None
 
         piece = board.piece_at(node.move.from_square)
         piece_name = self.PIECE_NAMES.get(piece.piece_type, "piece")
@@ -375,7 +376,7 @@ class MoveExplanation:
         """
         # TODO: Implement
         if self.NARRATE_BOARD_VALUE:
-            return "To fill out board value function!"
+            return "(TBU: BOARD_VALUE_FUNCTION)."
         else:
             return None
 
