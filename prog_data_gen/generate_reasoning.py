@@ -78,6 +78,7 @@ class MoveExplanation:
 
     # RL-theory specific tuners
     NARRATE_BOARD_VALUE = True
+    NARRATE_BOARD_VALUE_DELTA = True
     NARRATE_MOVE_VALUE = True
     
     PIECE_NAMES = {
@@ -122,28 +123,15 @@ class MoveExplanation:
     def generate_explanations(self) -> List[Dict[str, Any]]:
         """Generates explanations for each root entry and returns the updated list."""
         explanations = []
+        depth_values = [self.initial_score]
+        board = self.initial_board.copy()
 
         # Generate explanation for each entry
         for entry in self.root_entries:
-            root_node = entry.get('tree')
-
-            if isinstance(root_node, VariationNode) and self.best_root_value is not None:
-                explanation_parts: List[str] = []
-
-                # First get the root & if this is a write-off
-                branch_board = self.initial_board.copy()   # Just to be safe w/ mutation
-                root_desc, is_writeoff = self._narrate_root(branch_board, root_node)
-                explanation_parts.append(root_desc)
-                if is_writeoff:
-                    entry['explanation'] = " ".join(explanation_parts)
-                    explanations.append(entry)
-                    continue
-                
-                # If not a write-off move (i.e., worth considering) now branch out for logic
-                depth_values = [self.initial_score]  # Will use this as reference for 'good' move or 'bad' move
-                explanation_parts.extend(self._generate_recursive_explanation(branch_board, root_node, depth_values, is_root=True))
-                entry['explanation'] = self._sentence_casing(" ".join(explanation_parts))
-                explanations.append(entry)
+            node = entry.get('tree')
+            narrations, _ = self._generate_recursive_explanation(board, node, depth_values)
+            entry['explanation'] = self._sentence_casing(narrations)
+            explanations.append(entry)
 
         return explanations
 
@@ -155,99 +143,104 @@ class MoveExplanation:
             board: chess.Board, 
             node: VariationNode,
             depth_values: List[int],
-            is_root: bool,
-            first_child: bool = False
-        ) -> List[str]:
+        ) -> Tuple[List[str], bool]:
         """
-        Primary function to recursively generate programmatic explanations.
+        Primary function to recursively generate programmatic explanations using DFS technique.
         Returns:
             explanation_parts: List of explanations in natural language.
-            bool: If true, means it was a considered (i.e., not written off) move
+            is_writeoff: If true, means this node was written off (note that if this node's child is written off we don't propagate written off up)
         """
         explanation_parts: List[str] = []
-        our_move = not board.turn == self.root_color # Since we're looking at the move following 'node'
+        our_move = board.turn == self.root_color
+        is_root = node.parent is None
+        children_considered = 0
 
-        # Start by narrating our move (if not the root)
-        if not is_root:
-            explanation_parts.append(self._narrate_branch(
-                board=board,
-                node=node,
-                depth_values=depth_values,
-                our_move=our_move,
-                first_child=first_child
-            ))
+        # For all moves we will want to narrate
+        if is_root:
+            narration, is_writeoff = self._narrate_root(board, node)
+        else:
+            narration, is_writeoff = self._narrate_branch(board, node, depth_values, our_move)
         
-        # Base case: Leaf
-        if not node.children:
-            # TODO: include some 'value' of the board for end state (TD-lambda rollout for Value Iter)
+        explanation_parts.extend(narration)   # Add to our list of explanation parts
+
+        # Base case 1: Written off
+        if is_writeoff:
             return explanation_parts, True
-
-        # Recursively analyze children
-        moves_considered = 0
-        for i, child in enumerate(node.children):
-            resp, alive = self._consider_branch(board, node, child, our_move)
-            if not alive:   # Case where we prune this branch
-                explanation_parts.append(resp)
-                continue
-
-            next_board = board.push(node.move)
-            child_explanations, considered = self._generate_recursive_explanation(
-                    board=next_board,
-                    node=child,
-                    depth_values=depth_values + [node.score],
-                    is_root=False,
-                    first_child=(i==0)
-                )
-            moves_considered += considered
-            explanation_parts.extend(child_explanations)
+        
+        # Base case 2: Leaf node
+        if node.children is None:
+            explanation_parts.append(self._narrate_board_value(node))
+            return explanation_parts, True
+        
+        # Recursive case
+        for child in enumerate(node.children):
+            board.push(child.move)   # Update board for this move
+            depth_values.append(node.score)
+            narrations, is_writeoff = self._generate_recursive_explanation(
+                board=board,
+                node=child,
+                depth_values=depth_values
+            )
+            _ = depth_values.pop()
             _ = board.pop()
+            children_considered += 0 if is_writeoff else 1
+            explanation_parts.extend(narrations)
 
-        # If multiple moves analyzed narrate what the 'best' would be
-        if moves_considered > 1:
+        # If multiple children considered, need to generate final 'best move' narration
+        if children_considered > 1:
             explanation_parts.append(
                 self._narrate_best_move(board, node.children, our_move)
             )
-
-        return explanation_parts, True
+        
+        return explanation_parts, False
 
     # ................................................................. #    
-    def _narrate_branch(self, board, node, depth_values, our_move, first_child) -> str:
+    def _narrate_branch(self, board, node, depth_values, our_move) -> List[str, Any]:
         """ Helper function to generate text for a branch node. """
-        branch_text = ""
+        branch_text = []
+        first_child = node == node.parent.children[0]
+
         if our_move:
             if first_child:
-                branch_text = random.choice(our_move_first_child_phrases).format(move_description=self._describe_move(board, node, depth_values))
+                branch_text.append(random.choice(our_move_first_child_phrases).format(move_description=self._describe_move(board, node, depth_values)))
             else:
-                branch_text = random.choice(our_move_sibling_phrases).format(move_description=self._describe_move(board, node, depth_values))
+                branch_text.append(random.choice(our_move_sibling_phrases).format(move_description=self._describe_move(board, node, depth_values)))
         else:
             if first_child:
-                branch_text = random.choice(opponent_move_first_child_phrases).format(move_description=self._describe_move(board, node, depth_values))
+                branch_text.append(random.choice(opponent_move_first_child_phrases).format(move_description=self._describe_move(board, node, depth_values)))
             else:
-                branch_text = random.choice(opponent_move_sibling_phrases).format(move_description=self._describe_move(board, node, depth_values))
+                branch_text.append(random.choice(opponent_move_sibling_phrases).format(move_description=self._describe_move(board, node, depth_values)))
         
-        return branch_text
-    
+        prune_text, is_writeoff = self._consider_branch(
+            board=board,
+            node=node, 
+            our_move=our_move
+        )
+        branch_text.append(prune_text)
 
-    def _consider_branch(self, board, parent, child, our_move) -> Tuple[str, bool]:
+        return branch_text, is_writeoff
+
+
+    def _consider_branch(self, board, node, our_move) -> Tuple[str, bool]:
         """ Checks if we should consider this branch or if we should prune. """
         if our_move:
-            if child.minimax < parent.minimax - self.BRANCH_WRITE_OFF_CP:
-                prune_text = random.choice(us_prune_branch_phrases).format(move_description=self._describe_move(board, child))
-                return prune_text, False
+            if node.minimax < node.parent.minimax - self.BRANCH_WRITE_OFF_CP:
+                prune_text = random.choice(us_prune_branch_phrases).format(move_description=self._describe_move(board, node))
+                return prune_text, True
         else:
-            if child.minimax > parent.minimax + self.BRANCH_WRITE_OFF_CP:
-                prune_text = random.choice(opponenet_prune_branch_phrases).format(move_description=self._describe_move(board, child))
-                return prune_text, False
+            if node.minimax > node.parent.minimax + self.BRANCH_WRITE_OFF_CP:
+                prune_text = random.choice(opponenet_prune_branch_phrases).format(move_description=self._describe_move(board, node))
+                return prune_text, True
 
         # If this is returned, we'll continue exploring that branch
-        return "", True
+        return None, False
 
 
     def _narrate_best_move(self, board, children, our_move):
         """ Given a list of children picks the best one and returns in natural language. """
         best_child = None
         optimal_minimax = -self.INF if our_move else self.INF
-        best_move_text = ""
+        best_move_narration = ""
 
         # Find the best child
         for child in children:
@@ -262,47 +255,31 @@ class MoveExplanation:
         
         # Narrate move
         if our_move:
-            best_move_text = random.choice(us_best_move_phrases).format(
+            best_move_narration = random.choice(us_best_move_phrases).format(
                 move_description=self._describe_move(board, best_child
             ))
         else:
-            best_move_text = random.choice(opponent_best_move_phrases).format(
+            best_move_narration = random.choice(opponent_best_move_phrases).format(
                 move_description=self._describe_move(board, best_child
             ))
 
-        return best_move_text
+        return best_move_narration
 
     
-    def _narrate_root(self, board: chess.Board, root: VariationNode) -> Tuple[str, bool]:
+    def _narrate_root(self, board: chess.Board, root: VariationNode) -> Tuple[List[str], bool]:
         """Narrate the root node and its children."""
+        root_narration = []
         # First narrate the first move.
-        root_desc = random.choice(root_consider_phrases).format(
-            move_description = self._describe_move(board, root, depth_values=None)
-        )
+        root_narration.append(random.choice(root_consider_phrases).format(
+            move_description = self._describe_move(board, root, depth_values=None)))
 
         # Now check if the root is a write-off
         if root.minimax < self.best_root_value - self.ROOT_WRITE_OFF_CP:
-            root_desc += " " + random.choice(write_off_root_phrases)
-            return root_desc, True
-        return root_desc, False
+            root_narration.append(random.choice(write_off_root_phrases))
+            return root_narration, True
+        
+        return root_narration, False
 
-    @staticmethod
-    def _sentence_casing(text: str) -> str:
-        """Converts a string with multiple sentences into sentence case."""
-        # Split text into sentences using regex to handle '.', '!', and '?'
-        sentences = re.split(r'([.!?])', text)
-        processed_sentences = []
-
-        for i in range(0, len(sentences) - 1, 2):
-            sentence = sentences[i].strip().capitalize()
-            punctuation = sentences[i + 1]
-            processed_sentences.append(sentence + punctuation)
-
-        # Handle any trailing text without punctuation
-        if len(sentences) % 2 == 1 and sentences[-1].strip():
-            processed_sentences.append(sentences[-1].strip().capitalize())
-
-        return " ".join(processed_sentences)
 
     def _describe_move(
             self, 
@@ -367,3 +344,36 @@ class MoveExplanation:
                 pass
 
         return move_description
+    
+    
+    def _narrate_board_value(self, node: VariationNode) -> str:
+        """ 
+        Generates a statement about the value of a board (either on objective basis -- pure value function) or on a delta basis (compared vs. initial board score).
+        """
+        # TODO: Implement
+        if self.NARRATE_BOARD_VALUE:
+            return "To fill out board value function!"
+        else:
+            return None
+
+
+    @staticmethod
+    def _sentence_casing(narrations: List[str, Any]) -> str:
+        """Converts a List of string/None with multiple sentences into sentence case."""
+        filtered_narrations = [narration for narration in narrations if narration is not None]    
+        text = " ".join(filtered_narrations)
+        
+        # Split text into sentences using regex to handle '.', '!', and '?'
+        sentences = re.split(r'([.!?])', text)
+        processed_sentences = []
+
+        for i in range(0, len(sentences) - 1, 2):
+            sentence = sentences[i].strip().capitalize()
+            punctuation = sentences[i + 1]
+            processed_sentences.append(sentence + punctuation)
+
+        # Handle any trailing text without punctuation
+        if len(sentences) % 2 == 1 and sentences[-1].strip():
+            processed_sentences.append(sentences[-1].strip().capitalize())
+
+        return " ".join(processed_sentences)

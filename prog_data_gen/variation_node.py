@@ -13,6 +13,7 @@ class VariationNode:
     minimax: int                   # Result of minimax (+αβ) below this node
     is_mate: bool = False          # Engine says position is forced mate
     mate_in: Optional[int] = None  # Moves until mate (sign ‑ for us to move)
+    parent: "VariationNode" = None # Also have pointer to parent (None -> root)
     children: List["VariationNode"] = field(default_factory=list)
 
     # ---------------------------------------------------------------------
