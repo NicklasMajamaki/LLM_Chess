@@ -151,6 +151,7 @@ class ChessExplainer:
                 ply_left=self.TREE_DEPTH_MAX,
                 alpha=-self.INF,
                 beta=self.INF,
+                current_depth=0 # Start depth at 0 for root moves
             )
             
             # Append our tree and optionally generate a natural language explanation for this trajectory
@@ -314,6 +315,7 @@ class ChessExplainer:
         ply_left: int,
         alpha: int,
         beta: int,
+        current_depth: int, # Added depth parameter
         child_eval: Optional[int] = None,
     ) -> Optional[VariationNode]:
         """Depth-limited α-β search using Stockfish for evaluations."""
@@ -335,6 +337,7 @@ class ChessExplainer:
                 score=final_score,
                 delta_score=delta_score,
                 minimax=final_score,
+                depth=current_depth, # Set depth
                 is_mate=is_mate,
                 mate_in=mate_in,
                 parent=None,
@@ -373,6 +376,7 @@ class ChessExplainer:
                 score=current_score,
                 delta_score=delta_score,
                 minimax=current_score,
+                depth=current_depth, # Set depth
                 parent=None,
                 children=[]
             )
@@ -384,6 +388,7 @@ class ChessExplainer:
                 score=current_score,
                 delta_score=delta_score,
                 minimax=current_score,
+                depth=current_depth, # Set depth
                 parent=None,
                 children=[]
             )
@@ -402,6 +407,7 @@ class ChessExplainer:
                 score=final_score,
                 delta_score=delta_score,
                 minimax=final_score,
+                depth=current_depth, # Set depth
                 is_mate=is_mate,
                 mate_in=mate_in,
                 parent=None,
@@ -439,6 +445,7 @@ class ChessExplainer:
                 ply_left=ply_left - 1,
                 alpha=a,
                 beta=b,
+                current_depth=current_depth + 1, # Increment depth for children
                 child_eval=move_info["score"], # Pass the known evaluation *after* child move
             )
 
@@ -474,6 +481,7 @@ class ChessExplainer:
             score=current_score, # The static score determined in step 4
             delta_score=delta_score,
             minimax=best_minimax_val, # The result of minimax search below this node
+            depth=current_depth, # Set depth
             is_mate=current_is_mate,
             mate_in=current_mate_in,
             parent=None,

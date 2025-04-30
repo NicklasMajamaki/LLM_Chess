@@ -23,36 +23,36 @@ write_off_root_phrases = [
 ]
 
 excellent_move_phrases = [
-    "That looks like a really strong move.",
-    "Hm this seems like a very move for me.",
-    "Looks like it could be an excellent move.",
-    "May be a brilliant move!",
-    "I think that's a super strong move."
+    "That looks like a really strong move{move_value}.",
+    "Hm this seems like a very move for me{move_value}.",
+    "Looks like it could be an excellent move{move_value}.",
+    "May be a brilliant move{move_value}!",
+    "I think that's a super strong move{move_value}."
 ]
 
 good_move_phrases = [
-    "Looks to be a good move.", 
-    "Seems like a strong move.",
-    "I think this is a positive line to consider.",
-    "This feels like a good direction.",
-    "Just thinking out loud, seems like a good move.",
-    "Good move - I like this."
+    "Looks to be a good move{move_value}.", 
+    "Seems like a strong move{move_value}.",
+    "I think this is a positive line to consider{move_value}.",
+    "This feels like a good direction{move_value}.",
+    "Just thinking out loud, seems like a good move{move_value}.",
+    "Good move - I like this{move_value}."
 ]
 
 bad_move_phrases = [
-    "Looks like a poor line.",
-    "Doesn't seem like a positive direction.",
-    "Not a great move.",
-    "This feels like a suboptimal direction.",
-    "Seems like a bleh move."
+    "Looks like a poor line{move_value}.",
+    "Doesn't seem like a positive direction{move_value}.",
+    "Not a great move{move_value}.",
+    "This feels like a suboptimal direction{move_value}.",
+    "Seems like a bleh move{move_value}."
 ]
 
 blunder_phrases = [
-    "Bleh, may be a blunder.",
-    "Nope this seems like a very bad direction.",
-    "That seems lke a very bad move.",
-    "Hm, seems like a big mistake.",
-    "Oh no we'd definitely be in trouble here."
+    "Bleh, may be a blunder{move_value}.",
+    "Nope this seems like a very bad direction{move_value}.",
+    "That seems like a very bad move{move_value}.",
+    "Hm, seems like a big mistake{move_value}.",
+    "Oh no we'd definitely be in trouble here{move_value}."
 ]
 
 our_move_first_child_phrases = [
@@ -112,13 +112,79 @@ opponent_best_move_phrases = [
 ]
 
 us_prune_branch_phrases = [
-    "We might think to play {move_description}, but that doesn't seem like a good idea.",
-    "What about playing {move_description}...no that doesn't seem smart.",
-    "We could consider {move_description}. On second thought that isn't a great line.",
-    "We may think to play {move_description}, but it seems like a bad direction."
+    "No this branch doesn't seem right.",
+    "Nevermind -- let's consider alternatives.",
+    "Actually that isn't what we should play.",
+    "No, maybe let's consider another move."
 ]
 
+# This should be called VERY rarely (if at all)
 opponenet_prune_branch_phrases = [
-    "They might consider {move_description}...but actually that would be pretty suboptimal for them to play.",
-    "They could move {move_description}. However, that seems like a silly move for them.",
+    "Actually they probably won't play that.",
+    "On second thought they wouldn't choose this branch.",
+]
+
+board_valuation_excellent_absolute = [
+    "We're in a really strong position to win here{board_value}.",
+    "I really like our board positioning{board_value}.",
+    "Our board position is looking very favorable{board_value}.",
+    "We definitely have the upper hand here{board_value}.",
+    "This board is very favorable for us{board_value}.",
+    "If we keep this up we should definintely win{board_value}.",
+]
+
+board_valuation_excellent_delta = [
+    "We're now in a much more favorable position{board_value}.",
+    "This board is much better off than before{board_value}.",
+    "I'm liking this board position much more than the start of this line{board_value}.",
+    "This line has given us a much stronger position than our current state{board_value}.",
+    "This is much better off than when we started{board_value}.",
+]
+
+board_valuation_good_absolute = [
+    "This seems like a decent position for us{board_value}.",
+    "I think we're in a reasonably good spot here{board_value}.",
+    "The board looks somewhat favorable for us{board_value}.",
+    "Feels like we have a slight advantage currently{board_value}.",
+    "This position seems fairly solid{board_value}.",
+]
+
+board_valuation_good_delta = [
+    "This line seems to have improved our position somewhat{board_value}.",
+    "We appear slightly better off than before{board_value}.",
+    "This feels like a step in the right direction compared to the start{board_value}.",
+    "Our position seems a bit stronger now{board_value}.",
+    "This looks like a positive development from where we were{board_value}.",
+]
+
+board_valuation_poor_absolute = [
+    "This position doesn't look great for us{board_value}.",
+    "I'm a bit concerned about our current board state{board_value}.",
+    "Seems like we might be at a disadvantage here{board_value}.",
+    "This board feels somewhat unfavorable{board_value}.",
+    "We could be in a tricky spot{board_value}.",
+]
+
+board_valuation_poor_delta = [
+    "This line seems to have weakened our position{board_value}.",
+    "We might be worse off than when we started this line{board_value}.",
+    "This doesn't feel like an improvement from our current state{board_value}.",
+    "Our position looks a bit weaker now{board_value}.",
+    "This development seems somewhat negative{board_value}.",
+]
+
+board_valuation_blunder_absolute = [
+    "Oh, this looks like a really bad position for us{board_value}.",
+    "This board is serious trouble for us{board_value}.",
+    "This board state seems very unfavorable{board_value}.",
+    "We're definitely playing from behind here{board_value}.",
+    "This position looks quite difficult to come back from{board_value}.",
+]
+
+board_valuation_blunder_delta = [
+    "This line appears to have led to a much worse position{board_value}.",
+    "We seem significantly worse off than before exploring this{board_value}.",
+    "This feels like a major step back from the start of this line{board_value}.",
+    "Our position looks significantly weaker now{board_value}.",
+    "This seems like a very negative outcome compared to where we were{board_value}.",
 ]

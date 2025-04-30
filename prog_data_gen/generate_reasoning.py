@@ -39,7 +39,15 @@ from phrase_banks import (
     us_best_move_phrases,
     opponent_best_move_phrases,
     us_prune_branch_phrases,
-    opponenet_prune_branch_phrases
+    opponenet_prune_branch_phrases,
+    board_valuation_excellent_absolute,
+    board_valuation_excellent_delta,
+    board_valuation_good_absolute,
+    board_valuation_good_delta,
+    board_valuation_poor_absolute,
+    board_valuation_poor_delta,
+    board_valuation_blunder_absolute,
+    board_valuation_blunder_delta
 )
 
 
@@ -66,20 +74,30 @@ class MoveExplanation:
     # ------------------------------------------------------------------ #
     #                        TUNABLE HYPERPARAMETERS                      #
     # ------------------------------------------------------------------ #
+    INF = 10_000_000              # Sentinel for minimax initialisation
+    MATE_CP   = 10_000            # Stockfish convention
+    
     ROOT_WRITE_OFF_CP   = 100     # "bad strategy" threshold at root (cp)
     BRANCH_WRITE_OFF_CP = 60      # same idea for sub‑branches   (cp)
+
+    # Determinants for move value
     GOOD_MOVE_CP = 50
     BAD_MOVE_CP = 50
     EXCELLENT_MOVE_CP = 100
     BLUNDER_CP = 100
 
-    INF = 10_000_000              # Sentinel for minimax initialisation
-    MATE_CP   = 10_000            # Stockfish convention
+    # Determinants for board value
+    EXCELLENT_BOARD = 300
+    GOOD_BOARD = 150
+    BAD_BOARD = -150
+    BLUNDER_BOARD = -300
 
     # RL-theory specific tuners
     NARRATE_BOARD_VALUE = True
     NARRATE_BOARD_VALUE_DELTA = True
     NARRATE_MOVE_VALUE = True
+    SHOW_MOVE_VALUE = True
+    SHOW_BOARD_VALUE = True
     
     PIECE_NAMES = {
         chess.PAWN:   "pawn",
@@ -117,6 +135,9 @@ class MoveExplanation:
                 max(self.roots, key=lambda n: n.minimax))
             self.best_root_value = self.best_root.minimax
 
+        # Need this to avoid confusion in the narration when jumping multiple depths
+        self.previous_narration_depth = 0
+
     # ------------------------------------------------------------------ #
     #                         PUBLIC ENTRY POINT                         #
     # ------------------------------------------------------------------ #
@@ -129,6 +150,7 @@ class MoveExplanation:
         # Generate explanation for each entry
         for entry in self.root_entries:
             node = entry.get('tree')
+            self.previous_narration_depth = 0   # Reset since back at root
             narrations, _ = self._generate_recursive_explanation(board, node, depth_values)
             # entry['explanation'] = self._sentence_casing(narrations)
             entry['explanation'] = narrations
@@ -169,8 +191,8 @@ class MoveExplanation:
             return explanation_parts, True
         
         # Base case 2: Leaf node
-        if node.children is None:
-            explanation_parts.extend(self._narrate_board_value(node))
+        if len(node.children) == 0:
+            explanation_parts.append(self._narrate_board_value(node))
             return explanation_parts, False
         
         # Recursive case
@@ -220,32 +242,33 @@ class MoveExplanation:
         branch_text = []
         first_child = node == node.parent.children[0]
 
+        prefix = self._get_depth_prefix(self.previous_narration_depth, node.depth, our_move)
+
         move_description, value_narration = self._describe_move(board, node, depth_values)
         if our_move:
             if first_child:
                 branch_text.extend([
-                    random.choice(our_move_first_child_phrases).format(move_description=move_description),
+                    prefix + random.choice(our_move_first_child_phrases).format(move_description=move_description),
                     value_narration
                 ])
             else:
                 branch_text.extend([
-                    random.choice(our_move_sibling_phrases).format(move_description=move_description),
+                    prefix + random.choice(our_move_sibling_phrases).format(move_description=move_description),
                     value_narration
                 ])
         else:
             if first_child:
                 branch_text.extend([
-                    random.choice(opponent_move_first_child_phrases).format(move_description=move_description),
+                    prefix + random.choice(opponent_move_first_child_phrases).format(move_description=move_description),
                     value_narration
                 ])
             else:
                 branch_text.extend([
-                    random.choice(opponent_move_sibling_phrases).format(move_description=move_description),
+                    prefix + random.choice(opponent_move_sibling_phrases).format(move_description=move_description),
                     value_narration
                 ])
         
         prune_text, is_writeoff = self._consider_branch(
-            board=board,
             node=node, 
             our_move=our_move
         )
@@ -254,20 +277,15 @@ class MoveExplanation:
         return branch_text, is_writeoff
 
 
-    def _consider_branch(self, board, node, our_move) -> Tuple[List[str], bool]:
+    def _consider_branch(self, node, our_move) -> Tuple[List[str], bool]:
         """ Checks if we should consider this branch or if we should prune. """
-        move_description, _ = self._describe_move(board, node)
         if our_move:
             if node.minimax < node.parent.minimax - self.BRANCH_WRITE_OFF_CP:
-                prune_text = [
-                    random.choice(us_prune_branch_phrases).format(move_description=move_description)
-                ]                
+                prune_text = random.choice(us_prune_branch_phrases)
                 return prune_text, True
         else:
             if node.minimax > node.parent.minimax + self.BRANCH_WRITE_OFF_CP:
-                prune_text = [
-                    random.choice(opponenet_prune_branch_phrases).format(move_description=move_description)
-                ]                
+                prune_text = random.choice(opponenet_prune_branch_phrases)    
                 return prune_text, True
 
         # If this is returned, we'll continue exploring that branch
@@ -307,10 +325,11 @@ class MoveExplanation:
             self, 
             board: chess.Board, 
             node: VariationNode, 
-            depth_values: List[int] = None
+            depth_values: List[int] = None,
         ) -> Tuple[str, bool]:
         """ Function to, given a move, describe the move (and optionally narrate move value). """
         color = "white" if board.turn == chess.WHITE else "black"
+        self.previous_narration_depth = node.depth   # Set for current node
 
         # Castling
         if board.is_castling(node.move):
@@ -350,35 +369,79 @@ class MoveExplanation:
         # Narrate move value (if hyperparam set)
         value_narration = None
         if self.NARRATE_MOVE_VALUE and depth_values and len(depth_values) > 1:
+            move_value = f"[{node.score-depth_values[-2]}]" if self.SHOW_MOVE_VALUE else ""
              # Case 1: Excellent move
             if node.score > (depth_values[-2] + self.EXCELLENT_MOVE_CP) and node.delta_score > self.EXCELLENT_MOVE_CP:
-                value_narration = random.choice(excellent_move_phrases)
+                value_narration = random.choice(excellent_move_phrases).format(move_value=move_value)
             # Case 2: Good move
             elif node.score > (depth_values[-2] + self.GOOD_MOVE_CP) and node.delta_score > self.GOOD_MOVE_CP:
-                value_narration = random.choice(good_move_phrases)
+                value_narration = random.choice(good_move_phrases).format(move_value=move_value)
             # Case 3: Blunder
             elif node.score < (depth_values[-2] - self.BLUNDER_CP) and node.delta_score < self.BLUNDER_CP:
-                value_narration = random.choice(blunder_phrases)
+                value_narration = random.choice(blunder_phrases).format(move_value=move_value)
             # Case 4: Bad move
             elif node.score < (depth_values[-2] - self.BAD_MOVE_CP) and node.delta_score > self.BAD_MOVE_CP:
-                value_narration = random.choice(bad_move_phrases)
+                value_narration = random.choice(bad_move_phrases).format(move_value=move_value)
             # Case 5: Nothing to report, doesn't materially sway board
             else:
                 pass
             return move_description, value_narration
 
         return move_description, value_narration
-    
-    
-    def _narrate_board_value(self, node: VariationNode) -> str:
-        """ 
-        Generates a statement about the value of a board (either on objective basis -- pure value function) or on a delta basis (compared vs. initial board score).
+
+
+    def _narrate_board_value(self, node: VariationNode) -> List[str]:
         """
-        # TODO: Implement
-        if self.NARRATE_BOARD_VALUE:
-            return "(TBU: BOARD_VALUE_FUNCTION)."
-        else:
+        Generates a statement about the value of a board (either on objective basis -- pure value function)
+        or on a delta basis (compared vs. initial board score).
+        Returns a list containing the narration string, or an empty list if no narration is generated.
+        """
+        if not self.NARRATE_BOARD_VALUE:
             return None
+
+        delta_score = node.score - self.initial_score
+        board_value = (f"[{delta_score}]" if delta_score else f"[{node.score}]") if self.SHOW_BOARD_VALUE else ""
+        narration = None
+
+        # Delta comparison
+        if self.NARRATE_BOARD_VALUE_DELTA:
+            if delta_score > self.EXCELLENT_BOARD:
+                narration = random.choice(board_valuation_excellent_delta).format(board_value=board_value)
+            elif delta_score > self.GOOD_BOARD:
+                narration = random.choice(board_valuation_good_delta).format(board_value=board_value)
+            elif delta_score < self.BLUNDER_BOARD:
+                narration = random.choice(board_valuation_blunder_delta).format(board_value=board_value)
+            elif delta_score < self.BAD_BOARD:
+                narration = random.choice(board_valuation_poor_delta).format(board_value=board_value)
+        # Absolute comparison
+        else:
+            if node.score > self.EXCELLENT_BOARD:
+                narration = random.choice(board_valuation_excellent_absolute).format(board_value=board_value)
+            elif node.score > self.GOOD_BOARD:
+                narration = random.choice(board_valuation_good_absolute).format(board_value=board_value)
+            elif node.score < self.BLUNDER_BOARD:
+                narration = random.choice(board_valuation_blunder_absolute).format(board_value=board_value)
+            elif node.score < self.BAD_BOARD:
+                narration = random.choice(board_valuation_poor_absolute).format(board_value=board_value)
+
+        return narration
+
+
+    @staticmethod
+    def _get_depth_prefix(prev_narration_depth, node_depth, our_move):
+        depth_jump_size = (prev_narration_depth - node_depth)//2
+
+        # Nominal - no need to prefix about which move we're returning to
+        if depth_jump_size <= 0:
+            return ""
+        
+        returning_to_move = node_depth // 2
+        phrases = ['first', 'second', 'third'] # Won't take our tree deeper than this likely
+
+        if our_move:
+            return f"Returning to our {phrases[returning_to_move]} move, "
+        else:
+            return f"Returning to their {phrases[returning_to_move]} move, "
 
 
     @staticmethod
