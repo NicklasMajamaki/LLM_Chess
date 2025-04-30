@@ -11,6 +11,7 @@ class VariationNode:
     score: int                     # Static evaluation **after** this move
     delta_score: Optional[int]     # Change in static evaluation from parent node
     minimax: int                   # Result of minimax (+αβ) below this node
+    depth: int                     # Depth of this node in the tree (root = 0)
     is_mate: bool = False          # Engine says position is forced mate
     mate_in: Optional[int] = None  # Moves until mate (sign ‑ for us to move)
     parent: "VariationNode" = None # Also have pointer to parent (None -> root)
