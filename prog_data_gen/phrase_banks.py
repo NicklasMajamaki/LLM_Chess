@@ -81,7 +81,7 @@ opponent_move_first_child_phrases = [
     "They might think about responding with {move_description}.",
     "They could consider then playing {move_description}.",
     "Then they could respond with {move_description}.",
-    "Ok considering their moves, they may play {move_description}.",
+    "From here they may play {move_description}.",
     "They might hit back with {move_description}."
     "They could consider replying with {move_description}."
 ]

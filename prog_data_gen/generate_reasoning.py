@@ -152,8 +152,8 @@ class MoveExplanation:
             node = entry.get('tree')
             self.previous_narration_depth = 0   # Reset since back at root
             narrations, _ = self._generate_recursive_explanation(board, node, depth_values)
-            # entry['explanation'] = self._sentence_casing(narrations)
-            entry['explanation'] = narrations
+            entry['explanation'] = self._sentence_casing(narrations)
+            # entry['explanation'] = narrations
             explanations.append(entry)
 
         return explanations
@@ -206,15 +206,15 @@ class MoveExplanation:
             )
             children_considered += 0 if is_writeoff else 1
             explanation_parts.extend(narrations)
-        
-        _ = depth_values.pop()
-        _ = board.pop()
 
         # If multiple children considered, need to generate final 'best move' narration
         if children_considered > 1:
             explanation_parts.extend(
                 self._narrate_best_move(board, node.children, our_move)
             )
+        
+        _ = depth_values.pop()
+        _ = board.pop()
         
         return explanation_parts, False
 
