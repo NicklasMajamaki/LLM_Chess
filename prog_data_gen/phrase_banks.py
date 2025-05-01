@@ -6,13 +6,13 @@ root_consider_phrases = [
     "What if we consider {move_description}.",
     "We could try playing {move_description}.",
     "We could play {move_description}.",
-    "Ok let's analyze the line starting with {move_description}."
-    "What if we start with {move_description}?"
+    "Ok let's analyze the line starting with {move_description}.",
+    "What if we start with {move_description}?",
 ]
 
 write_off_root_phrases = [
     "Hold that, this seems like a bad direction.",
-    "No, not it."
+    "No, not it.",
     "No, this actually isn't the best line to consider.",
     "No, this doesn't seem like a good idea.",
     "Nevermind - let's consider something else.",
@@ -57,7 +57,7 @@ blunder_phrases = [
 
 our_move_first_child_phrases = [
     "We could then respond with {move_description}.",
-    "Ok then we could play {move_description}."
+    "Ok then we could play {move_description}.",
     "We could follow with {move_description}.",
     "What if we then played {move_description}?",
     "Then we might play {move_description}.",
@@ -82,7 +82,7 @@ opponent_move_first_child_phrases = [
     "They could consider then playing {move_description}.",
     "Then they could respond with {move_description}.",
     "From here they may play {move_description}.",
-    "They might hit back with {move_description}."
+    "They might hit back with {move_description}.",
     "They could consider replying with {move_description}."
 ]
 
@@ -104,7 +104,7 @@ us_best_move_phrases = [
 ]
 
 opponent_best_move_phrases = [
-    "They would probably choose {move_description} of all the options."
+    "They would probably choose {move_description} of all the options.",
     "I expect they would choose {move_description}.",
     "They would likely choose {move_description}.",
     "I think they would play {move_description}.",
@@ -133,28 +133,12 @@ board_valuation_excellent_absolute = [
     "If we keep this up we should definintely win{board_value}.",
 ]
 
-board_valuation_excellent_delta = [
-    "We're now in a much more favorable position{board_value}.",
-    "This board is much better off than before{board_value}.",
-    "I'm liking this board position much more than the start of this line{board_value}.",
-    "This line has given us a much stronger position than our current state{board_value}.",
-    "This is much better off than when we started{board_value}.",
-]
-
 board_valuation_good_absolute = [
     "This seems like a decent position for us{board_value}.",
     "I think we're in a reasonably good spot here{board_value}.",
     "The board looks somewhat favorable for us{board_value}.",
     "Feels like we have a slight advantage currently{board_value}.",
     "This position seems fairly solid{board_value}.",
-]
-
-board_valuation_good_delta = [
-    "This line seems to have improved our position somewhat{board_value}.",
-    "We appear slightly better off than before{board_value}.",
-    "This feels like a step in the right direction compared to the start{board_value}.",
-    "Our position seems a bit stronger now{board_value}.",
-    "This looks like a positive development from where we were{board_value}.",
 ]
 
 board_valuation_poor_absolute = [
@@ -165,26 +149,10 @@ board_valuation_poor_absolute = [
     "We could be in a tricky spot{board_value}.",
 ]
 
-board_valuation_poor_delta = [
-    "This line seems to have weakened our position{board_value}.",
-    "We might be worse off than when we started this line{board_value}.",
-    "This doesn't feel like an improvement from our current state{board_value}.",
-    "Our position looks a bit weaker now{board_value}.",
-    "This development seems somewhat negative{board_value}.",
-]
-
 board_valuation_blunder_absolute = [
     "Oh, this looks like a really bad position for us{board_value}.",
     "This board is serious trouble for us{board_value}.",
     "This board state seems very unfavorable{board_value}.",
     "We're definitely playing from behind here{board_value}.",
     "This position looks quite difficult to come back from{board_value}.",
-]
-
-board_valuation_blunder_delta = [
-    "This line appears to have led to a much worse position{board_value}.",
-    "We seem significantly worse off than before exploring this{board_value}.",
-    "This feels like a major step back from the start of this line{board_value}.",
-    "Our position looks significantly weaker now{board_value}.",
-    "This seems like a very negative outcome compared to where we were{board_value}.",
 ]

@@ -41,13 +41,9 @@ from phrase_banks import (
     us_prune_branch_phrases,
     opponenet_prune_branch_phrases,
     board_valuation_excellent_absolute,
-    board_valuation_excellent_delta,
     board_valuation_good_absolute,
-    board_valuation_good_delta,
     board_valuation_poor_absolute,
-    board_valuation_poor_delta,
     board_valuation_blunder_absolute,
-    board_valuation_blunder_delta
 )
 
 
@@ -94,10 +90,12 @@ class MoveExplanation:
 
     # RL-theory specific tuners
     NARRATE_BOARD_VALUE = True
-    NARRATE_BOARD_VALUE_DELTA = True
-    NARRATE_MOVE_VALUE = True
+    NARRATE_MOVE_VALUE = False
     SHOW_MOVE_VALUE = True
     SHOW_BOARD_VALUE = True
+
+    # Output text hyperparams
+    OUTPUT_TEXT_FORMAT = "list"    # {'list', 'paragraph', 'depth_paragraph'}
     
     PIECE_NAMES = {
         chess.PAWN:   "pawn",
@@ -152,8 +150,8 @@ class MoveExplanation:
             node = entry.get('tree')
             self.previous_narration_depth = 0   # Reset since back at root
             narrations, _ = self._generate_recursive_explanation(board, node, depth_values)
-            entry['explanation'] = self._sentence_casing(narrations)
-            # entry['explanation'] = narrations
+            # entry['explanation'] = self._sentence_casing(narrations)
+            entry['explanation'] = narrations
             explanations.append(entry)
 
         return explanations
@@ -399,32 +397,42 @@ class MoveExplanation:
         if not self.NARRATE_BOARD_VALUE:
             return None
 
-        delta_score = node.score - self.initial_score
-        board_value = (f"[{delta_score}]" if delta_score else f"[{node.score}]") if self.SHOW_BOARD_VALUE else ""
+        board_value = f"[{node.score}]" if self.SHOW_BOARD_VALUE else ""
         narration = None
 
-        # Delta comparison
-        if self.NARRATE_BOARD_VALUE_DELTA:
-            if delta_score > self.EXCELLENT_BOARD:
-                narration = random.choice(board_valuation_excellent_delta).format(board_value=board_value)
-            elif delta_score > self.GOOD_BOARD:
-                narration = random.choice(board_valuation_good_delta).format(board_value=board_value)
-            elif delta_score < self.BLUNDER_BOARD:
-                narration = random.choice(board_valuation_blunder_delta).format(board_value=board_value)
-            elif delta_score < self.BAD_BOARD:
-                narration = random.choice(board_valuation_poor_delta).format(board_value=board_value)
-        # Absolute comparison
-        else:
-            if node.score > self.EXCELLENT_BOARD:
-                narration = random.choice(board_valuation_excellent_absolute).format(board_value=board_value)
-            elif node.score > self.GOOD_BOARD:
-                narration = random.choice(board_valuation_good_absolute).format(board_value=board_value)
-            elif node.score < self.BLUNDER_BOARD:
-                narration = random.choice(board_valuation_blunder_absolute).format(board_value=board_value)
-            elif node.score < self.BAD_BOARD:
-                narration = random.choice(board_valuation_poor_absolute).format(board_value=board_value)
+        # Narrate board value 
+        if node.score > self.EXCELLENT_BOARD:
+            narration = random.choice(board_valuation_excellent_absolute).format(board_value=board_value)
+        elif node.score > self.GOOD_BOARD:
+            narration = random.choice(board_valuation_good_absolute).format(board_value=board_value)
+        elif node.score < self.BLUNDER_BOARD:
+            narration = random.choice(board_valuation_blunder_absolute).format(board_value=board_value)
+        elif node.score < self.BAD_BOARD:
+            narration = random.choice(board_valuation_poor_absolute).format(board_value=board_value)
 
         return narration
+
+
+    def format_explanation(self, explanation_parts: List[Tuple[str, int]]) -> str:
+        """ 
+        Given your explanations (list of tuples of strings and depths),
+        return your explanation as a single string for output.
+
+        Format style based on hyperparameter 'OUTPUT_TEXT_FORMAT' 
+        """
+        output_text = ""
+        if self.OUTPUT_TEXT_FORMAT == 'list':
+            for s, i in explanation_parts:
+                if s is not None:
+                    output_text += s + "\n"
+        elif self.OUTPUT_TEXT_FORMAT == 'paragraph':
+            output_text = self._sentence_casing([s for s, i in explanation_parts])
+        elif self.OUTPUT_TEXT_FORMAT == 'depth-paragraph':
+            pass
+        else:
+            raise ValueError("OUTPUT_TEXT_FORMAT not one of the defined formats.")
+
+        return output_text
 
 
     @staticmethod
