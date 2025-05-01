@@ -18,7 +18,7 @@ from generate_reasoning import generate_reasoning
 # Main driver class
 ###############################################################################
 class ChessExplainer:
-    """Light‑weight wrapper around Stockfish to build explanation trees and generate prose."""
+    """Wrapper around Stockfish to build explanation trees and generate prose."""
 
     # Tunables – tweak for speed/quality trade‑off --------------------------
     ROOT_SAMPLING = {
