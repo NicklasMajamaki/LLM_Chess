@@ -134,7 +134,10 @@ class MoveExplanation:
             entry['explanation'] = self.format_explanation(narrations)
             explanations.append(entry)
 
-        return explanations
+        # Generate our final response value
+        final_statement, best_move_uci = self._generate_final_choice([node.get('tree') for node in self.root_entries])
+
+        return explanations, final_statement, best_move_uci
 
     # ------------------------------------------------------------------ #
     #                          PRIVATE HELPERS                           #
@@ -267,7 +270,7 @@ class MoveExplanation:
                 return prune_text, True
         else:
             if node.minimax > node.parent.minimax + self.BRANCH_WRITE_OFF_CP:
-                prune_text = random.choice(phrase_banks['opponenet_prune_branch_phrases'])    
+                prune_text = random.choice(phrase_banks['opponent_prune_branch_phrases'])    
                 return prune_text, True
 
         # If this is returned, we'll continue exploring that branch
@@ -401,7 +404,7 @@ class MoveExplanation:
         node_score = root.minimax
 
         # Compute softmax weights based on negative absolute difference
-        temp = 50.0
+        temp = 10.0    # Tested this out -- 10-25 seems to be a good distribution 
         diffs = [abs(node_score - val) for (_, val) in phrases]
         logits = [-d / temp for d in diffs]
         max_logit = max(logits)
@@ -449,6 +452,21 @@ class MoveExplanation:
             raise ValueError("OUTPUT_TEXT_FORMAT not one of the defined formats.")
 
         return output_text
+
+
+    def _generate_final_choice(self, nodes: List[VariationNode]) -> str:
+        # First need to find our best move
+        best_node = None
+        max_val = -self.INF
+        for node in nodes:
+            if node.minimax > max_val:
+                max_val = node.minimax
+                best_node = node
+
+        # Now generate our final analysis statement
+        best_move, _ = self._describe_move(self.initial_board, best_node)
+        final_statement = random.choice(phrase_banks['final_statement_phrases']).format(best_move=best_move)
+        return final_statement, best_node.move.uci()        
 
 
     @staticmethod

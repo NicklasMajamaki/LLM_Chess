@@ -115,13 +115,13 @@ board_valuation_phrases = [
     ("This line gives us a position that feels like we'll win{board_value}.", 675),
     ("Looking at this position, this feels like we're on a path to victory{board_value}.", 660),
     ("After this line, we're in a very favorable position to win{board_value}.", 630),
-    ("The resulting position has us with a massive advantage{board_value}.", 600),
+    ("The resulting position gives us a massive advantage{board_value}.", 600),
     ("This sequence leaves us with an overwhelming edge{board_value}.", 600),
     ("The position after these moves is definitely favorable for us{board_value}.", 570),
     ("This leaves us with a board that is clearly to our advantage{board_value}.", 525),
     ("Looking at this position, we have a strong advantage{board_value}.", 450),
     ("The resulting position gives us a clear edge{board_value}.", 420),
-    ("This sequence leaves us with good winning chances{board_value}.", 375),
+    ("This sequence leaves us with fair chance of winning{board_value}.", 375),
     ("After these moves, we maintain a solid advantage{board_value}.", 330),
     ("This line leaves us with a nice advantage{board_value}.", 270),
     ("The position after this seems to favor our side{board_value}.", 255),
@@ -141,7 +141,7 @@ board_valuation_phrases = [
     ("Looking at this, neither side seems to have an edge{board_value}.", 0),
     ("This line leaves us in an equal position compared to the opponent{board_value}.", 0),
     ("This position seems slightly better for the opponent{board_value}.", -45),
-    ("Looking at this, we might be marginally worse{board_value}.", -75),
+    ("Looking at this, our position seems marginally behind{board_value}.", -75),
     ("The resulting position appears to favor them slightly{board_value}.", -105),
     ("This line leaves us a bit worse off{board_value}.", -135),
     ("After these moves, the opponent seems to have an edge{board_value}.", -180),
@@ -162,6 +162,15 @@ board_valuation_phrases = [
     ("This board position is nearly hopeless for us to come back from{board_value}.", -675),
     ("Looking at this position, we're facing low odds of coming back from this{board_value}.", -675),
     ("The resulting position leaves us with very little chance to come back{board_value}.", -675)
+]
+
+final_statement_phrases = [
+    "After analyzing these lines, our best move would be to choose {best_move}.",
+    "Given how these various moves would play out, we should pick {best_move}.",
+    "Our best move given how these would play out against optimal opponent play would be {best_move}.",
+    "Of these moves we should choose to play {best_move}.",
+    "Out of all of these options we should choose to play {best_move}.",
+    "Given how each line would evolve we should pick {best_move} as this puts us in the best position."
 ]
 
 # --------------------------------------------------
@@ -216,8 +225,22 @@ phrase_banks = {
     "us_prune_branch_phrases": us_prune_branch_phrases,
     "board_valuation_phrases": board_valuation_phrases,
     "opponent_prune_branch_phrases": opponent_prune_branch_phrases,
+    "final_statement_phrases": final_statement_phrases,
     "excellent_move_phrases": excellent_move_phrases,
     "good_move_phrases": good_move_phrases,
     "bad_move_phrases": bad_move_phrases,
     "blunder_phrases": blunder_phrases,
 }
+
+
+# --------------------------------------------------
+# |     Phrase Bank for Generating Train Data      |
+# --------------------------------------------------
+initial_think_phrase = [
+    "Ok let's think through this position.",
+    "Interesting, let's consider some moves here.",
+    "Got it, let's think about some lines we could play.",
+    "Great let's think through this position.",
+    "Ok let's consider some moves we could make.",
+    "Let's think through this.",
+]
