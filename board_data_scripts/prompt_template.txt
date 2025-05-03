@@ -1,0 +1,9 @@
+<|begin_of_text|><|header_start|>system<|header_end|>
+
+Given a chess board in a grid format and a list of possible continuations where the best line is one of the continuations, figure out which one leads to the best board for the current player and suggest the first move from that continuation as the move to play. Think through step by step, and when you give your answer, be sure to enclose it between <answer> [Move suggestion] </answer> tokens.<|eot|><|header_start|>user<|header_end|>
+
+Board:
+{board}
+Continuations:
+{trajectories}
+<|eot|><|header_start|>assistant<|header_end|>
