@@ -20,7 +20,7 @@ EVAL_FILES = [
     "worstmove_fen_100.parquet"
 ]
 REJ_FILES = {
-    "rejectionsampling_300.parquet"
+    "rejsampling_100_v1.parquet"
 }
 
 
@@ -31,7 +31,7 @@ def none_or_int(val):
 def parse_args():
     parser = argparse.ArgumentParser(description="Run vLLM evaluation.")
 
-    parser.add_argument("--task_type", type=str, defualt='eval', help="Choose which task you want to do")
+    parser.add_argument("--task_type", type=str, default='eval', help="Choose which task you want to do")
     parser.add_argument("--data_dir", type=str, default="./data", help="Path to the data directory")
     parser.add_argument("--eval_files", nargs="+", default=EVAL_FILES, help="List of evaluation files")
     parser.add_argument("--rej_files", nargs="+", default=REJ_FILES, help="List of rej sampling data files")

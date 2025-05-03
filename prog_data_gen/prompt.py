@@ -30,7 +30,7 @@ As a technique you may want to consider enumerating possible moves and simulatin
 {_format_explanations(explanations, final_statement)}
 </think>
 
-<answer> {final_move_uci} </answer>"""
+<answer> {final_move_uci} </answer> <|eot_id|>"""
 
     return sys_prompt, user_prompt_plus_format, model_response
 
