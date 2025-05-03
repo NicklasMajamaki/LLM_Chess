@@ -56,7 +56,8 @@ class ResultsDict():
             
             # Ground truth is expected to be a list of valid moves
             valid_moves = ground_truth if isinstance(ground_truth, list) else [ground_truth]
-            
+            valid_moves = str(valid_moves)
+
             # Check if the predicted answer is in the list of valid moves
             if predicted_answer in valid_moves:
                 self.results["Correct"] += 1
@@ -81,7 +82,7 @@ class ResultsDict():
                 "prompt": prompt,
                 "model_response": model_response,
                 "error": "Parsing Error",
-                "valid_moves": ground_truth
+                "valid_moves": str(ground_truth)
             })
         except Exception as e:
             self.results["Error: Other"] += 1
@@ -89,7 +90,7 @@ class ResultsDict():
                 "prompt": prompt,
                 "model_response": model_response,
                 "error": str(e),
-                "valid_moves": ground_truth
+                "valid_moves": str(ground_truth)
             })
         
     def get_final_dict(self):
