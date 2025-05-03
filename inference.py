@@ -12,6 +12,7 @@ FILENAME_MAP = {
     'worstmove': "choose_from_n",
     'legalmoves': "produce_list",
     'predictmove': "predict_singlemove",
+    'rejsampling': "predict_in_list",
 }
 EVAL_FILES = [
     "bestmove_fen_100.parquet",
