@@ -142,7 +142,7 @@ def main():
 
     k = 0
     
-    for i, row in df.head(50).iterrows():
+    for i, row in df.head(200).iterrows():
     #for i, row in df.iloc[100:300].iterrows():
         if k % 10 == 0:
             print(f"Processing row {k}")
@@ -152,7 +152,7 @@ def main():
         record = process_board(fen, prompt_template)
         all_results.append(record)
 
-    with open('more_samples_50.csv', 'w', newline='') as f:
+    with open('more_samples_200.csv', 'w', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=["board", "trajectories", "evaluations", "best_move"])
         writer.writeheader()
         for row in all_results:

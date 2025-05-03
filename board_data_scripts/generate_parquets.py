@@ -36,7 +36,8 @@ def get_acceptable_answers(row):
         evals = [parse_eval_string(e) for e in ast.literal_eval(row['evaluations'])]
         trajectories = ast.literal_eval(row['trajectories'])
         moves = get_first_moves(trajectories)
-        best_move = row['best_move']
+        #best_move = row['best_move']
+        best_move = moves[evals.index(max(evals))]
 
         if best_move in moves:
             best_idx = moves.index(best_move)
@@ -60,18 +61,27 @@ def load_prompt_template(template_path):
     return template
 
 
+
+
 def main():
     # Load the prompt template
-    template_path = "prompt_template.txt"
+    template_path = "prompt_template4.txt"
     prompt_template = load_prompt_template(template_path)
 
     # Load the dataset
-    dataset_path = "high_temp_100.csv"
+    dataset_path = "more_samples_50.csv"
     df = pd.read_csv(dataset_path)
 
     df['answer'] = df.apply(get_acceptable_answers, axis=1)
+    print("Sample answer:", df['answer'].iloc[1])
 
     print("Average answer length:", df['answer'].apply(len).mean())
+
+    avg_random_guess_prob = df.apply(
+        lambda row: len(row['answer']) / len(ast.literal_eval(row['trajectories'])),
+        axis=1
+    ).mean()
+    print("Average random guess probability:", avg_random_guess_prob)
 
     df['prompt'] = df.apply(
         lambda row: (
@@ -85,11 +95,11 @@ def main():
         axis=1
     )
 
-    print("Sample prompt:", df['prompt'].iloc[0])
-    print("Sample answer:", df['answer'].iloc[0])
+    print("Sample prompt:", df['prompt'].iloc[5])
+    print("Sample answer:", df['answer'].iloc[5])
 
     df_out = df[['board', 'prompt', 'answer']]
-    df_out.to_parquet('output.parquet', index=False)
+    df_out.to_parquet('50_examples_none.parquet', index=False)
 
     
 
