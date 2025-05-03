@@ -70,8 +70,8 @@ class MoveExplanation:
     # RL-theory specific tuners
     NARRATE_BOARD_VALUE = True
     NARRATE_MOVE_VALUE = False
-    SHOW_MOVE_VALUE = True
-    SHOW_BOARD_VALUE = True
+    SHOW_MOVE_VALUE = False
+    SHOW_BOARD_VALUE = False
 
     # Output text hyperparams
     OUTPUT_TEXT_FORMAT = "depth_paragraph"    # {'list', 'paragraph', 'depth_paragraph'}
