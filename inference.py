@@ -21,10 +21,10 @@ EVAL_FILES = [
     "worstmove_fen_100.parquet"
 ]
 REJ_FILES = {
-    "rejsampling_50_both.parquet",
-    "rejsampling_50_none.parquet",
-    "rejsampling_50_qualitative.parquet",
-    "rejsampling_50_quantitative.parquet"
+    "rejsampling_both_50.parquet",
+    "rejsampling_none_50.parquet",
+    "rejsampling_qualitative_50.parquet",
+    "rejsampling_quantitative_50.parquet"
 }
 
 
