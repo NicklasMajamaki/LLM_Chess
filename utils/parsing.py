@@ -31,7 +31,7 @@ def coerce_response(text: str, eval_type: str) -> str:
     except:
         processed_text = text
 
-    if eval_type == 'choose_from_n' or eval_type == 'predict_singlemove':
+    if eval_type == 'choose_from_n' or eval_type == 'predict_singlemove' or eval_type == 'predict_in_list':
         # Need output to be a single string (no list)
         if isinstance(processed_text, str):
             processed_text = _stringify_move(processed_text)
