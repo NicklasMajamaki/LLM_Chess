@@ -3,19 +3,19 @@ import chess.engine
 import random
 import numpy as np
 
-def get_n_best_moves_san_and_evaluation(fen, n, stockfish_path="stockfish", depth=15):
+def get_n_best_moves_uci_and_evaluation(fen, n, stockfish_path="stockfish", depth=15):
     """
     This function takes a FEN string, a number of plies (n), the path to the Stockfish engine, and a search depth.
-    It returns a PGN-style move sequence of the best moves in SAN format, the final evaluation of the position,
+    It returns a UCI-style move sequence, the final evaluation of the position,
     and the final FEN string after n plies.
     :param fen: FEN string representing the initial position
     :param n: Number of plies (half-moves) to calculate
     :param stockfish_path: Path to the Stockfish engine executable
     :param depth: Search depth for Stockfish
-    :return: A tuple containing the PGN-style move sequence, final evaluation, and final FEN string
+    :return: A tuple containing the UCI-style move sequence, final evaluation, and final FEN string
     """
     board = chess.Board(fen)
-    move_sequence_san = []
+    move_sequence_uci = []
 
     with chess.engine.SimpleEngine.popen_uci(stockfish_path) as engine:
 
@@ -26,8 +26,8 @@ def get_n_best_moves_san_and_evaluation(fen, n, stockfish_path="stockfish", dept
 
             result = engine.analyse(board, chess.engine.Limit(depth=depth))
             best_move = result["pv"][0]
-            san = board.san(best_move)
-            move_sequence_san.append(san)
+            uci = best_move.uci()
+            move_sequence_uci.append(uci)
             board.push(best_move)
 
         # Evaluate the final position
@@ -40,18 +40,13 @@ def get_n_best_moves_san_and_evaluation(fen, n, stockfish_path="stockfish", dept
         
         final_fen = board.fen()
 
-    # Format the PGN-style move sequence (e.g., "1. e4 e5 2. Nf3 Nc6")
-    pgn_moves = ""
-    for i in range(0, len(move_sequence_san), 2):
-        move_number = i // 2 + 1
-        white_move = move_sequence_san[i]
-        black_move = move_sequence_san[i + 1] if i + 1 < len(move_sequence_san) else ""
-        pgn_moves += f"{move_number}. {white_move} {black_move} "
+    # Format the UCI-style move sequence (e.g., "e2e4 e7e5 g1f3 b8c6")
+    uci_moves = " ".join(move_sequence_uci)
 
-    return pgn_moves.strip(), eval_str, final_fen
+    return uci_moves, eval_str, final_fen
 
 def get_continuation_from_move(board, move, n_remaining, engine, depth):
-    move_sequence_san = [board.san(move)]
+    move_sequence_uci = [move.uci()]
     board.push(move)
 
     for _ in range(n_remaining - 1):
@@ -59,7 +54,7 @@ def get_continuation_from_move(board, move, n_remaining, engine, depth):
             break
         result = engine.analyse(board, chess.engine.Limit(depth=depth))
         best_move = result["pv"][0]
-        move_sequence_san.append(board.san(best_move))
+        move_sequence_uci.append(best_move.uci())
         board.push(best_move)
 
     evaluation = engine.analyse(board, chess.engine.Limit(depth=depth))["score"]
@@ -71,18 +66,13 @@ def get_continuation_from_move(board, move, n_remaining, engine, depth):
 
     final_fen = board.fen()
 
-    pgn_moves = ""
-    for i in range(0, len(move_sequence_san), 2):
-        move_number = i // 2 + 1
-        white_move = move_sequence_san[i]
-        black_move = move_sequence_san[i + 1] if i + 1 < len(move_sequence_san) else ""
-        pgn_moves += f"{move_number}. {white_move} {black_move} "
+    uci_moves = " ".join(move_sequence_uci)
 
-    return pgn_moves.strip(), eval_str, final_fen
+    return uci_moves, eval_str, final_fen
 
 def get_best_n_continuation(fen, n, stockfish_path="stockfish", depth=15):
     board = chess.Board(fen)
-    move_sequence_san = []
+    move_sequence_uci = []
 
     with chess.engine.SimpleEngine.popen_uci(stockfish_path) as engine:
         for i in range(n):
@@ -90,8 +80,8 @@ def get_best_n_continuation(fen, n, stockfish_path="stockfish", depth=15):
                 break
             result = engine.analyse(board, chess.engine.Limit(depth=depth))
             best_move = result["pv"][0]
-            san = board.san(best_move)
-            move_sequence_san.append(san)
+            uci = best_move.uci()
+            move_sequence_uci.append(uci)
             board.push(best_move)
 
         evaluation = engine.analyse(board, chess.engine.Limit(depth=depth))["score"]
@@ -103,14 +93,9 @@ def get_best_n_continuation(fen, n, stockfish_path="stockfish", depth=15):
         
         final_fen = board.fen()
 
-    pgn_moves = ""
-    for i in range(0, len(move_sequence_san), 2):
-        move_number = i // 2 + 1
-        white_move = move_sequence_san[i]
-        black_move = move_sequence_san[i + 1] if i + 1 < len(move_sequence_san) else ""
-        pgn_moves += f"{move_number}. {white_move} {black_move} "
+    uci_moves = " ".join(move_sequence_uci)
 
-    return pgn_moves.strip(), eval_str, final_fen
+    return uci_moves, eval_str, final_fen
 
 
 def softmax(x, temperature=1.0):
@@ -159,9 +144,9 @@ def sample_continuations_from_board(fen, n, max_samples=5, stockfish_path="stock
         gap = move_scores[0][1] - move_scores[1][1] if len(move_scores) > 1 else 0
         num_samples = max_samples
 
-        if gap < 50:
+        if gap < 20:
             num_samples = 4
-        elif gap < 70:
+        elif gap < 50:
             num_samples = 3
         elif gap < 100:
             num_samples = 2
@@ -200,13 +185,12 @@ if __name__ == "__main__":
     print(fen)
 
     # Get best move continuation
-    pgn_moves, final_eval, final_fen = get_best_n_continuation(fen, n, stockfish_path, depth)
+    uci_moves, final_eval, final_fen = get_best_n_continuation(fen, n, stockfish_path, depth)
     print("\n▶ Best move continuation:")
-    print(pgn_moves)
+    print(uci_moves)
     print(f"Final evaluation after {n} plies: {final_eval}")
 
-    # Get NUM_SAMPLES continuations where the best first move is always included in the sampled moves
+    # Get NUM_SAMPLES continuations where the best continuation is always included in the sampled moves, and is always the first element
     print("SAMPLES START:")
     print(sample_continuations_from_board(fen, n, max_samples=max_samples, stockfish_path=stockfish_path, depth=depth, temperature=1.0))
     print("SAMPLES END")
-
