@@ -35,7 +35,7 @@ class RejectionSamplingDataframe():
 class ResultsDict():
     def __init__(self, rej_type, filename, wandb_run):
         self.filename = filename
-        self.trimmed_filename = filename.split("_", 1)[0]
+        self.trimmed_filename = filename.split("_", 2)[0]
         self.wandb_run = wandb_run
         self.rej_type = rej_type
         self.results = {
