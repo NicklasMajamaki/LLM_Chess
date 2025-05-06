@@ -57,8 +57,8 @@ class ProbabilisticPromptCompletionDataset(IterableDataset):
 
 
 print("Loading model and tokenizer...")
-#model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, torch_dtype=torch.bfloat16)
-model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2", token=HF_TOKEN)
+model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, torch_dtype=torch.bfloat16)
+#model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2", token=HF_TOKEN)
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 tokenizer.pad_token = tokenizer.eos_token
 dataset = ProbabilisticPromptCompletionDataset(datasets, probs, tokenizer)
@@ -70,14 +70,14 @@ training_args = TrainingArguments(
     output_dir=local_output_dir,
     bf16=True,
     learning_rate=1e-5,
-    max_steps=10000,
+    max_steps=5000,
     per_device_train_batch_size=8,
     deepspeed="ds_config_zero2.json",
     ddp_backend = "nccl",
     lr_scheduler_type="cosine", 
     num_train_epochs=3,
     logging_steps=1,
-    save_steps=1000,
+    save_steps=500,
     save_total_limit=4,
     report_to="wandb"
 )
