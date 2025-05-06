@@ -1,0 +1,7 @@
+name: hello-world
+compute:
+  gpus: 0
+image: bash
+command: |
+  sleep 2
+  echo Hello World!
