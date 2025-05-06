@@ -25,9 +25,7 @@ As a technique you may want to consider enumerating possible moves and simulatin
 <|start_header_id|>assistant<|end_header_id|>"""
 
     model_response = f"""{random.choice(initial_think_phrase)}
-<think>
-{_format_explanations(explanations, final_statement)}
-</think>
+<think> {_format_explanations(explanations, final_statement)} </think>
 
 <answer> {final_move_uci} </answer><|eot_id|>"""
 
