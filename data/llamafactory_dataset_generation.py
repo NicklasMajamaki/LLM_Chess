@@ -78,7 +78,6 @@ hf_dataset.to_json(f"{output_fp}/{dataset_filename}")
 datasets = {
     "llmchess_programmatic": {
         "file_name": dataset_filename,
-        "formatting": "sharegpt",
         "columns": {
             "prompt": "prompt",
             "response": "completion"
