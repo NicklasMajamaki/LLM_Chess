@@ -8,6 +8,9 @@ version = "0.1.0"
 requires-python = ">=3.8"
 dependencies = []
 
+[project.scripts]
+llamafactory-cli = "llamafactory.cli:main"
+
 [tool.setuptools.packages.find]
 where = []
 include = []
