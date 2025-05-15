@@ -1,7 +1,6 @@
 {
   "llmchess_programmatic": {
     "file_name": "llamafactory_programmatic_7500.json",
-    "formatting": "sharegpt",
     "columns": {
         "prompt": "prompt",
         "response": "completion"
