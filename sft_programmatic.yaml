@@ -34,5 +34,3 @@ ddp_timeout: 180000000
 
 ### reporting
 report_to: wandb
-wandb_project: llm-chess-sft
-wandb_entity: lucasdino-ucsd
