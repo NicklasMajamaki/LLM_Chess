@@ -6,35 +6,33 @@ trust_remote_code: true
 stage: sft
 do_train: true
 finetuning_type: full
-deepspeed: ds_config_zero2
-push_to_hub: true
+deepspeed: ./ds_z3_config.json
+push_to_hub: false
 
 ### dataset
 dataset: llmchess_programmatic
 template: none
-cutoff_len: 8192
+cutoff_len: 4096
 overwrite_cache: true
-preprocessing_num_workers: 16
 
 ### output
-output_dir: sft-model
-logging_steps: 1
-save_steps: 7500
-plot_loss: true
+output_dir: ./sft-model
+logging_steps: 10
+save_strategy: epoch
+save_total_limit: 1
 overwrite_output_dir: true
 
 ### train
-per_device_train_batch_size: 1
-gradient_accumulation_steps: 1
+per_device_train_batch_size: 8
+gradient_accumulation_steps: 4
 learning_rate: 1.0e-5
-num_train_epochs: 3.0
 lr_scheduler_type: cosine
 warmup_ratio: 0.1
+num_train_epochs: 1.0
 bf16: true
 ddp_timeout: 180000000
 
-evaluation_strategy: "no"
-
 ### reporting
 report_to: wandb
-run_name: llama3-8b-sft-llmchess-programmatic
+wandb_project: llm-chess-sft
+wandb_entity: lucasdino-ucsd
