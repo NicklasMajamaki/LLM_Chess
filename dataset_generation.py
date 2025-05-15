@@ -50,7 +50,12 @@ hf_dataset.to_json("data/llamafactory_programmatic_7500.json")
 # Define your dataset names and their paths
 datasets = {
     "llmchess_programmatic": {
-        "file_name": "llamafactory_programmatic_7500.json"
+        "file_name": "llamafactory_programmatic_7500.json",
+        "formatting": "sharegpt",
+        "columns": {
+            "prompt": "prompt",
+            "response": "completion"
+        }
     }
 }
 
