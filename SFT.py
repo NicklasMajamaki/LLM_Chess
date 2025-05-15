@@ -5,80 +5,115 @@ import torch.nn as nn
 import torch.optim as optim
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments, Trainer
 from transformers import DataCollatorForSeq2Seq
-from torch.utils.data import IterableDataset
-from transformers import default_data_collator
-from datasets import load_dataset, concatenate_datasets
+from torch.utils.data import Dataset
+from datasets import load_dataset, concatenate_datasets, Dataset as HFDataset
 import random
 import subprocess
-from torch.utils.data import DataLoader, Dataset
-
-
+import numpy as np
 
 MODEL_NAME = "meta-llama/Meta-Llama-3-8B-Instruct"
 
 local_output_dir = "./sft-model"
 s3_output_dir = "s3://llm-chess/saved_models/sft-model"
 
+# Load datasets
 ds1 = load_dataset("parquet", data_files="data/train/explainer_clean_1250.parquet")["train"]
 ds2 = load_dataset("parquet", data_files="data/train/magpie_clean_10k.parquet")["train"]
 
-# More datasets can be added, but make sure the probabilities sum to 1
-datasets = [ds1, ds2]
-probs = [0.7, 0.3]
+# Weighted upsample: replicate ds1 and ds2 so the combined set is ~40% ds1, 60% ds2
+len1, len2 = len(ds1), len(ds2)
+total = len1 + len2
+target1, target2 = int(0.4 * (len1 + len2)), int(0.6 * (len1 + len2))
+ratio1, ratio2 = max(target1 // len1, 1), max(target2 // len2, 1)
 
-class ProbabilisticPromptCompletionDataset(IterableDataset):
-    def __init__(self, datasets, probs, tokenizer, max_length=2048):
-        self.datasets = datasets
-        self.probs = probs
+ds1_upsampled = ds1.select(np.tile(np.arange(len1), ratio1)[:target1])
+ds2_upsampled = ds2.select(np.tile(np.arange(len2), ratio2)[:target2])
+
+# Combine and shuffle
+combined = concatenate_datasets([ds1_upsampled, ds2_upsampled]).shuffle(seed=42)
+
+class PromptCompletionDataset(Dataset):
+    def __init__(self, hf_dataset, tokenizer, max_length=4096):
+        self.dataset = hf_dataset
         self.tokenizer = tokenizer
         self.max_length = max_length
 
-    def __iter__(self):
-        while True:
-            ds = random.choices(self.datasets, weights=self.probs, k=1)[0]
-            example = random.choice(ds)
-            prompt = example["prompt"]
-            completion = example["completion"]
+    def __len__(self):
+        return len(self.dataset)
 
-            # Tokenize prompt and completion
-            prompt_tokens = self.tokenizer(prompt, add_special_tokens=False, truncation=True, max_length=self.max_length)
-            remaining_length = self.max_length - len(prompt_tokens["input_ids"])
-            completion_tokens = self.tokenizer(completion, add_special_tokens=False, truncation=True, max_length=remaining_length)
+    def __getitem__(self, idx):
+        example = self.dataset[idx]
+        prompt = example["prompt"]
+        completion = example["completion"]
 
-            input_ids = prompt_tokens["input_ids"] + completion_tokens["input_ids"]
-            attention_mask = [1] * len(input_ids)
-            labels = [-100] * len(prompt_tokens["input_ids"]) + completion_tokens["input_ids"]
-
-            yield {
+        # Tokenize prompt
+        prompt_tokens = self.tokenizer(
+            prompt,
+            add_special_tokens=False,
+            truncation=True,
+            max_length=self.max_length,
+        )
+        # Limit completion so prompt+completion <= max_length
+        prompt_len = len(prompt_tokens["input_ids"])
+        remaining_length = self.max_length - prompt_len
+        # If prompt already takes max_length, return truncated prompt, empty completion
+        if remaining_length <= 0:
+            input_ids = prompt_tokens["input_ids"][:self.max_length]
+            attention_mask = [1] * self.max_length
+            labels = [-100] * self.max_length
+            return {
                 "input_ids": input_ids,
                 "attention_mask": attention_mask,
-                "labels": labels
+                "labels": labels,
             }
 
+        completion_tokens = self.tokenizer(
+            completion,
+            add_special_tokens=False,
+            truncation=True,
+            max_length=remaining_length,
+        )
+
+        input_ids = prompt_tokens["input_ids"] + completion_tokens["input_ids"]
+        attention_mask = [1] * len(input_ids)
+        labels = [-100] * len(prompt_tokens["input_ids"]) + completion_tokens["input_ids"]
+
+        # Pad if needed
+        pad_len = self.max_length - len(input_ids)
+        if pad_len > 0:
+            input_ids += [self.tokenizer.pad_token_id] * pad_len
+            attention_mask += [0] * pad_len
+            labels += [-100] * pad_len
+
+        return {
+            "input_ids": input_ids,
+            "attention_mask": attention_mask,
+            "labels": labels,
+        }
 
 print("Loading model and tokenizer...")
 model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, torch_dtype=torch.bfloat16)
-#model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2", token=HF_TOKEN)
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-tokenizer.pad_token = tokenizer.eos_token
-dataset = ProbabilisticPromptCompletionDataset(datasets, probs, tokenizer)
+# Use a real pad token if available, otherwise eos
+if tokenizer.pad_token is None:
+    tokenizer.pad_token = tokenizer.eos_token
+
+dataset = PromptCompletionDataset(combined, tokenizer)
 data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model, padding=True)
 
-# OUTPUT_DIR WILL NEED TO BE CHANGED, SAME WITH SAVE/LOGGING STEPS
-# Pretty much every parameter here should be changed, but the framework is here
+# W&B init (specify your project and run name)
+wandb.init(entity="lucasdino-ucsd", project="sft")
+
 training_args = TrainingArguments(
     output_dir=local_output_dir,
     bf16=True,
     learning_rate=1e-5,
-    max_steps=5000,
     per_device_train_batch_size=8,
-    #deepspeed="ds_config_zero2.json",
-    #ddp_backend = "nccl",
-    lr_scheduler_type="cosine", 
-    num_train_epochs=3,
-    logging_steps=1,
-    save_steps=500,
-    save_total_limit=4,
+    lr_scheduler_type="cosine",
+    num_train_epochs=1,       
+    logging_steps=10,
+    save_strategy="epoch",    
+    save_total_limit=1,       
     report_to="wandb"
 )
 
@@ -92,6 +127,9 @@ trainer = Trainer(
 
 print("Starting training...")
 trainer.train()
+
+print("Saving final model and uploading to S3...")
+trainer.save_model(local_output_dir)
 
 cmd = f"aws s3 cp {local_output_dir} {s3_output_dir} --recursive"
 print(f"Uploading model to S3 with command:\n{cmd}")
