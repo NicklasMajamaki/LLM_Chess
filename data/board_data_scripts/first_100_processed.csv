@@ -1,0 +1,1601 @@
+board,trajectories,evaluations,best_move
+"8| . . k r . . . r
+7| p p . q . p p .
+6| . . p . n . . .
+5| . . . p P . . p
+4| P . . . n . . .
+3| . Q P . . P P .
+2| . P . B P . K P
+1| R N . . . R . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 18","['h5h4 g3g4 e4g3 f1f2 f7f5', 'e4d2 b1d2 h5h4 f3f4 h4g3']","['-1.59 (centipawns)', '-0.79 (centipawns)']",h5h4
+"8| r . . . . r k .
+7| p b . n q . . p
+6| . p p . p b p .
+5| . . . . . . . .
+4| . . . P N . . .
+3| . . P . . N . .
+2| P P . . Q . P P
+1| R . B . . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 4
+- Fullmove number: 18","['c1f4 e6e5 e4f6 d7f6 f3e5', 'c1h6 f6g7 h6g5 d7f6 f3e5', 'e4f6 d7f6 c1g5 c6c5 f3e5']","['3.85 (centipawns)', '4.12 (centipawns)', '4.17 (centipawns)']",c1f4
+"8| . . . . . r k .
+7| . Q . . . p p .
+6| p . . p . . . p
+5| . p . . . . . .
+4| . . P . . . . .
+3| . . q . . . . P
+2| . . . . . P P .
+1| . . . R . . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 2
+- Fullmove number: 27","['c4b5 c3c2 d1a1 a6b5 b7b5', 'b7a6 c3c4 a6d6 f8c8 d1d4']","['-0.16 (centipawns)', '-0.80 (centipawns)']",c4b5
+"8| r n b . r . . .
+7| b p p . k N p p
+6| . . . . . n . .
+5| p . . . . . . .
+4| . . B . P . . .
+3| . . P . . . . .
+2| P P . . . P P P
+1| R N B . . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 11","['e4e5 c8e6 c4e6 e7e6 e5f6', 'b1a3 c8e6 f7g5 e6c4 a3c4', 'f7g5 h7h6 g5f3 f6e4 c1f4']","['2.70 (centipawns)', '2.46 (centipawns)', '2.21 (centipawns)']",e4e5
+"8| . . . r k . r .
+7| . q . b b p B p
+6| p . p . . . . .
+5| . . . . . . . .
+4| B . . Q P . . .
+3| . . . . . . . .
+2| P P P . . P P P
+1| . . . R . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 4
+- Fullmove number: 17","['f7f6 g7f6 g8g2 g1h1 b7c7', 'b7b4 d4b4 e7b4 g7f6 b4e7', 'b7c7 d4c3 a6a5 d1d3 d8c8', 'h7h5 d4e5 b7b4 g7f6 d8c8']","['5.29 (centipawns)', '4.59 (centipawns)', '5.24 (centipawns)', '4.98 (centipawns)']",f7f6
+"8| . . . . . r k .
+7| p . . . n p . .
+6| . . . . . . . .
+5| . . . . . Q . P
+4| . . q p . . . .
+3| . . . . . R P .
+2| P . . . . R . .
+1| . . . . . . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 32","['f5g5 e7g6 g1h2 c4c7 f3f6', 'f5f6 c4b4 f6g5 g8h8 h5h6']","['11.23 (centipawns)', '8.55 (centipawns)']",f5g5
+"8| r . . . k b . r
+7| . p p q . . p p
+6| p . n . . . . n
+5| . . . . p . . .
+4| . . B p P . . .
+3| . N P . . Q . P
+2| P P . . . P P .
+1| R . B . . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 3
+- Fullmove number: 12","['e8c8 c1d2 f8e7 c4d5 h8f8', 'h6f7 c3d4 e5d4 c4d5 f8d6']","['2.34 (centipawns)', '2.33 (centipawns)']",e8c8
+"8| . . B . . . . .
+7| p . . . . . . .
+6| . p . . . . k .
+5| . . . p . . p .
+4| . . . P . . K .
+3| . . . . . . . P
+2| P P . . . . . .
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 10
+- Fullmove number: 41","['c8f5 g6g7 g4g5 g7f7 b2b4', 'c8d7 g6f6 d7b5 f6e6 g4g5', 'c8e6 g6f6 e6f5 f6e7 g4g5', 'b2b4 g6f6 c8f5 a7a6 f5d3']","['9.95 (centipawns)', '10.78 (centipawns)', '15.19 (centipawns)', '15.00 (centipawns)']",c8f5
+"8| r . . . k r . .
+7| . b . p . p . p
+6| p . n . . . . .
+5| . p . N . . Q p
+4| . . . . P . . .
+3| P q . . . . . .
+2| . P . . . . P P
+1| . . . . . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 31",['d5c7'],['Mate in 0'],d5c7
+"8| r n b q k b n r
+7| p p . p p p p p
+6| . . . . . . . .
+5| . . p . . . . .
+4| . . . . . . . .
+3| . . . . . . P .
+2| P P P P P P B P
+1| R N B Q K . N R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 2","['d7d5 g1f3 g8f6 e1g1 g7g6', 'b8c6 c2c4 g7g6 g1f3 f8g7', 'g8f6 c2c4 b8c6 b1c3 e7e6', 'g7g6 g1f3 f8g7 c2c4 b8c6']","['0.19 (centipawns)', '0.20 (centipawns)', '0.18 (centipawns)', '0.17 (centipawns)']",d7d5
+"8| . . . . . k . .
+7| . p . P . . p p
+6| p b . p . . . .
+5| P . . . p . . .
+4| . P . . . . . .
+3| . . . . . . . P
+2| . . . P . P P .
+1| . . . . . R . K
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 27","['b6d8 f1e1 f8e7 d2d4 e7d7', 'b6c7 f1c1 c7d8 c1c8 f8e7']","['4.28 (centipawns)', '5.57 (centipawns)']",b6d8
+"8| . . . r . . . .
+7| p k p . . . R .
+6| . . . . . . . .
+5| . p . . . p . .
+4| . . b . . . . r
+3| . . n . P . . .
+2| . P . . . . . .
+1| . . K . . . R .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 4
+- Fullmove number: 28","['b2c3 d8d3 g7g2 d3c3 c1d2', 'g1e1 c3e4 g7g2 h4h6 b2b3']","['-7.95 (centipawns)', '-9.58 (centipawns)']",b2c3
+"8| r . . q k . . r
+7| p p . . b p p p
+6| . . n . p n . .
+5| . B p p . . . .
+4| . . . . . P b .
+3| . P . P P N . .
+2| P B P . . . P P
+1| R N . Q . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 8","['a8c8 h2h3 g4f3 d1f3 e8g8', 'd8c7 b1d2 e8g8 b5c6 c7c6', 'd8d6 b1d2 e8g8 b5c6 d6c6', 'd8b6 b5c6 b6c6 b1d2 e8g8']","['0.19 (centipawns)', '0.31 (centipawns)', '0.34 (centipawns)', '0.29 (centipawns)']",a8c8
+"8| r . . . r k . .
+7| p . b . . p . p
+6| . p p . p . . .
+5| . . P p . . . .
+4| . . . . P . . .
+3| . . N B R . . .
+2| P P . . . P P P
+1| . . . . . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 21","['e4d5 c6d5 c5b6 c7b6 e3e2', 'c5b6 a7b6 e4d5 c6d5 e3e2']","['4.66 (centipawns)', '4.75 (centipawns)']",e4d5
+"8| . r . . . . k .
+7| . . . . . p . .
+6| p . . . . . . p
+5| . p . . . . p .
+4| . . b . . . . .
+3| . . B . . . P .
+2| . . . . . P . P
+1| R . . . . . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 2
+- Fullmove number: 35",['a1a6 b8d8 f2f4 g8h7 c3e5'],['-0.62 (centipawns)'],a1a6
+"8| r . . q . r k .
+7| p p p . n p . p
+6| . . . . . p b b
+5| . . . P p . . .
+4| . . B . P . . .
+3| P . N . . . . P
+2| . P . . N P P .
+1| R . . Q . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 12","['f6f5 d1c2 f5e4 c3e4 e7f5', 'g8h8 g2g4 f8g8 e2g3 e7c8']","['-0.59 (centipawns)', '0.50 (centipawns)']",f6f5
+"8| . . r . r . k .
+7| . p p . . p p n
+6| . p . p . n . p
+5| . P . P . . . .
+4| . . . . P . . B
+3| P . . . . . . .
+2| . . . N . P P P
+1| R . . . R . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 21","['f6d7 f2f3 f7f5 e4f5 e8e1', 'c8a8 f2f3 f6d7 d2c4 a8a4', 'g7g5 h4g3 f6d7 f2f3 f7f5', 'f6g4 f2f3 g4e5 a3a4 h7f8']","['0.06 (centipawns)', '0.28 (centipawns)', '0.37 (centipawns)', '0.39 (centipawns)']",f6d7
+"8| r . . . k b n r
+7| p p . b . p p p
+6| . . n . p . . .
+5| . . p p . . . .
+4| . . . P . . . .
+3| P . P . P . P .
+2| . q . B N P B P
+1| R N . Q . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 9","['b2a1 c3c4 g8f6 c4d5 e6d5', 'g8f6 e3e4 d5e4 d4d5 e6d5']","['-4.24 (centipawns)', '-4.51 (centipawns)']",b2a1
+"8| . . . . k . . r
+7| . . . p . p . .
+6| . . n . p . . .
+5| . . . b P . p p
+4| . . p P . . . .
+3| P . . . . N . P
+2| . . . . B P P .
+1| . . . . . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: Black can castle kingside.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 22","['g5g4 h3g4 h5g4 f3h2 c6d4', 'e8e7 f1d1 c4c3 f3e1 d5b3']","['-3.95 (centipawns)', '-3.10 (centipawns)']",g5g4
+"8| . . . . r r k .
+7| p . p . . . p .
+6| . p . . . q . .
+5| . . . R . p p .
+4| . P P . . P . .
+3| P . . . p . P .
+2| . . . . Q . . P
+1| . . . R . . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 26","['f4g5 f6g5 c4c5 b6b5 d1f1', 'd5d3 g5f4 g3f4 f6g6 e2g2', 'd5d4 g5f4 d4f4 e8e5 f4d4']","['-1.78 (centipawns)', '-2.35 (centipawns)', '-2.38 (centipawns)']",f4g5
+"8| r n . q k . n r
+7| p b p p . p p p
+6| . p . . p . . .
+5| . N . . . . . .
+4| . b . P . B . .
+3| . . . . . . . .
+2| P P P . P P P P
+1| R . . Q K B N R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 2
+- Fullmove number: 5",['c2c3 b4d6 f4d6 c7d6 b5d6'],['3.13 (centipawns)'],c2c3
+"8| . . . . r . k .
+7| p p p . . p . p
+6| . . . . . . p .
+5| . . . . n . . .
+4| . . . . . . . .
+3| . . Q . . . . N
+2| P P . . . K P P
+1| . . . . R . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 20","['f7f6 e1e5 e8e5 h3f4 e5f5', 'e5g4 f2g1 g4f6 e1e8 f6e8']","['8.12 (centipawns)', '7.67 (centipawns)']",f7f6
+"8| . . . . . . . .
+7| . p . . . . . .
+6| p . . . . . k p
+5| . . . . . p p .
+4| . . . . . . . P
+3| . . P . B n P .
+2| P P . . K . . .
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 2
+- Fullmove number: 40","['f3e5 h4g5 h6g5 e3d4 e5c6', 'f3h2 h4g5 h6g5 b2b4 h2g4']","['-0.10 (centipawns)', '-0.04 (centipawns)']",f3e5
+"8| . . k . . b . r
+7| p r . . . . n .
+6| . . N . . . . p
+5| . P p R p . . .
+4| P . . . . . . .
+3| . . . . . . . .
+2| . P . . . . P P
+1| . . K . R . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 28","['d5d8 c8c7 e1e5 c7b6 d8a8', 'c1b1 b7d7 d5d7 c8d7 c6e5']","['1.72 (centipawns)', '0.14 (centipawns)']",d5d8
+"8| r . b . . r k .
+7| . p p . n . p p
+6| p q p . . p . .
+5| . . . . . P . .
+4| . . . . P B . .
+3| . . N . . . . .
+2| P P P . . . P P
+1| R . . Q . R . K
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 2
+- Fullmove number: 14","['d1d3 c6c5 d3g3 b6c6 a1d1', 'd1f3 c6c5 a1d1 g8h8 f3g3', 'f1f3 g8h8 f3d3 e7g8 h2h3', 'd1e1 b6b2 f4c7 b2b4 a1d1']","['2.88 (centipawns)', '2.90 (centipawns)', '3.12 (centipawns)', '3.34 (centipawns)']",d1d3
+"8| . k . . . b r .
+7| . q . r n . . .
+6| . p . p N . . p
+5| . P . . p P . .
+4| . . N . . . p .
+3| . . . . . . P .
+2| . Q . . . P . P
+1| R . . . . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 2
+- Fullmove number: 27","['e7c8 a1a6 e5e4 f1a1 f8g7', 'f8g7 a1a6 e7c8 f1a1 e5e4', 'e5e4 a1a6 e7d5 f1a1 f8g7', 'h6h5 a1a6 f8g7 c4b6 e7d5']","['7.71 (centipawns)', '7.56 (centipawns)', '7.75 (centipawns)', '10.75 (centipawns)']",e7c8
+"8| . . . . r . k .
+7| p r . . . p p .
+6| . . . . . . . p
+5| . . . . . . . .
+4| . . . . R . . .
+3| . . . . . . . .
+2| P P . . . P P b
+1| R . . . . . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 23","['g1h2 e8e4 b2b3 g8h7 a1d1', 'g1h1 e8e4 h1h2 b7b2 f2f3']","['-6.73 (centipawns)', '-6.93 (centipawns)']",g1h2
+"8| . r . . . . . b
+7| . . . . . . k .
+6| . . n N . . b p
+5| . p . . . . p n
+4| . P . . . . . .
+3| . . . . . P . .
+2| . . . . . B P P
+1| . . . R R . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 26","['d1d5 h5f4 d5b5 b8b5 d6b5', 'e1e6 h5f4 d6f5 g6f5 e6c6', 'd1c1 c6b4 c1c7 g7g8 e1c1', 'g2g3 g7h7 d1d5 b8d8 e1d1']","['0.00 (centipawns)', '-0.01 (centipawns)', '-0.06 (centipawns)', '-0.13 (centipawns)']",d1d5
+"8| r . . q . r k .
+7| . . . . p p b p
+6| p . . p . n p .
+5| . p . . n . . .
+4| . . . p P . . .
+3| . . N . B . . P
+2| P P P Q B P P .
+1| R . . . R . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 14","['d2d4 a8b8 a1d1 d8c7 a2a3', 'e3d4 e5c6 d4e3 b5b4 c3a4']","['-0.07 (centipawns)', '-0.22 (centipawns)']",d2d4
+"8| . . . r . . . k
+7| p . q r . p p .
+6| . p . . p . . .
+5| . . . . . . . .
+4| . . P B Q . . .
+3| . P . . . . . .
+2| P . . . . P P P
+1| . R . . . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 23",['d7d4 e4f3 d4d3 f3h5 h8g8'],['0.08 (centipawns)'],d7d4
+"8| r n b q k b . r
+7| p p p p . p p p
+6| . . . . p n . .
+5| . . . . . . . .
+4| . . . P . . . .
+3| . . N . . . . .
+2| P P P . P P P P
+1| R . B Q K B N R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 3","['e2e4 d7d5 e4e5 f6d7 f2f4', 'd1d3 d7d5 e2e4 c7c5 e4d5', 'c1f4 d7d5 c3b5 b8a6 e2e3', 'c1g5 f8e7 e2e4 f6e4 g5e7']","['0.35 (centipawns)', '0.05 (centipawns)', '0.02 (centipawns)', '-0.17 (centipawns)']",e2e4
+"8| . . . . . b . .
+7| p k . n . . p p
+6| . p . . . p . .
+5| . . . . p P . .
+4| . R . . P . . P
+3| . . . B B . P .
+2| . . . . . . . .
+1| . . r . . . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 34",['e3c1 f8b4 g1f1 b7c6 d3c4'],['-3.13 (centipawns)'],e3c1
+"8| r n b q k b n r
+7| p p p . . p p p
+6| . . . . p . . .
+5| . . . p . . . .
+4| . . . . . . . .
+3| . . P . P . . .
+2| P P . P . P P P
+1| R N B Q K B N R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 3","['d2d4 g8f6 f1d3 b8d7 f2f4', 'g1f3 f8d6 d2d4 g8f6 f1d3', 'c3c4 g8f6 g1f3 f8d6 d2d4', 'a2a3 g8f6 d2d4 f8d6 b1d2']","['-0.13 (centipawns)', '-0.16 (centipawns)', '-0.16 (centipawns)', '-0.27 (centipawns)']",d2d4
+"8| . . . . . . . .
+7| p . p . . p p .
+6| . p P . . n . p
+5| . . . . K . . P
+4| . k . . . P . .
+3| . . . . . . . .
+2| . P . . . . . .
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 2
+- Fullmove number: 35","['b4c5 e5f5 c5b4 f5e5 f6h5', 'b4b3 f4f5 b3b2 e5d4 b2b3']","['Mate in -19', 'Mate in -17']",b4c5
+"8| . . . . . r k .
+7| p p . R . p p .
+6| . . . . . . . .
+5| . . p . p . . b
+4| . . . . P . . .
+3| . . N . . . . P
+2| P P P . . P . .
+1| . . . . . . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 22","['b7b5 d7c7 b5b4 c3d5 h5f3', 'f8b8 g1g2 f7f6 d7c7 c5c4']","['0.63 (centipawns)', '1.17 (centipawns)']",b7b5
+"8| . . . . . . . .
+7| . . . . . . . .
+6| . p p p . . . .
+5| p N . . k . . .
+4| . . . . P p . r
+3| . . . P . K n .
+2| P P P . . . . .
+1| R . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 41","['b5a7 c6c5 c2c3 h4h2 d3d4', 'd3d4 e5e6 b5c3 g3h5 a1g1', 'b5c3 h4h2 a1d1 h2c2 d3d4', 'b5a3 b6b5 c2c3 h4h2 d3d4']","['0.13 (centipawns)', '0.00 (centipawns)', '-0.08 (centipawns)', '-0.09 (centipawns)']",b5a7
+"8| . . k . r . . r
+7| p p . q . . p .
+6| . . p . . P . .
+5| . . n p . . . .
+4| P . . . . . P p
+3| . Q P . P P . .
+2| . P . N K . . P
+1| R . . . . R . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 3
+- Fullmove number: 25","['b3b4 c5e6 f6g7 d7g7 e2f2', 'b3a3 c5e6 f6g7 d7g7 e2d1', 'b3c2 g7f6 b2b4 c5e6 a1e1']","['0.53 (centipawns)', '0.56 (centipawns)', '0.26 (centipawns)']",b3b4
+"8| . . . . . r . .
+7| . . . . . . . k
+6| . . R . . P p p
+5| . . . . . . . .
+4| p . . . . . . B
+3| p . P . . . . .
+2| P . B . . . P P
+1| . . . . . R . K
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 35","['c6c7 h7g8 c2g6 h6h5 f1e1', 'h1g1 h6h5 c6c7 h7h6 f1e1', 'f1b1 h6h5 c6c7 h7h6 b1b5', 'f1a1 h6h5 c6c7 h7h6 a1e1']","['Mate in -4', 'Mate in -6', 'Mate in -2', 'Mate in -6']",c6c7
+"8| r n . q k . n r
+7| p p . . . . b p
+6| . . p . . . p .
+5| . . . p p b . .
+4| . . . . . . . .
+3| . . N P . Q . .
+2| P P P . . P P P
+1| R . B . K B N R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 8","['g2g4 f5e6 f3g3 g8f6 f1h3', 'h2h4 h7h5 f3g3 g8h6 f1e2', 'f3d1 d8e7 c3e2 b8a6 e2g3', 'c3e2 h7h5 h2h3 b8a6 g2g4']","['-1.33 (centipawns)', '-0.96 (centipawns)', '-1.17 (centipawns)', '-1.47 (centipawns)']",g2g4
+"8| . . . r . . n r
+7| p . p k . p p p
+6| . . p . p . . .
+5| . . b . . q N .
+4| . . . . . P . .
+3| P . . P . . . .
+2| . P P B . . P P
+1| R . . Q . R . K
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 4
+- Fullmove number: 15","['h7h5 d2c3 g8e7 c3g7 h8g8', 'd7e8 d2c3 e8f8 g5e4 c5e7', 'g8e7 g2g4 f5d5 f1f3 d7e8', 'c5b6 g5f3 d7e8 f1e1 g8e7']","['2.08 (centipawns)', '2.15 (centipawns)', '2.38 (centipawns)', '2.01 (centipawns)']",h7h5
+"8| . . K . . . . .
+7| . . . . . . . .
+6| . . . . . . . .
+5| . r . . . . . .
+4| . . . . . . . .
+3| k . . . . . . .
+2| . . . . . . . .
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 3
+- Fullmove number: 54","['b5d5 c8c7 a3b4 c7c6 d5d1', 'b5b1 c8d7 b1e1 d7d6 a3b4', 'a3b3 c8d7 b5e5 d7d6 e5e1', 'a3a4 c8d7 b5h5 d7e7 a4b5']","['Mate in -6', 'Mate in -14', 'Mate in -13', 'Mate in -14']",b5d5
+"8| r . . . k . . r
+7| . p p . b p p p
+6| . . q p b n . .
+5| . . . . p . . .
+4| p P P . P . . P
+3| . . . P B P P .
+2| P . . . N . B .
+1| R . . Q . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 15","['e8g8 d1d2 b7b5 f1c1 c6b7', 'b7b5 e2c3 b5c4 b4b5 c6d7', 'c6a6 d1d2 c7c6 a1b1 b7b5', 'a4a3 b4b5 c6d7 a1c1 d7d8']","['0.43 (centipawns)', '0.53 (centipawns)', '0.46 (centipawns)', '0.78 (centipawns)']",e8g8
+"8| r . . . . . . .
+7| p p p k b . . .
+6| . . n p . p . .
+5| . . . . . . . .
+4| . . . . b . . .
+3| . . Q . P . P .
+2| P P P B . P . .
+1| R N . . . K N q
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 4
+- Fullmove number: 22","['f1e2 h1g1 d2e1 g1g2 c3b3', 'c3d3 h1g2 f1e2 e4d3 c2d3']","['-5.83 (centipawns)', '-7.55 (centipawns)']",f1e2
+"8| . r . . . . k .
+7| Q . . . . . p .
+6| . . . . q . . p
+5| . . . . . . . P
+4| . p r . p R . .
+3| . . . p P . P .
+2| . P . R . P . .
+1| . K . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 31","['b8c8 a7f7 e6f7 f4f7 g8f7', 'e6c8 a7f7 g8h8 f7f8 c8f8']","['-11.83 (centipawns)', '-9.66 (centipawns)']",b8c8
+"8| . . r r . . k .
+7| p . . . q . b p
+6| . . . . p . p .
+5| . . . . . p . .
+4| . . . p . . . .
+3| P . . . P P . P
+2| . B . . Q P R K
+1| R . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 27","['e3d4 e7c7 g2g3 c7c4 a1e1', 'b2d4 e7c7 h2g1 e6e5 d4b2']","['-1.12 (centipawns)', '-1.34 (centipawns)']",e3d4
+"8| r . . . r . k .
+7| p p p . . p p p
+6| . . n . b . . .
+5| . . . . N . . .
+4| . . . . . P . .
+3| . . Q B . . . .
+2| P . P . . . P P
+1| . R . . . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 2
+- Fullmove number: 16","['e6d5 d3c4 a8d8 g1h1 d5c4', 'e6a2 b1e1 a2d5 d3h7 g8h7', 'c6e5 f4e5 a8d8 g1h1 d8d5']","['7.75 (centipawns)', '7.42 (centipawns)', '7.27 (centipawns)']",e6d5
+"8| r . b q . r k .
+7| p p . . . p b .
+6| . . . P . n p .
+5| . . . . p . . p
+4| . . B n P . . .
+3| . . N . B P . .
+2| P P P Q . . P P
+1| R . . . K . N R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside.
+- No en passant target square.
+- Halfmove clock: 2
+- Fullmove number: 11","['g1e2 c8e6 c4e6 d4e6 e1c1', 'e1c1 d8d6 g1e2 d6c7 c4d5', 'c4b3 d8d6 g1e2 f8d8 e1c1']","['2.96 (centipawns)', '2.40 (centipawns)', '2.08 (centipawns)']",g1e2
+"8| r . b q k b n r
+7| p p . . . p p .
+6| . . n p p . . p
+5| . . . . . . . .
+4| . . B . P . . .
+3| . . N . . N . .
+2| P P . . Q P P P
+1| R . B . . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 8","['g8f6 c1f4 e6e5 a1d1 c8d7', 'c8d7 c1f4 g8f6 a1d1 e6e5', 'a7a6 c1f4 g8e7 f4g3 e7g6', 'e6e5 f1d1 g8f6 b2b4 a7a6']","['0.00 (centipawns)', '0.00 (centipawns)', '0.08 (centipawns)', '0.27 (centipawns)']",g8f6
+"8| r . . . k . . r
+7| . p q . . p p .
+6| p . n p . . . .
+5| . . . . p . b P
+4| . . N . P . B .
+3| . . P . . . . .
+2| P . . . . P . .
+1| R . . Q K . . R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 4
+- Fullmove number: 21","['a8d8 h1g1 c6e7 d1b3 b7b5', 'h8h6 d1d3 e8f8 h1g1 b7b5']","['-1.85 (centipawns)', '-1.61 (centipawns)']",a8d8
+"8| . . . . . . . .
+7| . . . . . . . P
+6| . k . p . . . .
+5| . . p . . . . .
+4| . . . . . . . K
+3| . . . . . . . .
+2| Q . . . . . P .
+1| . . . . . . . r
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 57","['h4g3 h1h7 a2b1 b6c6 b1h7', 'h4g5 b6c6 a2a8 c6b6 h7h8q']","['13.16 (centipawns)', 'Mate in -17']",h4g3
+"8| r . . q k . . r
+7| p b . n n p b p
+6| . p p . p . p .
+5| . . . p . . . .
+4| . . . P . B . .
+3| . Q P B P N . .
+2| P P . N . P P P
+1| R . . . K . . R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 2
+- Fullmove number: 11","['b3d1 c6c5 h2h4 h7h6 d1e2', 'h2h4 h7h6 b3d1 c6c5 d1e2', 'a2a4 c6c5 d3b5 e8g8 a4a5', 'e1g1 e8g8 f1e1 c6c5 d3f1']","['0.38 (centipawns)', '0.40 (centipawns)', '0.13 (centipawns)', '0.14 (centipawns)']",b3d1
+"8| . . . . . . k .
+7| . b r . . p . p
+6| p . . . . . p .
+5| . p . . r . . .
+4| . . . N . . P .
+3| P . P . . . . P
+2| . P . . . R . K
+1| . . . . . R . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 3
+- Fullmove number: 33","['f2e2 e5e2 d4e2 c7e7 e2d4', 'f2f6 g8g7 f1f2 h7h6 f6b6', 'f2c2 c7e7 f1f2 g8g7 c2e2', 'f2d2 g8g7 f1f2 c7e7 d2e2']","['-0.19 (centipawns)', '-0.50 (centipawns)', '-0.51 (centipawns)', '-0.49 (centipawns)']",f2e2
+"8| r . . q . r k .
+7| . p p . . . p p
+6| p . n p p . . .
+5| . . b . . . . n
+4| P . . p P . . .
+3| . . P . . N . P
+2| . P . . . P P .
+1| R N B Q R . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 12","['c3d4 c5b4 b1c3 d8f6 e1f1', 'c1g5 d8e8 c3d4 c5b4 b1c3']","['0.11 (centipawns)', '-0.33 (centipawns)']",c3d4
+"8| r . . q . r k .
+7| p p p b . p . .
+6| . . . . p n . b
+5| . . . p . . p .
+4| . n P P . . . p
+3| . . N . P N . P
+2| P P . . B P P B
+1| R . . Q . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 5
+- Fullmove number: 13","['f3e5 d5c4 e2c4 b4d5 c3d5', 'a1c1 a7a5 f3e5 d7e8 a2a3', 'a2a3 b4c6 a1c1 c6e7 e2d3', 'c3b5 f6e4 b5c7 a8c8 a2a3']","['2.70 (centipawns)', '3.01 (centipawns)', '2.76 (centipawns)', '2.58 (centipawns)']",f3e5
+"8| r n . q k b . r
+7| p b . p . p p p
+6| . . . . . . . .
+5| . . p n . . . .
+4| . . B . . . . .
+3| . . . . . N . .
+2| P P Q . . P P P
+1| R N B . K . . R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 9","['c2b3 d8e7 e1d1 e7d6 b3b7', 'e1g1 d5b4 c2c3 f7f6 f1e1']","['3.63 (centipawns)', '2.87 (centipawns)']",c2b3
+"8| r . . q . . k .
+7| p p . . . . p p
+6| . . n p . . . .
+5| . . . p . . . .
+4| . . . . N . . .
+3| . . P B P P . .
+2| P P . . . P . P
+1| R . . . K . . R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 13","['c6e5 e1c1 e5d3 d1d3 d5e4', 'd5e4 d3e4 d8h4 h1g1 c6e7']","['-4.77 (centipawns)', '-4.09 (centipawns)']",c6e5
+"8| . k . r . b . r
+7| p p p . . q . .
+6| . . n . . . . .
+5| . N . . p . . .
+4| . . . . . p . p
+3| . . P P . P . P
+2| P . . . . . P .
+1| R . B Q . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 22","['f7d5 a2a4 d5d3 d1d3 d8d3', 'f8c5 g1h2 f7f5 c1a3 d8d3', 'a7a6 a2a4 h8g8 d3d4 f8c5', 'h8g8 d3d4 a7a6 a2a4 c6a5']","['-3.96 (centipawns)', '-3.96 (centipawns)', '-3.53 (centipawns)', '-3.52 (centipawns)']",f7d5
+"8| . . . . . . . .
+7| . . . . . . . .
+6| . . . . . . . p
+5| p . . k p K p .
+4| P . . . . . P .
+3| . . . . . P . P
+2| . . . . . . . .
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 10
+- Fullmove number: 48",['f5g6 d5d4 g6h6 d4e3 h6g5'],['0.00 (centipawns)'],f5g6
+"8| . . . . . . . .
+7| p . . . . . . R
+6| . . k . p . p .
+5| . N . p P b . .
+4| P . . P . P . .
+3| . r . . . r . .
+2| . . . . K . . .
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 4
+- Fullmove number: 47","['b5a7 c6b6 a7c8 b6a5 h7a7', 'b5d6 f3h3 h7h3 b3h3 a4a5']","['-6.73 (centipawns)', '-6.29 (centipawns)']",b5a7
+"8| r . . . . . k .
+7| p . . . . p . p
+6| . . . . . . p .
+5| . . . . . . . .
+4| . . . P . . . .
+3| . . . . . P P .
+2| . P . R . . . P
+1| . . . . . K . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 24","['a8b8 f1f2 b8b3 g3g4 g8f8', 'g8f8 f1e2 f8e7 e2d3 a8b8', 'a7a5 f1e2 g8f8 e2d3 f8e7']","['0.29 (centipawns)', '0.54 (centipawns)', '0.64 (centipawns)']",a8b8
+"8| . . . . . . . .
+7| . . . k . . p p
+6| . p . . . . . .
+5| . P . . . . . .
+4| . . . . . . . .
+3| . . K . . . . P
+2| . . . . . p . .
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 44","['c3d2 f2f1q d2e3 d7e6 e3e4', 'c3d3 f2f1q d3c2 d7d6 c2b3', 'c3c4 d7e6 c4d4 f2f1q d4e4', 'h3h4 f2f1q c3d4 d7d6 d4e4']","['Mate in 12', 'Mate in 8', 'Mate in 12', 'Mate in 11']",c3d2
+"8| r . b q k b n r
+7| p p p . p p p p
+6| . . n . . . . .
+5| . . . p . . . .
+4| . . . P . . . .
+3| . . . . P N . .
+2| P P P . . P P P
+1| R N B Q K B . R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 3","['c8g4 f1b5 d8d7 b1d2 a7a6', 'e7e6 c2c4 g8f6 b1c3 f8d6', 'c8f5 f1b5 e7e6 c2c4 g8e7', 'g8f6 c2c4 e7e6 b1c3 f8d6']","['0.39 (centipawns)', '0.36 (centipawns)', '0.46 (centipawns)', '0.32 (centipawns)']",c8g4
+"8| . . k r . . . r
+7| p p p . . p p p
+6| . . p . . . . .
+5| . . b . P b . .
+4| . . N . . P . .
+3| . . . . . . . .
+2| P P . . Q n P P
+1| R . B . K B . R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 2
+- Fullmove number: 15","['f2h1 c1e3 c5b4 c4d2 f7f6', 'f2d3 e2d3 f5d3 c1e3 c5e3', 'f5g4 e2g4 f2g4 f1e2 h7h5']","['4.51 (centipawns)', '4.36 (centipawns)', '4.08 (centipawns)']",f2h1
+"8| . b . r k . . r
+7| . b . q . p p p
+6| p p . . . n . .
+5| . . p . B . . .
+4| . . P . . . . .
+3| . . N P . . . .
+2| P P . . . P P P
+1| R . Q . R B K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: Black can castle kingside.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 16","['e8g8 e5b8 d8b8 c1f4 f8d8', 'b8e5 e1e5 e8f8 c1g5 h7h6']","['1.42 (centipawns)', '1.60 (centipawns)']",e8g8
+"8| . . R . . . . .
+7| p . . . . . p .
+6| . . . . . . k .
+5| . . . b . . . .
+4| . . . R . . . .
+3| . . . . . . . .
+2| P P . . . K . P
+1| . r . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 35",['b1b2 f2g3 b2g2 g3h3 g2g5'],['2.13 (centipawns)'],b1b2
+"8| . . . . . . . .
+7| . . . . k . p p
+6| . p . . . . . .
+5| p . . B . . . .
+4| b . . N . . . P
+3| . . . R . . P .
+2| . . . . . P . K
+1| . . . . b . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 38","['d5f3 e1f2 d4c6 e7f7 d3d7', 'f2f4 e7d6 d5g8 d6c5 d4f3', 'd5c6 a4c6 d4c6 e7f6 d3e3', 'd5g2 e1f2 d4c6 a4c6 g2c6']","['5.12 (centipawns)', '5.57 (centipawns)', '5.76 (centipawns)', '5.20 (centipawns)']",d5f3
+"8| . . . . r . . .
+7| . . . r . p p p
+6| . k . n . . . .
+5| . . . . . . P .
+4| . . . . . P . .
+3| . . P . . . . .
+2| . K . b b . . P
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 32","['g5g6 e8b8 h2h3 b6c6 b2c2', 'b2b3 b6c6 h2h3 e2d1 b3a2', 'h2h4 e8b8 c3c4 b6c6 b2c2', 'f4f5 e8b8 h2h3 b6c6 b2c2']","['Mate in 2', 'Mate in 2', 'Mate in 2', 'Mate in 2']",g5g6
+"8| . . r . . r k .
+7| p . . . q p p p
+6| . p . . p . . .
+5| . Q n p P . . .
+4| P . . . . . . .
+3| . . P . . N . .
+2| . . P . . P P P
+1| R . . . . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 17","['c5e4 a4a5 e4c3 b5d3 b6b5', 'c5b7 b5b4 e7c5 a1a3 c5b4']","['-2.82 (centipawns)', '-2.00 (centipawns)']",c5e4
+"8| . . . . . . . .
+7| . . . . . . . .
+6| p . . . . . b .
+5| . p . . k . p .
+4| . . p . . . P .
+3| P . P . K P . .
+2| . P . . . . . .
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 39","['e3f2 e5f4 f2e2 g6e8 e2d2', 'e3d2 e5f4 d2e2 g6e8 b2b3', 'e3e2 e5f4 e2f2 g6e8 f2e2']","['-9.33 (centipawns)', '-10.61 (centipawns)', '-16.79 (centipawns)']",e3f2
+"8| r . b q k . . r
+7| p p p . b p p p
+6| . . . . . n . .
+5| . . . P p . . .
+4| . . . . . B . .
+3| . . . . . P . .
+2| P P . . . P . P
+1| R N . Q K B . R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 10","['f4e5 e8g8 b1c3 f8e8 f1e2', 'f1b5 c8d7 b5d7 d8d7 f4e5', 'f4g3 f6d5 g3e5 e8g8 b1c3']","['-3.06 (centipawns)', '-3.08 (centipawns)', '-3.07 (centipawns)']",f4e5
+"8| . . . . r . k .
+7| . . . . . p p p
+6| . r . p . n . .
+5| . . . . . . . .
+4| . p . . P . . .
+3| P . . . . P . P
+2| b R P . N . P .
+1| . . . . R . . K
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 32",['b2a2 b4a3 a2a3 d6d5 e4d5'],['0.15 (centipawns)'],b2a2
+"8| . . . . . r . .
+7| . . . . . . p k
+6| b . p . p . . p
+5| p p . q N n . Q
+4| . P . P p . . .
+3| P . P . . . . .
+2| . . . B . P r P
+1| . . . R . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 24",['g1g2 e4e3 g2g1 e3d2 h5g6'],['1.73 (centipawns)'],g1g2
+"8| . . . . . . . .
+7| . . . . . . . p
+6| . . . . . . . .
+5| . . . B . N . .
+4| . . N . P k P .
+3| . . . . . P . .
+2| . . . . K . . .
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 7
+- Fullmove number: 46","['d5f7 h7h6 f7e8 f4g5 e2e3', 'c4d2 f4e5 d5f7 e5f6 f7e8', 'e4e5 f4g5 e5e6 h7h5 g4h5', 'd5e6 f4g5 e6f7 g5f4 f7e8']","['Mate in -5', 'Mate in -7', 'Mate in -7', 'Mate in -8']",d5f7
+"8| r . n . k . . r
+7| p p . q . . p .
+6| . . p . . . n p
+5| P . . p P p . .
+4| . b . P . . . P
+3| . P N . . N . .
+2| . . P Q . P P .
+1| R . . . . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- Castling rights: Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 3
+- Fullmove number: 19","['e5e6 d7d6 h4h5 g6f4 f3e5', 'h4h5 b4c3 d2c3 g6f4 a1e1', 'a5a6 b7b5 e5e6 d7d6 c3b5', 'd2e3 b4c3 e5e6 d7c7 e3c3']","['-3.59 (centipawns)', '-3.27 (centipawns)', '-3.08 (centipawns)', '-3.49 (centipawns)']",e5e6
+"8| . . . . . . . .
+7| p p N b . . k p
+6| . . . N . . p .
+5| . . . B n p . .
+4| . . . . . . . .
+3| . . . . . . . .
+2| P P P . . P P P
+1| . . . . R . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 26","['e5c6 f2f3 g7f8 d6b7 c6b4', 'g7f6 c7e8 d7e8 d6e8 f6g5']","['9.81 (centipawns)', '10.74 (centipawns)']",e5c6
+"8| . r . . . b k .
+7| p . . q . . . p
+6| . r p . p . p .
+5| . . . . P p . .
+4| P . . P b P . P
+3| . . R . B N P .
+2| . . . . Q K . .
+1| . . R . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 7
+- Fullmove number: 26","['f3d2 b6b2 f2g1 e4d5 c3c2', 'f2f1 f8b4 c3b3 e4d5 b3b2', 'h4h5 b6b2 f3d2 b2a2 f2f1', 'd4d5 b6b2 f3d2 d7d5 f2f1']","['-2.50 (centipawns)', '-2.77 (centipawns)', '-2.70 (centipawns)', '-4.01 (centipawns)']",f3d2
+"8| r . b . k . . r
+7| p p . . b p p p
+6| . . n . p n . .
+5| . . p q . . B .
+4| . . . . . . . .
+3| . . P P . N . .
+2| P P . . B P P P
+1| R N . Q . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 2
+- Fullmove number: 8","['h7h6 g5e3 e8g8 d3d4 c5d4', 'e8g8 b1d2 b7b6 d2c4 c8b7', 'b7b6 d3d4 c5d4 c3d4 c8b7', 'd5d8 a2a4 h7h6 g5h4 g7g5']","['-0.33 (centipawns)', '-0.25 (centipawns)', '-0.15 (centipawns)', '-0.01 (centipawns)']",h7h6
+"8| r . b q . b . r
+7| p p p p . k p p
+6| . . n . . n . .
+5| . . . . p . . .
+4| . . . . P . . .
+3| . . . . . N . .
+2| P P P P . P P P
+1| R N B Q . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 3
+- Fullmove number: 5","['d7d6 d2d4 e5d4 c2c3 d4d3', 'f7g8 b1c3 d7d5 e4d5 f6d5', 'd7d5 e4d5 d8d5 b1c3 d5d7', 'f6e4 f1e1 e4f6 d2d4 e5d4']","['-3.82 (centipawns)', '-3.91 (centipawns)', '-3.64 (centipawns)', '-3.94 (centipawns)']",d7d6
+"8| r . b q k b . r
+7| . p p p . p p p
+6| p . n . . n . .
+5| . . . . p . . .
+4| . . B . P . . .
+3| P . N . . . . .
+2| . P P P . P P P
+1| R . B Q K . N R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 5","['d2d3 f8c5 g1f3 d7d6 c1e3', 'c4a2 f8c5 d2d3 d7d6 g1f3', 'c4b3 c6d4 b3a2 f8c5 d2d3']","['-0.02 (centipawns)', '0.01 (centipawns)', '-0.08 (centipawns)']",d2d3
+"8| . . . . . K . .
+7| . . . . . . . .
+6| . . . . . . . .
+5| . . . . . . . .
+4| . . . . . . . .
+3| k . . . . . . .
+2| . . . r . . . .
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 13
+- Fullmove number: 59","['d2d7 f8e8 d7c7 e8d8 c7h7', 'a3b4 f8e7 b4c5 e7e6 d2a2']","['Mate in -10', 'Mate in -18']",d2d7
+"8| . . . . . . . .
+7| . p B . b . . p
+6| p . . . . . p .
+5| . . . . . . . .
+4| . P . . . . P .
+3| P . . k . . . P
+2| . . . . . P K .
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 39","['g2g3 d3c2 f2f4 c2b3 f4f5', 'g2f3 e7g5 c7b6 g5d2 b6e3', 'c7b6 d3e4 g2g3 e7d6 g3g2', 'f2f4 d3e4 g4g5 e7f8 c7e5']","['0.07 (centipawns)', '0.00 (centipawns)', '0.00 (centipawns)', '0.00 (centipawns)']",g2g3
+"8| . . . . . . r .
+7| p . k . . p r .
+6| . . . p . p . b
+5| . b . P p P . .
+4| . . p . P . . .
+3| P p P n . R p P
+2| . P . . N . B .
+1| . K . N . . R .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 3
+- Fullmove number: 30","['f3f1 d3f2 b1a1 c7b6 a1b1', 'd1e3 d3f2 b1a1 f2e4 e3g4', 'g1h1 d3c5 f3e3 h6e3 d1e3']","['-3.71 (centipawns)', '-4.46 (centipawns)', '-3.76 (centipawns)']",f3f1
+"8| . . k r . b . r
+7| p p . . . p p p
+6| . n . p . n . .
+5| . . p . . . . .
+4| . . . . P B . .
+3| . P N R . . . .
+2| P . P . . P P P
+1| . . . R . . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 2
+- Fullmove number: 14","['f6e8 a2a4 e8c7 f2f3 f8e7', 'd8d7 a2a4 b6a8 c3b5 a7a6', 'f8e7 c3b5 a7a6 f4d6 a6b5', 'b6d7 a2a4 d8e8 f4d6 f8d6']","['-3.99 (centipawns)', '-3.97 (centipawns)', '-3.93 (centipawns)', '-3.90 (centipawns)']",f6e8
+"8| . . k . . . . .
+7| . . p . . p . p
+6| p . . . . . p .
+5| . . . P . . . .
+4| . P r . . . . .
+3| . K . . P . . P
+2| P . N . . . . .
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 31","['c4h4 a2a4 h4h3 c2d4 g6g5', 'c4e4 b3c3 e4h4 a2a4 h4h3']","['-5.95 (centipawns)', '-5.45 (centipawns)']",c4h4
+"8| . . . . . . k .
+7| . p . q . p . p
+6| . P p . . . p .
+5| . . P p . . . .
+4| . . . . . . . .
+3| . . b . . Q . .
+2| . . . . . P P P
+1| . . . . . . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 30",['f3c3 d5d4 c3d3 d7d5 h2h4'],['-4.56 (centipawns)'],f3c3
+"8| . . . r . . . r
+7| p b p . R . k .
+6| . p . . . n B .
+5| . . . . . . . .
+4| . . . P . N . .
+3| . . P . . P . p
+2| P P . . . K . .
+1| . . . . . . R .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 3
+- Fullmove number: 35",['g7h6 g6h7 d8g8 h7g8 h8g8'],['5.78 (centipawns)'],g7h6
+"8| r . b q r n k .
+7| p p . . . p b p
+6| . . p . . n p .
+5| . . . P p . . .
+4| . . P . P . . .
+3| . . . B . N . .
+2| P P . N . . P P
+1| R . B Q . R K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 12","['b7b5 b2b3 c6d5 c4d5 f6d5', 'f8d7 d2b3 a7a5 a2a4 c6d5', 'a7a5 a2a4 f8d7 d1e2 d8b6']","['-0.76 (centipawns)', '-0.47 (centipawns)', '-0.45 (centipawns)']",b7b5
+"8| . . . . . . . .
+7| . . . . . . . .
+6| . . K . . . . .
+5| . . . . . . . .
+4| . p . . . . . .
+3| . k . Q . . . .
+2| . . . . . . . .
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 59","['b3a2 c6c5 b4b3 c5b4 a2a1', 'b3b2 c6c5 b4b3 c5b4 b2a1', 'b3a4 c6c5 b4b3 d3a6']","['Mate in 4', 'Mate in 4', 'Mate in 0']",b3a2
+"8| r . b q k . . r
+7| p p p . . p p p
+6| . . n p . n . .
+5| . . b . p . . .
+4| . . B . P . . .
+3| . . P P . N . P
+2| P P . . . P P .
+1| R N B Q K . . R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 6","['a7a6 a2a4 h7h6 b2b4 c5a7', 'a7a5 b1d2 h7h6 e1g1 c5a7', 'c6e7 e1g1 c5b6 b1d2 e7g6', 'e8g8 e1g1 c5b6 f1e1 h7h6']","['0.24 (centipawns)', '0.17 (centipawns)', '0.23 (centipawns)', '0.22 (centipawns)']",a7a6
+"8| r . b q k b . r
+7| p p p . p p p p
+6| . . n p . n . .
+5| . . . . . . . .
+4| . . B . P . . .
+3| . . N . . N . .
+2| P P P P . P P P
+1| R . B Q K . . R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 5
+- Fullmove number: 4","['c8g4 d2d4 e7e5 c4b5 f6d7', 'f6e4 c3e4 d6d5 c4d3 d5e4', 'e7e6 d2d4 f8e7 a2a3 d6d5', 'a7a6 d2d4 c8g4 c4e2 g4f3']","['0.25 (centipawns)', '0.40 (centipawns)', '0.46 (centipawns)', '0.54 (centipawns)']",c8g4
+"8| b . . r . . k .
+7| . . . r . p p p
+6| p p . . . . q .
+5| . . b . . . . .
+4| . . . N . . . Q
+3| . P . . . P . P
+2| . B . R . . P K
+1| . . . R . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 39","['c5d6 h2h1 g6g3 h4g3 d6g3', 'h7h6 h2h1 a6a5 b2c3 a8b7', 'h7h5 h2h1 c5b4 d2d3 g8h7', 'c5f8 b3b4 h7h6 b2c3 f8d6']","['-3.26 (centipawns)', '-3.29 (centipawns)', '-3.00 (centipawns)', '-3.23 (centipawns)']",c5d6
+"8| r . b . k . . .
+7| . p . . . p b .
+6| p . n . p . p .
+5| . . Q n P . . .
+4| . . . p . . . .
+3| . K . N . . . r
+2| P P P . . . . .
+1| . . . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- Castling rights: Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 2
+- Fullmove number: 26","['c2c3 h3d3 b3c2 d3h3 c5a3', 'b3c4 c8d7 b2b4 g7f8 c4b3', 'a2a4 g7f8 c5a3 f8a3 b2a3', 'a2a3 g7f8 c5c6 b7c6 b3a2']","['Mate in 18', '-13.55 (centipawns)', '-12.64 (centipawns)', '-13.01 (centipawns)']",c2c3
+"8| r n b q k b . r
+7| p p p . . p p p
+6| . . . . . . . .
+5| . . . . p . . .
+4| . . Q . P . . .
+3| . . . . . . . N
+2| P P P P . P P P
+1| R N B . K . . R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 6","['b8c6 b1c3 f8d6 b2b3 c8e6', 'c8e6 c4e2 b8c6 c2c3 h8g8', 'h7h6 b1c3 b8c6 h3g1 f8d6', 'd8d6 b1c3 b8c6 c3b5 d6e7']","['-0.83 (centipawns)', '-0.77 (centipawns)', '-0.64 (centipawns)', '-0.48 (centipawns)']",b8c6
+"8| . . . . . r . .
+7| . . . . p . k p
+6| . . . . . b p .
+5| . . p . q p . .
+4| . p . . . . n .
+3| . B . P . P . .
+2| . . . . . . P P
+1| . N Q R . . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 29","['e5h2 g1f1 h2h1 f1e2 h1g2', 'e5d4 c1e3 d4e3 g1h1 g4f2']","['Mate in -1', 'Mate in -2']",e5h2
+"8| r . b q k b n r
+7| p p p p . . p p
+6| . . n . . . . .
+5| . B . . p p . .
+4| . . . . P . . .
+3| . . . . . N . .
+2| P P P P . P P P
+1| R N B Q K . . R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside, Black can castle kingside, Black can castle queenside.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 4","['b1c3 f5e4 c3e4 g8f6 d1e2', 'd2d3 f5e4 d3e4 g8f6 e1g1']","['0.50 (centipawns)', '0.64 (centipawns)']",b1c3
+"8| r . . . . k . r
+7| p b . . q p p p
+6| n p . . p . . .
+5| . Q . p . . . .
+4| . . . P . B . .
+3| P . n . P P . .
+2| P . . . . . P P
+1| R . . . K . N R
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- Castling rights: White can castle kingside, White can castle queenside.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 14","['b5b3 e6e5 f4e5 f7f6 e5f4', 'b5d3 c3a4 d3b3 a4c5 d4c5']","['-3.03 (centipawns)', '-4.10 (centipawns)']",b5b3
+"8| . . . . r . k .
+7| . . . . . p . .
+6| p . . . . . . p
+5| B p . . . . p .
+4| . . b . . . . .
+3| . . . . . . P .
+2| . . . . . P . P
+1| R . . . . . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 0
+- Fullmove number: 34","['a5b4 e8e6 f2f3 g8h7 a1e1', 'g3g4 g8h7 h2h3 e8e2 g1g2', 'h2h3 g8h7 g3g4 e8e2 g1g2', 'a1d1 e8e2 d1d8 g8h7 g3g4']","['-2.32 (centipawns)', '-2.72 (centipawns)', '-2.80 (centipawns)', '-2.81 (centipawns)']",a5b4
+"8| . r . . . . k .
+7| p . . . . p . .
+6| . . . . . p . p
+5| . . P . . . . .
+4| r P . . . . . .
+3| . . . . . . P .
+2| P R . . . P . P
+1| . . . R . . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 3
+- Fullmove number: 28","['c5c6 g8g7 c6c7 b8c8 b2c2', 'b2c2 a4b4 c5c6 b4b1 d1b1']","['6.39 (centipawns)', '5.91 (centipawns)']",c5c6
+"8| . r r . . . k .
+7| p . . . . . p .
+6| . . . . q . . p
+5| . p p . . . . P
+4| . . . . p R . .
+3| P . Q p P . P .
+2| . P . R . P . .
+1| . K . . . . . .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is Black’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 1
+- Fullmove number: 28","['b5b4 c3c1 b4a3 f2f3 e4f3', 'a7a5 c3a5 b5b4 f2f3 e4f3']","['-7.38 (centipawns)', '-5.99 (centipawns)']",b5b4
+"8| . . . . . . . .
+7| N . . . . . . p
+6| . . . N . . p k
+5| . . . R . p . .
+4| . . . . . . . .
+3| . . . . . . . .
+2| P P P . . P P P
+1| . . . . . . K .
+   _ _ _ _ _ _ _ _
+   A B C D E F G H
+
+- It is White’s turn to move.
+- No castling rights available.
+- No en passant target square.
+- Halfmove clock: 3
+- Fullmove number: 33","['g1f1 h6g7 a7c6 g7f6 c6d4', 'f2f3 h6g7 g1f1 g7f6 a7b5', 'a7c6 h6g7 g1f1 h7h6 f1e2', 'a7b5 h6g7 g1f1 g7f6 b5d4']","['10.92 (centipawns)', '10.89 (centipawns)', '11.32 (centipawns)', '11.01 (centipawns)']",g1f1
