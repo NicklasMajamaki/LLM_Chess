@@ -28,7 +28,7 @@ gradient_accumulation_steps: 1
 learning_rate: 1.0e-6
 lr_scheduler_type: cosine
 warmup_ratio: 0.1
-num_train_epochs: 2.0
+num_train_epochs: 5.0
 bf16: true
 ddp_timeout: 180000000
 
