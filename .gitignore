@@ -22,3 +22,4 @@ progdata/
 
 # Big data files we'll keep local (for processing / etc.)
 magpie_llama70b_00-of-13.parquet
+**/llamafactory_programmatic*
