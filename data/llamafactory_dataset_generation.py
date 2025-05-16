@@ -28,7 +28,7 @@ ds1 = concatenate_datasets(ds1_list)
 ds2 = concatenate_datasets(ds2_list)
 
 # Determine total number of samples
-TOTAL_SAMPLES = 30000  # Set your desired total number of samples here
+TOTAL_SAMPLES = 25000  # Set your desired total number of samples here
 
 # Compute the max possible samples for each dataset given the ratio
 max_explainer = len(ds1)
