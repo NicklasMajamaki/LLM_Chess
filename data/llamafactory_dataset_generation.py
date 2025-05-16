@@ -9,6 +9,11 @@ magpie_files = [
 ]
 explainer_files = [
     "explainer_data/explainer_clean_1250.parquet",
+    "explainer_data/explainer_clean_100_1558_15.parquet",
+    "explainer_data/explanations_0_1000_0104_16.parquet",
+    "explainer_data/explanations_1_1000_0330_16.parquet",
+    "explainer_data/explanations_2_1000_0557_16.parquet",
+    "explainer_data/explanations_3_1000_0826_16.parquet",
 ]
 
 # Specify sampling ratios (should sum to 1.0)

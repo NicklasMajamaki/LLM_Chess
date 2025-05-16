@@ -1,6 +1,6 @@
 {
   "llmchess_programmatic": {
-    "file_name": "llamafactory_programmatic_2500.json",
+    "file_name": "llamafactory_programmatic_10000.json",
     "columns": {
       "prompt": "prompt",
       "response": "completion"
