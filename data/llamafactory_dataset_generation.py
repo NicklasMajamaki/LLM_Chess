@@ -5,7 +5,7 @@ import json
 # Specify our filepaths
 output_fp = "./"
 magpie_files = [
-    "magpie_data/magpie_clean_10k.parquet",
+    "magpie_data/magpie_clean_30k.parquet",
 ]
 explainer_files = [
     "explainer_data/explainer_clean_1250.parquet",
@@ -17,8 +17,8 @@ explainer_files = [
 ]
 
 # Specify sampling ratios (should sum to 1.0)
-explainer_ratio = 0.5
-magpie_ratio = 0.5
+explainer_ratio = 0.2
+magpie_ratio = 0.8
 
 
 # Load our datasets 
@@ -28,7 +28,7 @@ ds1 = concatenate_datasets(ds1_list)
 ds2 = concatenate_datasets(ds2_list)
 
 # Determine total number of samples
-TOTAL_SAMPLES = 10000  # Set your desired total number of samples here
+TOTAL_SAMPLES = 30000  # Set your desired total number of samples here
 
 # Compute the max possible samples for each dataset given the ratio
 max_explainer = len(ds1)
