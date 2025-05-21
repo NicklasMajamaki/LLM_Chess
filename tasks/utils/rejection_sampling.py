@@ -38,60 +38,102 @@ class ResultsDict():
         self.trimmed_filename = filename.split("_", 2)[0]
         self.wandb_run = wandb_run
         self.rej_type = rej_type
-        self.results = {
-            "Filename": self.filename,
-            "Total Samples": 0,
-            "Correct": 0,
-            "Incorrect": 0,
-            "Error: Parsing": 0,
-            "Error: Other": 0,
-        }
+        self.results = self._instantiate_dict()
+
         self.correct_responses = []
         self.rejected_responses = []
 
-    def add_result(self, model_response, ground_truth, prompt):
+    def _instantiate_dict(self):
+        if self.eval_type == "choose_from_n":
+            return {
+                "Filename": self.filename,
+                "Total Samples": 0,
+                "Correct": 0,
+                "Incorrect": 0,
+                "Error: Parsing": 0,
+                "Error: Illegal Move": 0,
+                "Error: Other": 0,
+            }
+        elif self.eval_type == "produce_list":
+            return {
+                "Filename": self.filename,
+                "Total Samples": 0,
+                "Total Ground Truth Legal Moves": 0,
+                "Predicted Ground Truth Legal Moves": 0,
+                "Illegal Moves": 0,
+                "Error: Parsing": 0,
+                "Error: Other": 0,
+            }
+        elif self.eval_type == "predict_singlemove":
+            return {
+                "Filename": self.filename,
+                "Total Samples": 0,
+                "Legal Moves Provided": 0,
+                "Cumulative Rank of Moves Provided": 0,
+                "Error: Parsing": 0,
+                "Error: Illegal Move": 0,
+                "Error: Other": 0,
+            }
+        else:
+            raise ValueError(f"Undefined eval type: {self.eval_type}")
+
+    def add_result(self, model_response, ground_truth):
         try:
             self.results["Total Samples"] += 1
-            predicted_answer = coerce_response(extract_solution(model_response), self.rej_type)
-            
-            # Ground truth is expected to be a list of valid moves
-            valid_moves = ground_truth if isinstance(ground_truth, list) else [ground_truth]
-            valid_moves = str(valid_moves)
+            if self.eval_type == "choose_from_n":
+                predicted_answer = coerce_response(extract_solution(model_response), self.eval_type)
+                answer, provided_moves = ground_truth
 
-            # Check if the predicted answer is in the list of valid moves
-            if predicted_answer in valid_moves:
-                self.results["Correct"] += 1
-                self.correct_responses.append({
-                    "prompt": prompt,
-                    "model_response": model_response,
-                    "predicted_move": predicted_answer,
-                    "valid_moves": valid_moves
-                })
-            else:
-                self.results["Incorrect"] += 1
-                self.rejected_responses.append({
-                    "prompt": prompt,
-                    "model_response": model_response,
-                    "predicted_move": predicted_answer,
-                    "valid_moves": valid_moves
-                })
+                if predicted_answer == answer:
+                    self.results["Correct"] += 1    
+                    self.correct_responses.append(model_response)
+                else:
+                    if predicted_answer in provided_moves:
+                        self.results["Incorrect"] += 1
+                    else:
+                        raise IllegalMoveException("Predicted move is not in the provided moves.")
+            elif self.eval_type == 'produce_list':   # We know that 'predicted_answer' will be a list
+                answer = ground_truth
+                self.results["Total Ground Truth Legal Moves"] += len(answer)
+                predicted_answer = coerce_response(extract_solution(model_response), self.eval_type)
+
+                num_right = 0
+                already_guessed = set()
+                for move in predicted_answer:
+                    if move in answer and move not in already_guessed:
+                        already_guessed.add(move)
+                        num_right += 1
+                        self.results["Predicted Ground Truth Legal Moves"] += 1
+                    else:
+                        self.results["Illegal Moves"] += 1
                 
-        except ParseException:
-            self.results["Error: Parsing"] += 1
-            self.rejected_responses.append({
-                "prompt": prompt,
-                "model_response": model_response,
-                "error": "Parsing Error",
-                "valid_moves": str(ground_truth)
-            })
+                if already_guessed == set(answer):
+                    self.correct_responses.append(model_response)
+                
+            elif self.eval_type == 'predict_singlemove':
+                predicted_answer = coerce_response(extract_solution(model_response), self.eval_type)
+                answer_dict = ground_truth
+                
+                if predicted_answer in answer_dict:
+                    self.results["Legal Moves Provided"] += 1
+                    sorted_moves = sorted(answer_dict.items(), key=lambda x: x[1])
+                    predicted_move_idx = next(i for i, (move, _) in enumerate(sorted_moves) if move == predicted_answer)
+                    self.results["Cumulative Rank of Moves Provided"] += predicted_move_idx/len(sorted_moves)
+
+                    # Sorted in increasing order
+                    if predicted_move_idx / len(sorted_moves) > 0.5:
+                        self.correct_responses.append(model_response)
+                else:
+                    raise IllegalMoveException("Predicted move is not in the legal moves.")
+                                
         except Exception as e:
-            self.results["Error: Other"] += 1
-            self.rejected_responses.append({
-                "prompt": prompt,
-                "model_response": model_response,
-                "error": str(e),
-                "valid_moves": str(ground_truth)
-            })
+            if isinstance(e, ParseException):
+                self.results["Error: Parsing"] += 1
+            elif isinstance(e, IllegalMoveException):
+                self.results["Error: Illegal Move"] += 1
+            else:
+                self.results["Error: Other"] += 1
+
         
     def get_final_dict(self):
         def safe_div(x, y, default=0): return x / y if y else default

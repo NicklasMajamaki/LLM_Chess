@@ -15,7 +15,7 @@ class EvaluationDataframe():
         """ Load the dataset and store useful metadata associated with it. """
         self.filename = filename
         self.datafolder = datafolder
-        self.filepath = os.path.join(datafolder, "evals_visual", filename)
+        self.filepath = os.path.join(datafolder, "rej_sampling", filename)
         self.eval_type = next(v for k, v in filename_map.items() if filename.startswith(k))
         self.df = self._load_parquets(self.filepath)
 
