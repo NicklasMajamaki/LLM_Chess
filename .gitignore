@@ -22,3 +22,6 @@ progdata/
 
 # Big data files we'll keep local (for processing / etc.)
 magpie_llama70b_00-of-13.parquet
+
+# Legacy datasets no longer necessary to upload to github (but will keep local JIC)
+evals_all_formats/
