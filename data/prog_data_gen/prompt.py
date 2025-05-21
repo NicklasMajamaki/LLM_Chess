@@ -10,26 +10,15 @@ def generate_data_sample(fen: str, explanations: List[str], final_statement: str
     """  
     Given a board (FEN notation), explanations, and a final evaluation, create a reasoning trace to train a model on.
     """
-
-    sys_prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-You are a chess grandmaster currently playing a very strong opponent. Assume they will be playing optimally. 
-
-Shortly you'll be provided with a board state by the user -- please analyze it and think through your possible moves.
-
-You should refer to moves in UCI notation (e.g., d7d5) and should include your thinking in think tags (e.g., <think> your_thinking </think>) and your answer in answer tags (e.g., <answer> UCI_move </answer>). 
-
-As a technique you may want to consider enumerating possible moves and simulating the likely trajectory that would ensue.<|eot_id|>"""
-
-    user_prompt_plus_format = f"""<|start_header_id|>user<|end_header_id|>
-{_convert_fen_to_visual(fen)}<|eot_id|>
-<|start_header_id|>assistant<|end_header_id|>"""
+    sys_prompt = "chess_task_sysprompt.txt"
+    user_prompt = f"""Here is a board in a game you're currently playing. I want you to think through some possible moves you could make and how those moves will likely play out. You may find it helpful to roll-out each line assuming your opponent plays near-optimally. You may also find it helpful to consider the value of the final board state after each roll-out.\n\nAfter you think through your various moves, please end by telling me your chosen move (in UCI notation) within answer tags.\n\n{_convert_fen_to_visual(fen)}"""
 
     model_response = f"""{random.choice(initial_think_phrase)}
 <think> {_format_explanations(explanations, final_statement)} </think>
 
 <answer> {final_move_uci} </answer><|eot_id|>"""
 
-    return sys_prompt, user_prompt_plus_format, model_response
+    return sys_prompt, user_prompt, model_response
 
 
 # --------------------------------------------------
