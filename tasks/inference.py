@@ -19,12 +19,12 @@ EVAL_FILES = [
     "predictmove_visual_100.parquet",
     "worstmove_visual_100.parquet"
 ]
-REJ_FILES = {
+REJ_FILES = [
     "bestmove_visual_500.parquet",
     "legalmoves_visual_500.parquet",
     "predictmove_visual_500.parquet",
     "worstmove_visual_500.parquet"
-}
+]
 
 
 # Parsing functionality for CLI args
