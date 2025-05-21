@@ -77,7 +77,7 @@ class ResultsDict():
         else:
             raise ValueError(f"Undefined eval type: {self.eval_type}")
 
-    def add_result(self, model_response, ground_truth):
+    def add_result(self, model_response, ground_truth, prompt):
         try:
             self.results["Total Samples"] += 1
             if self.eval_type == "choose_from_n":
@@ -108,7 +108,10 @@ class ResultsDict():
                         self.results["Illegal Moves"] += 1
                 
                 if already_guessed == set(answer):
-                    self.correct_responses.append(model_response)
+                    self.correct_responses.append({
+                        "prompt": prompt,
+                        "completion": model_response
+                    })
                 
             elif self.eval_type == 'predict_singlemove':
                 predicted_answer = coerce_response(extract_solution(model_response), self.eval_type)
