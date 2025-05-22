@@ -24,7 +24,7 @@ class JSONLDataClass():
         # Process data
         data = []
         for datum in raw_data:
-            prompt, response = self.chat_processor(datum['chat'])
+            prompt, response = self.chat_processor.process_chat(datum['chat'])
             data.append({
                 "prompt": prompt,
                 "response": response,
