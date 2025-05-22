@@ -20,10 +20,10 @@ EVAL_FILES = [
     "worstmove_visual_100.jsonl"
 ]
 REJ_FILES = [
-    "bestmove_visual_500.jsonl",
-    "legalmoves_visual_500.jsonl",
-    "predictmove_visual_500.jsonl",
-    "worstmove_visual_500.jsonl"
+    "bestmove_visual_50.jsonl",
+    "legalmoves_visual_50.jsonl",
+    "predictmove_visual_50.jsonl",
+    "worstmove_visual_50.jsonl"
 ]
 
 
