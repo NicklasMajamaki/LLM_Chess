@@ -5,27 +5,23 @@ Dockerfile
 # Other scripts used locally
 build_dataset.ps1
 
-# Various local dirs / files to ignore
-/colab_data.zip
-/local_testing
-testbook.ipynb
-saved_data/
+# local dirs to ignore
 runscripts/
-runscripts_archive/
-data/llamafactory_programmatic_25000.json
+local_testing/
+llm_chess/data/model_outputs/
+llm_chess/data/programmatic_explanations/data/
 
 # Jupyter notebook specific files
-/.virtual_documents
-/.ipynb_checkpoints
+.virtual_documents/
+.ipynb_checkpoints/
 __pycache__/
 
 # Chess Engine Files
-stockfish/
-prog_data/
-progdata/
+llm_chess/data/programmatic_explanations/stockfish/
 
 # Big data files we'll keep local (for processing / etc.)
-magpie_llama70b_00-of-13.parquet
+llm_chess/data/raw/magpie_data/
+llm_chess/data/raw/processed_data/
 
-# Legacy datasets no longer necessary to upload to github (but will keep local JIC)
-evals_all_formats/
+# Because of the Mac losers
+.DS_Store
