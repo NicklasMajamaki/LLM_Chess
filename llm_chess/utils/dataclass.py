@@ -19,7 +19,7 @@ class JSONLDataClass():
     def _load_data(self, filepath, shuffle=True):
         """ Load the parquet file and return the dataframe. """
         with open(filepath, 'r') as f:
-            raw_data = json.load(f)
+            raw_data = [json.loads(line.strip()) for line in f if line.strip()]
 
         # Process data
         data = []
