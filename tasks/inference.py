@@ -14,16 +14,16 @@ FILENAME_MAP = {
     'rejsampling': "predict_in_list",
 }
 EVAL_FILES = [
-    "bestmove_visual_100.parquet",
-    "legalmoves_visual_100.parquet",
-    "predictmove_visual_100.parquet",
-    "worstmove_visual_100.parquet"
+    "bestmove_visual_100.jsonl",
+    "legalmoves_visual_100.jsonl",
+    "predictmove_visual_100.jsonl",
+    "worstmove_visual_100.jsonl"
 ]
 REJ_FILES = [
-    "bestmove_visual_500.parquet",
-    "legalmoves_visual_500.parquet",
-    "predictmove_visual_500.parquet",
-    "worstmove_visual_500.parquet"
+    "bestmove_visual_500.jsonl",
+    "legalmoves_visual_500.jsonl",
+    "predictmove_visual_500.jsonl",
+    "worstmove_visual_500.jsonl"
 ]
 
 
