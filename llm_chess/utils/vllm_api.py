@@ -36,7 +36,7 @@ class vLLMClient:
             "repetition_penalty": self.repetition_penalty
         }
 
-        response = requests.post(f"{self.base_url}/chat/completions", json=payload, headers=self.headers)
+        response = requests.post(f"{self.base_url}", json=payload, headers=self.headers)
         response.raise_for_status()
         return response.json()['choices'][0]['message']['content'].strip()
 
