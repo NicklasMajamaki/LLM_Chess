@@ -14,7 +14,9 @@ TASK_MAP = {
 }
 
 
-# Parsing functionality for CLI args
+# ======================================
+# Arg parsing
+# ======================================
 def none_or_int(val):
     return None if val.lower() == "none" else int(val)
 
@@ -38,7 +40,7 @@ def parse_args():
     # Logging / saving details
     parser.add_argument("--use_wandb", default=False, action="store_true", help="Use wandb for logging")
     parser.add_argument("--print_verbose", default=False, action="store_true", help="Print all outputs.")
-    parser.add_argument("--save_verbose", default=True, action="store_true", help="Save all outputs.")
+    parser.add_argument("--save_verbose", action="store_true", help="Save all outputs.")
 
     # Inference hyperparams
     parser.add_argument("--max_tokens", type=int, default=2048)
@@ -51,10 +53,14 @@ def parse_args():
     return parser.parse_args()
 
 
-# Main code
+
+# ======================================
+# Main run code
+# ======================================
 def main():
     args = parse_args()
 
+    # Set up wandb logger
     if args.use_wandb:
         wandb_run = wandb.init(
             config={
@@ -69,6 +75,7 @@ def main():
     else:
         wandb_run = None
 
+    # VLLM client
     client = utils.vLLMClient(
         model=args.model,
         base_url=args.base_url,
