@@ -13,7 +13,7 @@ from datasets import load_dataset, concatenate_datasets, Dataset
 
 
 # Main args to adjust
-MAX_SAMPLES = 25000
+MAX_SAMPLES = 20000
 LLAMA_VERSION = "llama4"    # {'llama4', 'llama3'}
 OUTPUT_FOLDER = "data/"
 DATA_FOLDER = "data/cleaned_data/train_data"
