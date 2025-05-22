@@ -1,3 +1,5 @@
+import os
+
 # See https://www.llama.com/docs/model-cards-and-prompt-formats/llama3_1/ for details
 LLAMA_3_SPECIAL_TOKENS = {
     "begin_of_text": "<|begin_of_text|>",
@@ -35,12 +37,14 @@ class ChatProcessor():
         return self.special_tokens['start_header'] + role + self.special_tokens['end_header']
 
     def _get_prompt(self, filename):
-        """ Checks if prompt has already been cached -- if not loads in prompt. """
+        """ Checks if prompt has already been cached -- if not, loads in prompt. """
         if filename not in self.loaded_prompts:
-            with open(filename, 'r', encoding='utf-8') as f:
+            dir_path = os.path.dirname(os.path.abspath(__file__))
+            abs_path = os.path.join(dir_path, filename)
+            with open(abs_path, 'r', encoding='utf-8') as f:
                 prompt = f.read()
-            self.loaded_prompts['filename'] = prompt
-        return self.loaded_prompts['filename']
+            self.loaded_prompts[filename] = prompt
+        return self.loaded_prompts[filename]
 
     def process_chat(self, chat):
         full_prompt = self.special_tokens['begin_of_text']
@@ -50,14 +54,14 @@ class ChatProcessor():
             full_prompt += self._add_header(role) 
             if role == 'system':
                 if content.endswith('.txt') and all(c not in content for c in r'\/:*?"<>|'):  # Check if valid .txt file
-                    full_prompt += self._get_prompt(content)
+                    full_prompt = full_prompt + self._get_prompt(content) + self.special_tokens['end_of_turn']
                 else:
-                    full_prompt += content
+                    full_prompt = full_prompt + content + self.special_tokens['end_of_turn']
             elif role == 'user':
                 full_prompt += content
             elif role == 'assistant':
                 response = content
             else:
                 raise(ValueError(f"Role must be one of following: system, user, assistant. Currently set as {role}."))
-        
+
         return full_prompt, response

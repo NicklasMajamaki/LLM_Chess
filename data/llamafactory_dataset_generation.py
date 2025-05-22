@@ -21,12 +21,12 @@ DATASET_CONFIG = [
     {
         "name": "magpie",
         "files": ["magpieclean_20k.jsonl"],
-        "weight": 0.2
+        "weight": 0.8
     },
     {
         "name": "chess_explainer",
         "files": ["combined_chessexplainer_5k.jsonl"],
-        "weight": 0.8
+        "weight": 0.2
     }
 ]
 
