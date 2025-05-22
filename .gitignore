@@ -12,6 +12,7 @@ testbook.ipynb
 saved_data/
 runscripts/
 runscripts_archive/
+data/llamafactory_programmatic_25000.json
 
 # Jupyter notebook specific files
 /.virtual_documents
