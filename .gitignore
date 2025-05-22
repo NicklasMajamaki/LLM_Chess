@@ -2,6 +2,9 @@
 setup_docker.ps1
 Dockerfile
 
+# Other scripts used locally
+build_dataset.ps1
+
 # Various local dirs / files to ignore
 /colab_data.zip
 /local_testing
