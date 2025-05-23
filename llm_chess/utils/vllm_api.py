@@ -24,10 +24,7 @@ class vLLMClient:
     def _chat_single(self, prompt: str) -> str:
         payload = {
             "model": self.model,
-            "messages": [
-                {"role": "system", "content": "You are a helpful chess assistant."},
-                {"role": "user", "content": prompt}
-            ],
+            "prompt": prompt,
             "max_tokens": self.max_tokens,
             "temperature": self.temperature,
             "top_p": self.top_p,
