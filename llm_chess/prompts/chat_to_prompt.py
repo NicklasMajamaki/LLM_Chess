@@ -36,7 +36,7 @@ class ChatProcessor():
         return self.loaded_prompts[filename]
 
     def process_chat(self, chat):
-        full_prompt = self.special_tokens['begin_of_text']
+        full_prompt = ""    # vLLM automatically prepends bot token 
         response = ""
         for role, content in chat:
             # Always add the header (even if it is assistant)
@@ -47,7 +47,7 @@ class ChatProcessor():
                 else:
                     full_prompt = full_prompt + content + self.special_tokens['end_of_turn']
             elif role == 'user':
-                full_prompt += content
+                full_prompt = full_prompt + content + self.special_tokens['end_of_turn']
             elif role == 'assistant':
                 response = content
             else:
