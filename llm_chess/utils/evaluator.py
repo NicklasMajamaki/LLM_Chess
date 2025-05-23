@@ -17,6 +17,11 @@ class Evaluator():
         # Load in our various data files
         self.dataclasses = [JSONLDataClass(args.data_dir, filename, task_map, args.llama_version) for filename in args.data_files]
 
+        # Setup various vals just once
+        os.makedirs(os.path.join(args.data_dir, 'saved_data'), exist_ok=True)
+        self.timestamp = time.strftime("%Y%m%d-%H%M%S")
+                
+
     def evaluate(self, model, verbose=False, save_verbose=True):
         """ 
         Evaluate the model on the eval files. 
@@ -52,7 +57,7 @@ class Evaluator():
                     response = batch_responses[idx]
                     ground_truth = data_batch[idx]['info']['answer']
 
-                    results.add_result(response, ground_truth)
+                    results.add_result(prompt, response, ground_truth)
 
                     # Optionally log responses to console for visibility                    
                     if verbose:
@@ -65,7 +70,8 @@ class Evaluator():
                             "ground_truth": ground_truth
                         })
 
-            result_dicts.append(results.get_final_dict(self.args.run_type))
+            results, correct_responses = results.get_final_dict(self.args.run_type)
+            result_dicts.append(results)
             
             # Finally print results from dataclass evaluation
             print(f"{'-'*50}\nResults for {dataclass.filename}:")
@@ -73,10 +79,15 @@ class Evaluator():
                 print(f"{key}: {value}")
             print(f"{'-'*50}\n\n")
 
+            # Save our correct responses if 'rejsampling' task
+            if self.args.run_type == 'rejsampling':
+                save_path = os.path.join(dataclass.data_dir, 'saved_data', f"{dataclass.trimmed_filename}_correct_{self.timestamp}.json")
+                with open(save_path, 'w') as f:
+                    json.dump(correct_responses, f, indent=4)
+            
+            # Also save if save_verbose
             if save_verbose:
-                timestamp = time.strftime("%Y%m%d-%H%M%S")
-                os.makedirs(os.path.join(dataclass.data_dir, 'saved_data'), exist_ok=True)
-                save_path = os.path.join(dataclass.data_dir, 'saved_data', f"{dataclass.trimmed_filename}_{timestamp}.json")
+                save_path = os.path.join(dataclass.data_dir, 'saved_data', f"{dataclass.trimmed_filename}_all_{self.timestamp}.json")
                 with open(save_path, 'w') as f:
                     json.dump(verbose_generations, f, indent=4)
 

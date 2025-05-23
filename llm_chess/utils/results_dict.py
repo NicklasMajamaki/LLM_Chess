@@ -9,17 +9,25 @@ class ResultsDict():
         self.trimmed_filename = filename.split("_", 1)[0]
         self.wandb_run = wandb_run
         self.results = self._instantiate_dict()
+        self.correct_responses = []
 
-    def add_result(self, model_response, ground_truth):
+    def add_result(self, prompt, model_response, ground_truth):
         try:
             self.results["Total Samples"] += 1
             if self.task_type == "choose_from_n":
                 answer = ground_truth['answer']
                 candidates = ground_truth['candidates']
-
                 predicted_answer = coerce_response(extract_solution(model_response), self.task_type)
-                self.results["Correct"] += int(predicted_answer == answer)
-                if predicted_answer != answer:
+                
+                # Determine correctness
+                if predicted_answer == answer:
+                    self.results["Correct"] += 1
+                    self.correct_responses.append({
+                        "prompt": prompt,
+                        "completion": model_response,
+                        "ground_truth": ground_truth
+                    })
+                else:
                     if predicted_answer in candidates:
                         self.results["Incorrect"] += 1
                     else:
@@ -27,10 +35,10 @@ class ResultsDict():
             
             elif self.task_type == 'produce_list':
                 answer = ground_truth
-
                 self.results["Total Ground Truth Legal Moves"] += len(answer)
                 predicted_answer = coerce_response(extract_solution(model_response), self.task_type)
 
+                # Compute correctness
                 num_right = 0
                 already_guessed = set()
                 for move in predicted_answer:
@@ -40,6 +48,14 @@ class ResultsDict():
                         self.results["Predicted Ground Truth Legal Moves"] += 1
                     else:
                         self.results["Illegal Moves"] += 1
+
+                # Only append to correct_response if all correct
+                if already_guessed == set(answer):
+                    self.correct_responses.append({
+                        "prompt": prompt,
+                        "completion": model_response,
+                        "ground_truth": ground_truth
+                    })
                 
             elif self.task_type == 'predict_singlemove':
                 answer = ground_truth
@@ -51,6 +67,14 @@ class ResultsDict():
                     self.results["Legal Moves Provided"] += 1
                     predicted_move_idx = next(i for i, (move, _) in enumerate(sorted_answers) if move == predicted_answer)
                     self.results["Cumulative Rank of Moves Provided"] += predicted_move_idx/len(sorted_answers)
+
+                    # Only keep if > 0.7 (w/in top 30% of moves)
+                    if predicted_move_idx/len(sorted_answers) > 0.7:
+                        self.correct_responses.append({
+                            "prompt": prompt,
+                            "completion": model_response,
+                            "ground_truth": ground_truth
+                        })
                 else:
                     raise IllegalMoveException("Predicted move is not in the legal moves.")
         
@@ -104,7 +128,7 @@ class ResultsDict():
                     f"{run_type} - {self.trimmed_filename}/Error Rate": self.results["Error Rate"]
                 })
 
-        return self.results
+        return self.results, self.correct_responses
 
     # =================================================
     # Internal helper functions
