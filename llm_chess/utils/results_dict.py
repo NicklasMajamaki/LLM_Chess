@@ -47,7 +47,7 @@ class ResultsDict():
                 predicted_answer = coerce_response(extract_solution(model_response), self.task_type)
                 sorted_answers = sorted(answer.items(), key=lambda x: x[1])
                 
-                if predicted_answer in sorted_answers.keys():
+                if predicted_answer in answer:
                     self.results["Legal Moves Provided"] += 1
                     predicted_move_idx = next(i for i, (move, _) in enumerate(sorted_answers) if move == predicted_answer)
                     self.results["Cumulative Rank of Moves Provided"] += predicted_move_idx/len(sorted_answers)

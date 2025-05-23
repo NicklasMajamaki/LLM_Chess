@@ -40,7 +40,7 @@ def parse_args():
     # Logging / saving details
     parser.add_argument("--use_wandb", default=False, action="store_true", help="Use wandb for logging")
     parser.add_argument("--print_verbose", default=False, action="store_true", help="Print all outputs.")
-    parser.add_argument("--save_verbose", action="store_true", help="Save all outputs.")
+    parser.add_argument("--save_verbose", default=False, action="store_true", help="Save all outputs.")
 
     # Inference hyperparams
     parser.add_argument("--max_tokens", type=int, default=2048)
