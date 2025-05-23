@@ -22,6 +22,7 @@ llm_chess/data/programmatic_explanations/stockfish/
 # Big data files we'll keep local (for processing / etc.)
 llm_chess/data/raw/magpie_data/
 llm_chess/data/raw/processed_data/
+llm_chess/data/raw/rej_sampling_outputs/
 
 # Because of the Mac losers
 .DS_Store

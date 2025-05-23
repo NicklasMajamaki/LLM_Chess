@@ -9,21 +9,31 @@ from llm_chess.prompts.chat_to_prompt import ChatProcessor
 
 
 # Main args to adjust
-MAX_SAMPLES = 1000
-LLAMA_VERSION = "llama4"    # {'llama4', 'llama3'}
+MAX_SAMPLES = 15000
+LLAMA_VERSION = "llama3"    # {'llama4', 'llama3'}
 OUTPUT_FOLDER = "llm_chess/data/"
 DATA_FOLDER = "llm_chess/data/cleaned/train_data"
 DATASET_CONFIG = [
     {
         "name": "magpie",
         "files": ["magpieclean_20k.jsonl"],
-        "weight": 0.8
+        "weight": 0.6
     },
     {
         "name": "chess_explainer",
         "files": ["combined_chessexplainer_5k.jsonl"],
         "weight": 0.2
-    }
+    },
+    {
+        "name": "rejsampling1",
+        "files": ["rejsampling_clean_1630.jsonl"],
+        "weight": 0.1
+    },
+    {
+        "name": "rejsampling2",
+        "files": ["rejsampling_clean_1630.jsonl"],
+        "weight": 0.1
+    },
 ]
 
 # Using custom dataclass to load in each dataset
