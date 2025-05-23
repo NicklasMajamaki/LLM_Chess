@@ -35,7 +35,7 @@ class vLLMClient:
 
         response = requests.post(f"{self.base_url}", json=payload, headers=self.headers)
         response.raise_for_status()
-        return response.json()['choices'][0]['message']['content'].strip()
+        return response.json()['choices'][0]['text'].strip()
 
     async def chat(self, prompts: List[str]) -> List[str]:
         loop = asyncio.get_event_loop()
