@@ -50,7 +50,7 @@ class ResultsDict():
                         self.results["Illegal Moves"] += 1
 
                 # Only append to correct_response if all correct
-                if already_guessed == set(answer):
+                if already_guessed == set(answer) and len(predicted_answer) == len(answer):
                     self.correct_responses.append({
                         "prompt": prompt,
                         "completion": model_response,
