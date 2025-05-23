@@ -14,22 +14,27 @@ class ResultsDict():
         try:
             self.results["Total Samples"] += 1
             if self.task_type == "choose_from_n":
+                answer = ground_truth['answer']
+                candidates = ground_truth['candidates']
+
                 predicted_answer = coerce_response(extract_solution(model_response), self.task_type)
-                self.results["Correct"] += int(predicted_answer == ground_truth['answer'])
-                if predicted_answer != ground_truth['answer']:
-                    if predicted_answer in ground_truth['candidates']:
+                self.results["Correct"] += int(predicted_answer == answer)
+                if predicted_answer != answer:
+                    if predicted_answer in candidates:
                         self.results["Incorrect"] += 1
                     else:
                         raise IllegalMoveException("Predicted move is not in the provided moves.")
             
             elif self.task_type == 'produce_list':
-                self.results["Total Ground Truth Legal Moves"] += len(ground_truth['answer'])
+                answer = ground_truth
+
+                self.results["Total Ground Truth Legal Moves"] += len(answer)
                 predicted_answer = coerce_response(extract_solution(model_response), self.task_type)
 
                 num_right = 0
                 already_guessed = set()
                 for move in predicted_answer:
-                    if move in ground_truth['answer'] and move not in already_guessed:
+                    if move in answer and move not in already_guessed:
                         already_guessed.add(move)
                         num_right += 1
                         self.results["Predicted Ground Truth Legal Moves"] += 1
@@ -37,8 +42,10 @@ class ResultsDict():
                         self.results["Illegal Moves"] += 1
                 
             elif self.task_type == 'predict_singlemove':
+                answer = ground_truth
+
                 predicted_answer = coerce_response(extract_solution(model_response), self.task_type)
-                sorted_answers = sorted(ground_truth['answer'].items(), key=lambda x: x[1])
+                sorted_answers = sorted(answer.items(), key=lambda x: x[1])
                 
                 if predicted_answer in sorted_answers.keys():
                     self.results["Legal Moves Provided"] += 1
