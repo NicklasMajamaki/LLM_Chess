@@ -63,13 +63,14 @@ max_by_weight = [
 actual_total = int(min(MAX_SAMPLES, *max_by_weight))
 samples_per_set = [int(actual_total * src.weight) for src in sources]
 samples_per_set[-1] = actual_total - sum(samples_per_set[:-1])
+print("Dataset sizes:", {s.name: len(ds) for s, ds in zip(sources, all_loaded)})
 print("Sample counts per dataset:", {s.name: c for s, c in zip(sources, samples_per_set)})
 
 # Random sample from each dataset
 chat_processor = ChatProcessor(LLAMA_VERSION)
 final_samples = []
 for ds, count in zip(all_loaded, samples_per_set):
-    picked = random.sample(list(ds), count) if count > 0 else []
+    picked = random.sample(list(ds), min(count, len(ds))) if count > 0 else []
     for example in picked:
         prompt, response = chat_processor.process_chat(example['chat'])
         final_samples.append({
