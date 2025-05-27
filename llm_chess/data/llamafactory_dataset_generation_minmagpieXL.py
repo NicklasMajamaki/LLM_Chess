@@ -17,23 +17,18 @@ DATASET_CONFIG = [
     {
         "name": "magpie",
         "files": ["magpieclean_20k.jsonl"],
-        "weight": 0.0
+        "weight": 0.3
     },
     {
         "name": "chess_explainer",
         "files": ["combined_chessexplainer_5k.jsonl"],
-        "weight": 0.0
+        "weight": 0.2
     },
     {
         "name": "rejsampling1",
-        "files": ["rejsampling_clean_1630.jsonl"],
-        "weight": 0.45
-    },
-    {
-        "name": "rejsampling2",
-        "files": ["rejsampling_clean_1988.jsonl"],
-        "weight": 0.55
-    },
+        "files": ["rejsampling_clean_1630.jsonl", "rejsampling_clean_1988.jsonl", "rejsampling_clean_3269.jsonl"],
+        "weight": 0.5
+    }
 ]
 
 # Using custom dataclass to load in each dataset
@@ -69,7 +64,7 @@ print("Sample counts per dataset:", {s.name: c for s, c in zip(sources, samples_
 chat_processor = ChatProcessor(LLAMA_VERSION)
 final_samples = []
 for ds, count in zip(all_loaded, samples_per_set):
-    picked = random.sample(list(ds), count) if count > 0 else []
+    picked = random.sample(list(ds), min(count, len(ds))) if count > 0 else []
     for example in picked:
         prompt, response = chat_processor.process_chat(example['chat'])
         final_samples.append({

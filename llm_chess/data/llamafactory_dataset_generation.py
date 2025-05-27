@@ -26,7 +26,7 @@ DATASET_CONFIG = [
     },
     {
         "name": "rejsampling1",
-        "files": ["rejsampling_clean_1630.jsonl"],
+        "files": ["rejsampling_clean_1630.jsonl", "rejsampling_clean_1988.jsonl", "rejsampling_clean_3269.jsonl"],
         "weight": 0.15
     },
     {
@@ -69,7 +69,7 @@ print("Sample counts per dataset:", {s.name: c for s, c in zip(sources, samples_
 chat_processor = ChatProcessor(LLAMA_VERSION)
 final_samples = []
 for ds, count in zip(all_loaded, samples_per_set):
-    picked = random.sample(list(ds), count) if count > 0 else []
+    picked = random.sample(list(ds), min(count, len(ds))) if count > 0 else []
     for example in picked:
         prompt, response = chat_processor.process_chat(example['chat'])
         final_samples.append({
