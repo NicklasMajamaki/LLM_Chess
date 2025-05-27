@@ -15,7 +15,7 @@ class Evaluator():
         self.wandb_run = wandb_run
         
         # Load in our various data files
-        self.dataclasses = [JSONLDataClass(args.data_dir, filename, task_map, args.llama_version) for filename in args.data_files]
+        self.dataclasses = [JSONLDataClass(args.data_dir, filename, task_map, args.model_version) for filename in args.data_files]
 
         # Setup various vals just once
         os.makedirs(os.path.join(args.data_dir, 'saved_data'), exist_ok=True)

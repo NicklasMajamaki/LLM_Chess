@@ -6,14 +6,14 @@ import llm_chess.prompts as prompts
 
 
 class JSONLDataClass():
-    def __init__(self, data_dir, filename, task_map, llama_version):
+    def __init__(self, data_dir, filename, task_map, model_version):
         """ Load the jsonl file and store useful metadata associated with it. """
         self.filename = filename
         self.trimmed_filename = os.path.splitext(filename)[0]
         self.data_dir = data_dir
         self.filepath = os.path.join(data_dir, filename)
         self.task_type = next(v for k, v in task_map.items() if filename.startswith(k))
-        self.chat_processor = prompts.ChatProcessor(llama_version)
+        self.chat_processor = prompts.ChatProcessor(model_version)
         self.data = self._load_data(self.filepath)
 
     def _load_data(self, filepath, shuffle=True):

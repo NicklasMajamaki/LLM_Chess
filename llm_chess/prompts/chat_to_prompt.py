@@ -2,8 +2,6 @@ import os
 
 # See https://www.llama.com/docs/model-cards-and-prompt-formats/llama3_1/ for details
 LLAMA_3_SPECIAL_TOKENS = {
-    "begin_of_text": "<|begin_of_text|>",
-    "end_of_text": "<|end_of_text|>",
     "start_header": "<|start_header_id|>",
     "end_header": "<|end_header_id|>",
     "end_of_turn": "<|eot_id|>"
@@ -11,19 +9,26 @@ LLAMA_3_SPECIAL_TOKENS = {
 
 # See https://www.llama.com/docs/model-cards-and-prompt-formats/llama4/ for details
 LLAMA_4_SPECIAL_TOKENS = {
-    "begin_of_text": "<|begin_of_text|>",
-    "end_of_text": "<|end_of_text|>",
     "start_header": "<|header_start|>",
     "end_header": "<|header_end|>",
     "end_of_turn": "<|eot|>"
 }
 
+# See https://huggingface.co/Qwen/Qwen3-8B?chat_template=default for details
+QWEN_3_SPECIAL_TOKENS = {
+    "start_header": "<|im_start|>",
+    "end_header": "<|im_end|>",
+    "end_of_turn": ""
+}
+
+
+
 
 class ChatProcessor():
-    def __init__(self, llama_version):
+    def __init__(self, model_version):
         self.loaded_prompts = dict()
-        self.llama_version = llama_version
-        self._get_special_tokens(llama_version)
+        self.model_version = model_version
+        self._get_special_tokens(model_version)
 
     def get_prompt(self, filename):
         """ Checks if prompt has already been cached -- if not, loads in prompt. """
@@ -59,13 +64,15 @@ class ChatProcessor():
     # Private Helpers
     # ===========================================================
     
-    def _get_special_tokens(self, llama_version):
-        if llama_version == "llama3":
+    def _get_special_tokens(self, model_version):
+        if model_version == "llama3":
             self.special_tokens = LLAMA_3_SPECIAL_TOKENS
-        elif llama_version == "llama4":
+        elif model_version == "llama4":
             self.special_tokens = LLAMA_4_SPECIAL_TOKENS
+        elif model_version == "qwen3":
+            self.special_tokens = QWEN_3_SPECIAL_TOKENS
         else:
-            raise("llama_version must be either 'llama3' or 'llama4'.")
+            raise("model_version must be either 'llama3', 'llama4', or 'qwen3'.")
 
     def _add_header(self, role):
         return self.special_tokens['start_header'] + role + self.special_tokens['end_header']

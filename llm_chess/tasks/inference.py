@@ -25,7 +25,7 @@ def parse_args():
 
     # Model information 
     parser.add_argument("--model", type=str, default="meta-llama/Llama-3.1-8B-Instruct", help="Model name or path")
-    parser.add_argument("--llama_version", type=str, default="llama3", help="Llama version being run to ensure correct special tokens used.")
+    parser.add_argument("--model_version", type=str, default="llama3", help="Model version being run to ensure correct special tokens used.")
     parser.add_argument("--base_url", type=str, default="http://localhost:8000/v1/completions", help="Base URL for the model endpoint")
 
     # Filenames and dirs
