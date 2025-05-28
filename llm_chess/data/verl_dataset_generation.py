@@ -13,8 +13,8 @@ CUR_DIR = "llm_chess/data"
 MODEL_VERSION = "llama3"
 OUTPUT_FOLDER = f"{CUR_DIR}/cleaned/verl_tasks"
 TASKS = [
-    {"task": "predictmove", "split": "train", "samples": 500, "data_source": f'{CUR_DIR}/raw/deepmind_data/train_20k.csv'},
-    {"task": "predictmove", "split": "eval", "samples": 100, "data_source": f'{CUR_DIR}/raw/deepmind_data/evals_1k.csv'},
+    {"task": "predictmove", "split": "train", "samples": 1000, "data_source": f'{CUR_DIR}/raw/deepmind_data/train_20k.csv'},
+    {"task": "predictmove", "split": "eval", "samples": 64, "data_source": f'{CUR_DIR}/raw/deepmind_data/evals_1k.csv'},
 ]
 GENERATOR_ARGS = {
     "min_possible_moves": 3
