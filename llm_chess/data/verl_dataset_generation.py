@@ -68,7 +68,7 @@ You must select the best move from this position and return it within answer tag
 Think step by step if necessary, but do not omit the answer tags or UCI format. Only answers in the correct format will be accepted."""
 
         data = {
-            "data_source": task['task'],
+            "data_source": f"chess_{task['task']}",
             "prompt": [
                 {
                     "role": "system",
@@ -80,7 +80,7 @@ Think step by step if necessary, but do not omit the answer tags or UCI format. 
                 }
             ],
             "ability": "chess",
-            "reward_model": {"style": "rule", "ground_truth": move_prob_dict},
+            "reward_model": {"style": "rule", "ground_truth": str(move_prob_dict)},
             "extra_info": {
                 "split": task['split'],
                 "data_source": task['data_source']
