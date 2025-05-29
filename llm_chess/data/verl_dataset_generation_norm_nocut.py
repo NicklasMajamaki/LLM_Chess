@@ -1,5 +1,6 @@
 import os
 import ast
+import numpy as np
 import pandas as pd
 
 from llm_chess.data.raw.board import convert_board
@@ -13,8 +14,8 @@ CUR_DIR = "llm_chess/data"
 MODEL_VERSION = "llama3"
 OUTPUT_FOLDER = f"{CUR_DIR}/cleaned/verl_tasks"
 TASKS = [
-    {"task": "predictmove", "split": "train", "samples": 1536, "data_source": f'{CUR_DIR}/raw/deepmind_data/train_20k.csv'},
-    {"task": "predictmove", "split": "eval", "samples": 64, "data_source": f'{CUR_DIR}/raw/deepmind_data/evals_1k.csv'},
+    {"task": "predictmove", "split": "train", "samples": 4096, "data_source": f'{CUR_DIR}/raw/deepmind_data/train_20k.csv'},
+    {"task": "predictmove", "split": "eval", "samples": 128, "data_source": f'{CUR_DIR}/raw/deepmind_data/evals_1k.csv'},
 ]
 GENERATOR_ARGS = {
     "min_possible_moves": 3
@@ -59,6 +60,7 @@ def _predictmove(df, chat_processor, task, generator_args, output_folder, board_
 
         # Process various parts of the data
         move_prob_dict = dict(zip(moveset, win_probs))
+        move_prob_dict = _process_dict(move_prob_dict, mode="normalize", min_cutoff=0.0)
         user_prompt = f"""Below is a chess board from your current game.
 
 {convert_board(board, board_notation)}
@@ -95,6 +97,39 @@ Think step by step if necessary, but do not omit the answer tags or UCI format. 
     output_path = os.path.join(split_dir, pqt_filename)
     pd.DataFrame(outputs).to_parquet(output_path)
     print(f"Saved {len(outputs)} samples to {output_path}")
+
+
+def _process_dict(score_dict, mode="normalize", min_cutoff=0.3):
+    """
+    Process a {move: score} dict and return a new dict with transformed scores.
+
+    Modes:
+        - "normalize": min-max scale to [0, 1]
+        - "linear": rank scores, assign linearly spaced values in [0, 1], 1 for best move
+
+    min_cutoff: all values below this threshold (after scaling) are set to 0.
+    """
+    moves, values = zip(*score_dict.items())
+    values = np.asarray(values, dtype=np.float64)
+
+    if mode == "normalize":
+        vmin, vmax = values.min(), values.max()
+        rng = vmax - vmin
+        processed = (values - vmin) / rng if rng else np.ones_like(values)
+
+    elif mode == "linear":
+        order = np.argsort(-values)  # descending
+        linear_scores = np.linspace(1, 0, num=len(values))
+        processed = np.empty_like(values)
+        processed[order] = linear_scores
+
+    else:
+        raise ValueError(f"Unknown mode '{mode}'")
+
+    # Apply min_cutoff: set anything below threshold to 0
+    processed = np.where(processed < min_cutoff, 0, processed)
+
+    return dict(zip(moves, processed))
 
 
 # =================================
