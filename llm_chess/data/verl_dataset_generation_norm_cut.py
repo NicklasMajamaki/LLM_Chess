@@ -116,20 +116,18 @@ def _process_dict(score_dict, mode="normalize", min_cutoff=0.3):
         vmin, vmax = values.min(), values.max()
         rng = vmax - vmin
         processed = (values - vmin) / rng if rng else np.ones_like(values)
-
     elif mode == "linear":
         order = np.argsort(-values)  # descending
         linear_scores = np.linspace(1, 0, num=len(values))
         processed = np.empty_like(values)
         processed[order] = linear_scores
-
     else:
-        raise ValueError(f"Unknown mode '{mode}'")
-
+        raise ValueError(f"Unknown mode '{mode}'")    
+    
     # Apply min_cutoff: set anything below threshold to 0
     processed = np.where(processed < min_cutoff, 0, processed)
 
-    return dict(zip(moves, processed))
+    return dict(zip(moves, processed.astype(float).tolist()))
 
 
 # =================================

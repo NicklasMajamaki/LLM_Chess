@@ -4,6 +4,7 @@ Dockerfile
 
 # Other scripts used locally
 build_dataset.ps1
+build_verl_dataset.ps1
 
 # local dirs to ignore
 archive/
