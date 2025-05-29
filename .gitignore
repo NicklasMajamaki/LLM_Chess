@@ -6,11 +6,17 @@ Dockerfile
 build_dataset.ps1
 
 # local dirs to ignore
-runscripts/
 archive/
 local_testing/
 llm_chess/data/model_outputs/
 llm_chess/data/programmatic_explanations/data/
+
+# Various runscripts to ignore
+runscripts/eval/
+runscripts/eval_sft/
+runscripts/rejsampling/
+runscripts/sft/
+runscripts/verl/
 
 # Jupyter notebook specific files
 .virtual_documents/
