@@ -21,6 +21,13 @@ QWEN_3_SPECIAL_TOKENS = {
     "end_of_turn": ""
 }
 
+# See https://huggingface.co/Qwen/Qwen3-8B?chat_template=default for details
+QWEN_25_SPECIAL_TOKENS = {
+    "start_header": "<|im_start|>",
+    "end_header": "<|im_end|>",
+    "end_of_turn": ""
+}
+
 
 
 
@@ -71,6 +78,8 @@ class ChatProcessor():
             self.special_tokens = LLAMA_4_SPECIAL_TOKENS
         elif model_version == "qwen3":
             self.special_tokens = QWEN_3_SPECIAL_TOKENS
+        elif model_version == "qwen25":
+            self.special_tokens = QWEN_25_SPECIAL_TOKENS
         else:
             raise("model_version must be either 'llama3', 'llama4', or 'qwen3'.")
 
