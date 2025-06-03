@@ -15,6 +15,7 @@ llm_chess/data/programmatic_explanations/data/
 # Various runscripts to ignore
 runscripts/eval/
 runscripts/eval_sft/
+runscripts/eval_verl/
 runscripts/rejsampling/
 runscripts/sft/
 runscripts/verl/
