@@ -33,6 +33,7 @@ def parse_args():
     parser.add_argument("--data_files", nargs="+", default=None, help="List of data files to use (e.g., evals, rejsampling, train data)")
     
     # Various run details 
+    parser.add_argument("--experiment_name", type=str, default='my-experiment', help="Give name for experiment for s3 bucket saving organization.")
     parser.add_argument("--run_type", type=str, default='eval', help="Specify which task you're doing (e.g., 'eval', 'rejsampling').")
     parser.add_argument("--batch_size", type=int, default=4, help="Number of samples to pass into vLLM in each batch.")
     parser.add_argument("--max_samples", type=none_or_int, default=None, help="If set to None, use all your data in your --data-files; if set to int, use that as max number of samples to test on.")
@@ -102,7 +103,7 @@ def main():
     print(f"Completed {args.run_type}.\n\nFinal Results:\n{results}")
 
     # Save to s3 bucket
-    cmd = f"aws s3 cp {args.data_dir}/saved_data s3://llm-chess/saved_data --recursive"
+    cmd = f"aws s3 cp {args.data_dir}/saved_data s3://llm-chess/saved_data/{args.experiment_name} --recursive"
     print(f"S3 save command: {cmd}")
     subprocess.run(cmd.split())
 
