@@ -1,0 +1,83 @@
+name: llmchess-q25-7b-mmxl-verlmulti-1
+image: whatcanyousee/verl:ngc-cu124-vllm0.8.5-sglang0.4.6.post5-mcore0.12.1-te2.3-deepseekv3
+compute:
+    gpus: 8
+    cluster: r15z10p1
+scheduling:
+  priority: lowest
+  resumable: false
+  preemptible: false
+integrations:
+  - integration_type: git_repo
+    git_repo: NicklasMajamaki/LLM_Chess
+    git_branch: main
+  - integration_type: wandb
+    project: llm-chess-verl
+    entity: lucasdino-ucsd
+env_variables:
+  EXPERIMENT_NAME: "llmchess-q25-7b-mmxl-verlmulti-1"
+  DATA_PY_FILE: "verl_datasetgeneration_qwen25_normcut_4k"
+  HF_MODEL: "lucasdino/Qwen2.5-7B-Chess-MMXL"
+  SH_SCRIPT: "verl-qwen25-7b-grpo-normcut-4k-cliphigher_v2_xl.sh"
+command: |-
+  # Ensure latest from repo and set up env
+  cd LLM_Chess
+  git reset --hard HEAD
+  git clean -fd
+  git pull origin main
+  sleep 15
+
+  # Create our dataset + one-off installs
+  pip install chess
+  pip install pandas
+  pip install wandb
+  python -m llm_chess.data.$DATA_PY_FILE
+  
+  # Move our runscripts to a callable location
+  mv runscripts/verl_sh ./llm_chess/
+  chmod +x llm_chess/verl_sh/*.sh
+  cd llm_chess
+
+  # =====================================================================
+  # Need to import verl (hacky way) so that the python -m calls work
+  # =====================================================================
+  # Step 1: Temporarily move your existing setup.py if it exists
+  if [ -f setup.py ]; then
+      mv setup.py setup_temp.py
+  fi
+
+  # Step 2: Clone verl fork and move files
+  git clone --depth 1 https://github.com/lucasdino/verl-chess
+  mv verl-chess/verl ./
+  mv verl-chess/setup.py ./
+  pip install -e .[vllm]
+
+  # Step 3: Revert the setup scripts
+  mv setup.py setup_verl.py
+  if [ -f setup_temp.py ]; then
+      mv setup_temp.py setup.py
+  fi
+
+  echo "veRL is live."
+
+
+  # =====================================================================
+  # Fetch our desired model for RL
+  # =====================================================================
+  pip install --no-cache-dir awscli
+  huggingface-cli download $HF_MODEL --local-dir models/base_model --local-dir-use-symlinks False
+  # aws s3 sync s3://llm-chess/saved_models/sft-model/minmagpieXL_qwen models/base_model
+  mkdir models/checkpoints
+
+
+  # =====================================================================
+  # Main veRL loop
+  # =====================================================================
+  verl_sh/$SH_SCRIPT
+
+  # Save the trained model to S3
+  aws s3 cp models/checkpoints s3://llm-chess/saved_models/verl-model/$EXPERIMENT_NAME --recursive \
+  --exclude "*/optim/*"
+
+  echo "Training complete and model saved to S3"
+  sleep 20

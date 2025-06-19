@@ -55,6 +55,7 @@ class Evaluator():
                 for idx in range(len(data_batch)):
                     prompt = data_batch[idx]['prompt']
                     response = batch_responses[idx]
+                    prompt_info = data_batch[idx]['info']
                     ground_truth = data_batch[idx]['info']['answer']
 
                     results.add_result(prompt, response, ground_truth)
@@ -67,7 +68,7 @@ class Evaluator():
                         verbose_generations.append({
                             "prompt": prompt,
                             "model_response": response,
-                            "ground_truth": ground_truth
+                            "info": prompt_info
                         })
 
             results, correct_responses = results.get_final_dict(self.args.run_type)
