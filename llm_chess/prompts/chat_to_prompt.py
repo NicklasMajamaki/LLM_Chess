@@ -50,6 +50,12 @@ class ChatProcessor():
     def process_chat(self, chat):
         full_prompt = ""    # vLLM automatically prepends bot token 
         response = ""
+        
+        # Case where we don't want to process anything.
+        # Returning just 'chat' because we don't want to require 'chat' to be in a particular dict format
+        if self.special_tokens is None:
+            return chat
+        
         for role, content in chat:
             # Always add the header (even if it is assistant)
             full_prompt += self._add_header(role) 
@@ -80,6 +86,8 @@ class ChatProcessor():
             self.special_tokens = QWEN_3_SPECIAL_TOKENS
         elif model_version == "qwen25":
             self.special_tokens = QWEN_25_SPECIAL_TOKENS
+        elif model_version is None:
+            self.special_tokens = None
         else:
             raise("model_version must be either 'llama3', 'llama4', or 'qwen3'.")
 

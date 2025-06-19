@@ -90,17 +90,27 @@ def main():
         }
     )
 
-    # Used for both evaluations and rejection sampling
-    evaluator = utils.Evaluator(
-        args = args,
-        task_map = TASK_MAP,
-        wandb_run = wandb_run
-    )
-
-    # Run eval / rejection sampling
-    print(f"Starting {args.run_type}...")
-    results = evaluator.evaluate(client, verbose=False, save_verbose=args.save_verbose)
-    print(f"Completed {args.run_type}.\n\nFinal Results:\n{results}")
+    # For cases where we have data with 'correct answers' that we test against (e.g., evaluations, rejection sampling)
+    if args.run_type in ["eval", "rejsampling"]:
+        evaluator = utils.Evaluator(
+            args = args,
+            task_map = TASK_MAP,
+            wandb_run = wandb_run
+        )
+        print(f"Starting {args.run_type}...")
+        results = evaluator.evaluate(client, verbose=False, save_verbose=args.save_verbose)
+        print(f"Completed {args.run_type}.\n\nFinal Results:\n{results}")
+    
+    # For cases where we want the LLM to parse existing responses to extract more nuanced info (e.g., hallucinations, reasoning methods used)
+    if args.run_type == "llm_parse":
+        llm_parser = utils.LLMParser(
+            args = args,
+            task_map = TASK_MAP,
+            wandb_run = wandb_run
+        )
+        print(f"Starting {args.run_type}...")
+        results = llm_parser.evaluate(client, verbose=False, save_verbose=args.save_verbose)
+        print(f"Completed {args.run_type}.\n\nFinal Results:\n{results}")
 
     # Save to s3 bucket
     cmd = f"aws s3 cp {args.data_dir}/saved_data s3://llm-chess/saved_data/{args.experiment_name} --recursive"
