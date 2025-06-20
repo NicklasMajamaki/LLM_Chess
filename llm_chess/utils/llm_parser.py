@@ -56,7 +56,7 @@ class LLMParser:
             async def _chat(prompts: list[str]) -> list[str]:
                 """Always go through the same chat entry point."""
                 chat = await model.chat(prompts)
-                print(chat)
+                print(f"\n\nPROMPT:\n{prompts[0]}\n\nRESPONSE:{chat[0]}")
                 return chat
 
             # ----------------------------------------
