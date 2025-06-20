@@ -83,11 +83,14 @@ class LLMParser:
                                   f"Raw:\n{cur_raw}\n\nParsed:\n{parsed}\n")
                         return  # success
                     except ParseException as e:
-                        async with lock:
-                            rd.results["Error: Reprompt"] += 1
                         attempts += 1
                         if attempts > max_retry:
-                            return  # give up – counted already
+                            async with lock:
+                                rd.results["Error: Other"] += 1
+                            return
+                             # give up – count as 'other' here
+                        async with lock:
+                            rd.results["Error: Reprompt"] += 1
                         cur_raw = (
                             await _chat(
                                 [

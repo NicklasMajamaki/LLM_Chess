@@ -186,12 +186,11 @@ class ParserResultsDict():
     def add_result(self, parsed_response):
         self.results["Total Responses Parsed"] += 1
         if self.task_type == "hallucination":
-            for k, v in parsed_response:
+            for k, v in parsed_response.items():
                 self.results[k] += v
 
         elif self.task_type == "reasoning_strategy":
-            print(parsed_response)
-            for k, v in parsed_response:
+            for k, v in parsed_response.items():
                 self.results[f"Count: {k}"] += v
 
     def get_final_dict(self):
