@@ -191,7 +191,7 @@ class ParserResultsDict():
 
         elif self.task_type == "reasoning_strategy":
             for k, v in parsed_response:
-                self.results["Count: " + k] += v[0]
+                self.results[f"Count: {k}"] += v
 
     def get_final_dict(self):
         """ Return finalized dict and log to wandb. """
