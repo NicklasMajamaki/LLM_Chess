@@ -190,6 +190,7 @@ class ParserResultsDict():
                 self.results[k] += v
 
         elif self.task_type == "reasoning_strategy":
+            print(parsed_response)
             for k, v in parsed_response:
                 self.results[f"Count: {k}"] += v
 
