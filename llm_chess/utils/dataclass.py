@@ -45,10 +45,10 @@ class JSONLDataClass:
 # ---------------------------------------------------------------------
 # Folder-level loader for “model_response” format
 # ---------------------------------------------------------------------
-class JSONLFolderDataClass:
+class JSONFolderDataClass:
     """
-    Load an entire *folder* of jsonl files that each contain
-    {'model_response': ..., 'info': ...} lines.
+    Load an entire *folder* of .json or .jsonl files that each contain
+    {'model_response': ..., 'info': ...} items.
 
     A `sys_prompt` must be provided so the loader can wrap each response
     into a system/user/assistant triple before handing it to ChatProcessor.
@@ -70,13 +70,20 @@ class JSONLFolderDataClass:
             [
                 os.path.join(folder_path, f)
                 for f in os.listdir(folder_path)
-                if f.endswith(".jsonl")
+                if f.endswith(".json") or f.endswith(".jsonl")
             ]
         )
         all_data = []
         for fp in filepaths:
             with open(fp, "r") as f:
-                raw_data = [json.loads(line.strip()) for line in f if line.strip()]
+                try:
+                    if fp.endswith(".jsonl"):
+                        raw_data = [json.loads(line.strip()) for line in f if line.strip()]
+                    else:
+                        raw_data = json.load(f)
+                except json.JSONDecodeError as e:
+                    print(f"Failed to parse {fp}: {e}")
+                    raise
 
             for datum in raw_data:
                 user_prompt = (
@@ -97,8 +104,7 @@ class JSONLFolderDataClass:
                 )
 
         print(
-            f"Loaded {len(filepaths)} files ({sum(len(open(fp).read().splitlines()) for fp in filepaths)} lines) "
-            f"from {folder_path} → {len(all_data)} processed items."
+            f"Loaded {len(filepaths)} files from {folder_path} → {len(all_data)} processed items."
         )
         if shuffle:
             random.shuffle(all_data)
