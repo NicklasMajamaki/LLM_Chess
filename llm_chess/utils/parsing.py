@@ -76,31 +76,64 @@ def _coerce_string_list(items: list[str]) -> list[str]:
     return filtered
 
 def _coerce_dict_bool(items: str) -> Dict[str, int]:
-    allowed_keys = {'Enumeration', 'Tree Search', 'Backtracking', 'Self Correction', 'Subgoal Setting', 'Verification'}
+    """
+    Parse a dict-like string of reasoning-strategy flags and return
+    {key: 0|1}.  Accepts 0/1, True/False, "0"/"1", "true"/"false",
+    and also tuples like (True, "explanation").  Collects all problems
+    before raising ParseException.
+    """
+    allowed_keys = {
+        "Enumeration",
+        "Tree Search",
+        "Backtracking",
+        "Self Correction",
+        "Subgoal Setting",
+        "Verification",
+    }
 
-    # First try to parse into a dict
+    # --- literal-eval --------------------------------------------------------
     try:
         parsed = ast.literal_eval(items)
     except Exception as e:
         raise ParseException(f"Failed to parse input as a dictionary: {e}")
+
     if not isinstance(parsed, dict):
         raise ParseException("Parsed input is not a dictionary.")
 
-    errors = []
-    result = {}
-    # Now ensure valid keys / values
+    # --- validate & coerce ---------------------------------------------------
+    errors, result = [], {}
+
     for key, value in parsed.items():
+        # key check
         if key not in allowed_keys:
             errors.append(f"Invalid key: '{key}' (allowed: {sorted(allowed_keys)})")
-        if value[0] not in ('0', '1', True, False, 0, 1):
-            errors.append(f"Invalid value for key '{key}': '{value}' (must be '0' or '1')")
-        if key in allowed_keys and value[0] in ('0', '1', True, False, 0, 1):
-            result[key] = int(value)
+            continue  # still inspect value to collect all errors
+
+        # look only at first element if tuple / list
+        v = value[0] if isinstance(value, (tuple, list)) else value
+
+        # map to 0 / 1
+        if isinstance(v, str):
+            v = v.strip().lower()
+            norm = 1 if v in {"1", "true"} else 0 if v in {"0", "false"} else None
+        elif isinstance(v, (bool, int)):
+            norm = 1 if v in {1, True} else 0 if v in {0, False} else None
+        else:
+            norm = None
+
+        if norm is None:
+            errors.append(
+                f"Invalid value for key '{key}': {value!r} "
+                "(must be 0/1, '0'/'1', True/False)"
+            )
+        else:
+            result[key] = norm
 
     if errors:
         raise ParseException("Errors in input:\n" + "\n".join(errors))
 
     return result
+
 
 
 # ==================================================
