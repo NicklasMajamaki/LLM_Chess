@@ -1,43 +1,38 @@
-import os
-import time
-import json
-import asyncio
+import os, time, json, asyncio
 from typing import List, Any
 
 from .results_dict import ParserResultsDict
-from .dataclass import JSONFolderDataClass
-from .parsing import coerce_response
-from .exceptions import ParseException
+from .dataclass      import JSONFolderDataClass
+from .parsing        import coerce_response
+from .exceptions     import ParseException
 
 
+class LLMParser:
+    """Parse model generations with an LLM, counting hallucinations etc."""
 
-
-class LLMParser():
-    """ Wrapper that structures using an LLM to parse previous model generations to extract more nuanced information (e.g., # hallucinations, reasoning strategies used). """
-
+    # --------------------------------------------------------------------- #
     def __init__(self, args, runtype_mapping, wandb_run):
-        """ Given a set of eval_files instantiate an evaluator object to analyze the evals. """
-        self.args = args
-        self.runtype_mapping = runtype_mapping
-        self.wandb_run = wandb_run
-        
-        # Load in our various data files
-        self.dataclasses = [JSONFolderDataClass(args.data_dir, foldername, args.model_version, sys_prompt=runtype_mapping[args.run_type]) for foldername in args.data_files]
-        # Data will be in format "prompt, response, info" for the keys
+        self.args          = args
+        self.runtype       = args.run_type
+        self.wandb_run     = wandb_run
+        self.sys_prompt    = runtype_mapping[self.runtype]
+        self.dataclasses   = [
+            JSONFolderDataClass(args.data_dir, f, args.model_version, self.sys_prompt)
+            for f in args.data_files
+        ]
 
-        # Setup various vals just once
-        os.makedirs(os.path.join(args.data_dir, 'saved_data'), exist_ok=True)
+        os.makedirs(os.path.join(args.data_dir, "saved_data"), exist_ok=True)
         self.timestamp = time.strftime("%Y%m%d-%H%M%S")
 
-    def evaluate(self, model, verbose: bool=False, save_verbose: bool=True):
-        """Sync wrapper so the external API remains unchanged."""
+    # --------------------------------------------------------------------- #
+    # Public sync wrapper
+    def evaluate(self, model, *, verbose: bool = False, save_verbose: bool = True):
         return asyncio.run(
             self._evaluate_async(model, verbose=verbose, save_verbose=save_verbose)
         )
 
-    # ---------------------------------------------------------------------
+    # --------------------------------------------------------------------- #
     # Core async evaluation
-    # ---------------------------------------------------------------------
     async def _evaluate_async(self, model, *, verbose: bool, save_verbose: bool):
         results_all: List[dict[str, Any]] = []
         for dc in self.dataclasses:
