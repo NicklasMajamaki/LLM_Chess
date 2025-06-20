@@ -92,9 +92,9 @@ def _coerce_dict_bool(items: str) -> Dict[str, int]:
     for key, value in parsed.items():
         if key not in allowed_keys:
             errors.append(f"Invalid key: '{key}' (allowed: {sorted(allowed_keys)})")
-        if value[0] not in ('0', '1'):
+        if value[0] not in ('0', '1', True, False, 0, 1):
             errors.append(f"Invalid value for key '{key}': '{value}' (must be '0' or '1')")
-        if key in allowed_keys and value[0] in ('0', '1'):
+        if key in allowed_keys and value[0] in ('0', '1', True, False, 0, 1):
             result[key] = int(value)
 
     if errors:
