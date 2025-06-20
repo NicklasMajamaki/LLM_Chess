@@ -67,6 +67,7 @@ class LLMParser:
                 while True:
                     try:
                         parsed = coerce_response(cur_raw, self.runtype, info=info)
+                        print(f"PARSED:\n{parsed}\n\n\n\n")
                         async with lock:
                             rd.add_result(parsed)
                             if save_verbose:
