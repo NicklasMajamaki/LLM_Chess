@@ -196,10 +196,10 @@ class ParserResultsDict():
     def get_final_dict(self):
         """ Return finalized dict and log to wandb. """
         if self.task_type == "hallucination":
-            hallucination_percent = self.results['Count: Hallucinations'] / self.results['Total Moves']
-            average_moves_per_response = self.results['Total Moves'] / self.results['Total Responses Parsed']
-            parsing_moves_error_rate = self.results['Error: Parsing Move'] / self.results['Total Moves'] 
-            percent_reprompts = self.results['Error: Reprompt'] / self.results['Total Moves']
+            hallucination_percent = self._safe_div(self.results['Count: Hallucinations'],  self.results['Total Moves'])
+            average_moves_per_response = self._safe_div(self.results['Total Moves'], self.results['Total Responses Parsed'])
+            parsing_moves_error_rate = self._safe_div(self.results['Error: Parsing Move'], self.results['Total Moves']) 
+            percent_reprompts = self._safe_div(self.results['Error: Reprompt'], self.results['Total Moves'])
 
             self.results['Hallucination Percent'] = hallucination_percent
             self.results['Ave. Moves Per Response'] = average_moves_per_response
@@ -215,13 +215,13 @@ class ParserResultsDict():
                 })
         
         elif self.task_type == "reasoning_strategy":
-            self.results['Percent Enumeration'] = self.results['Count: Enumeration'] / self.results['Total Responses Parsed']
-            self.results['Percent Tree Search'] = self.results['Count: Tree Search'] / self.results['Total Responses Parsed']
-            self.results['Percent Backtracking'] = self.results['Count: Backtracking'] / self.results['Total Responses Parsed']
-            self.results['Percent Self Correction'] = self.results['Count: Self Correction'] / self.results['Total Responses Parsed']
-            self.results['Percent Subgoal Setting'] = self.results['Count: Subgoal Setting'] / self.results['Total Responses Parsed']
-            self.results['Percent Verification'] = self.results['Count: Verification'] / self.results['Total Responses Parsed']
-            self.results['Percent Reprompts'] = self.results['Error: Reprompt'] / self.results['Total Responses Parsed']
+            self.results['Percent Enumeration'] = self._safe_div(self.results['Count: Enumeration'], self.results['Total Responses Parsed'])
+            self.results['Percent Tree Search'] = self._safe_div(self.results['Count: Tree Search'], self.results['Total Responses Parsed'])
+            self.results['Percent Backtracking'] = self._safe_div(self.results['Count: Backtracking'], self.results['Total Responses Parsed'])
+            self.results['Percent Self Correction'] = self._safe_div(self.results['Count: Self Correction'], self.results['Total Responses Parsed'])
+            self.results['Percent Subgoal Setting'] = self._safe_div(self.results['Count: Subgoal Setting'], self.results['Total Responses Parsed'])
+            self.results['Percent Verification'] = self._safe_div(self.results['Count: Verification'], self.results['Total Responses Parsed'])
+            self.results['Percent Reprompts'] = self._safe_div(self.results['Error: Reprompt'], self.results['Total Responses Parsed'])
             
             if self.wandb_run:
                 self.wandb_run.log({

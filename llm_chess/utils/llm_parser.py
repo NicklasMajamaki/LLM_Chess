@@ -22,7 +22,7 @@ class LLMParser():
         self.wandb_run = wandb_run
         
         # Load in our various data files
-        self.dataclasses = [JSONLFolderDataClass(args.data_dir, foldername, args.model_version, sys_prompt=runtype_mapping[args.run_type], data_format="model_response") for foldername in args.data_files]
+        self.dataclasses = [JSONLFolderDataClass(args.data_dir, foldername, args.model_version, sys_prompt=runtype_mapping[args.run_type]) for foldername in args.data_files]
         # Data will be in format "prompt, response, info" for the keys
 
         # Setup various vals just once
@@ -144,7 +144,7 @@ class LLMParser():
                 await asyncio.gather(*tasks)
 
             # ------- wrap-up per dataclass -------
-            results = results.get_final_dict(run_type)
+            results = results.get_final_dict()
             results_dicts.append(results)
 
             print(f"{'-'*50}\nResults for {dataclass.trimmed_foldername}:")
