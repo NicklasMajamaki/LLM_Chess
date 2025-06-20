@@ -90,9 +90,9 @@ class JSONFolderDataClass:
                     f"Below is the provided model response:\n\n{datum['model_response']}"
                 )
                 chat = [
-                    {"role": "system", "content": sys_prompt},
-                    {"role": "user", "content": user_prompt},
-                    {"role": "assistant", "content": ""},
+                    ["system", sys_prompt],
+                    ["user", user_prompt],
+                    ["assistant", ""],
                 ]
                 prompt, response = self.chat_processor.process_chat(chat)
                 all_data.append(

@@ -5,7 +5,7 @@ import asyncio
 from typing import List, Any
 
 from .results_dict import ParserResultsDict
-from .dataclass import JSONLFolderDataClass
+from .dataclass import JSONFolderDataClass
 from .parsing import coerce_response
 from .exceptions import ParseException
 
@@ -22,7 +22,7 @@ class LLMParser():
         self.wandb_run = wandb_run
         
         # Load in our various data files
-        self.dataclasses = [JSONLFolderDataClass(args.data_dir, foldername, args.model_version, sys_prompt=runtype_mapping[args.run_type]) for foldername in args.data_files]
+        self.dataclasses = [JSONFolderDataClass(args.data_dir, foldername, args.model_version, sys_prompt=runtype_mapping[args.run_type]) for foldername in args.data_files]
         # Data will be in format "prompt, response, info" for the keys
 
         # Setup various vals just once
