@@ -76,7 +76,7 @@ def _coerce_string_list(items: list[str]) -> list[str]:
     return filtered
 
 def _coerce_dict_bool(items: str) -> Dict[str, int]:
-    allowed_keys = {'backtrack', 'verification', 'enumeration', 'subgoal setting'}
+    allowed_keys = {'Enumeration', 'Tree Search', 'Backtracking', 'Self Correction', 'Subgoal Setting', 'Verification'}
 
     # First try to parse into a dict
     try:
@@ -92,9 +92,9 @@ def _coerce_dict_bool(items: str) -> Dict[str, int]:
     for key, value in parsed.items():
         if key not in allowed_keys:
             errors.append(f"Invalid key: '{key}' (allowed: {sorted(allowed_keys)})")
-        if value not in ('0', '1'):
+        if value[0] not in ('0', '1'):
             errors.append(f"Invalid value for key '{key}': '{value}' (must be '0' or '1')")
-        if key in allowed_keys and value in ('0', '1'):
+        if key in allowed_keys and value[0] in ('0', '1'):
             result[key] = int(value)
 
     if errors:
