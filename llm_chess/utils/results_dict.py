@@ -169,3 +169,105 @@ class ResultsDict():
 
     def _safe_div(self, x, y, default=0): 
         return x / y if y else default
+    
+
+
+# =============================================
+# Results Dict for LLM Parsing Cases
+# =============================================
+class ParserResultsDict():
+    def __init__(self, task_type, filename, wandb_run):
+        self.task_type = task_type
+        self.filename = filename
+        self.trimmed_filename = filename.split("_", 1)[0]
+        self.wandb_run = wandb_run
+        self.results = self._instantiate_dict()
+
+    def add_result(self, parsed_response):
+        self.results["Total Responses Parsed"] += 1
+        if self.task_type == "hallucination":
+            for k, v in parsed_response:
+                self.results[k] += v
+
+        elif self.task_type == "reasoning_strategy":
+            for k, v in parsed_response:
+                self.results[k] += v
+
+    def get_final_dict(self):
+        """ Return finalized dict and log to wandb. """
+        if self.task_type == "hallucination":
+            hallucination_percent = self.results['Count: Hallucinations'] / self.results['Total Moves']
+            average_moves_per_response = self.results['Total Moves'] / self.results['Total Responses Parsed']
+            parsing_moves_error_rate = self.results['Error: Parsing Move'] / self.results['Total Moves'] 
+            percent_reprompts = self.results['Error: Reprompt'] / self.results['Total Moves']
+
+            self.results['Hallucination Percent'] = hallucination_percent
+            self.results['Ave. Moves Per Response'] = average_moves_per_response
+            self.results['Parsing Moves Error Rate'] = parsing_moves_error_rate
+            self.results['Percent Reprompts'] = percent_reprompts
+            
+            if self.wandb_run:
+                self.wandb_run.log({
+                    f"Hallucination - {self.filename}/Hallucination Percent": self.results["Hallucination Percent"],
+                    f"Hallucination - {self.filename}/Ave. Moves Per Response": self.results["Ave. Moves Per Response"],
+                    f"Hallucination - {self.filename}/Parsing Moves Error Rate": self.results["Parsing Moves Error Rate"],
+                    f"Hallucination - {self.filename}/Percent Reprompts": self.results["Percent Reprompts"]                
+                })
+        
+        elif self.task_type == "reasoning_strategy":
+            self.results['Percent Enumeration'] = self.results['Count: Enumeration'] / self.results['Total Responses Parsed']
+            self.results['Percent Tree Search'] = self.results['Count: Tree Search'] / self.results['Total Responses Parsed']
+            self.results['Percent Backtracking'] = self.results['Count: Backtracking'] / self.results['Total Responses Parsed']
+            self.results['Percent Self Correction'] = self.results['Count: Self Correction'] / self.results['Total Responses Parsed']
+            self.results['Percent Subgoal Setting'] = self.results['Count: Subgoal Setting'] / self.results['Total Responses Parsed']
+            self.results['Percent Verification'] = self.results['Count: Verification'] / self.results['Total Responses Parsed']
+            self.results['Percent Reprompts'] = self.results['Error: Reprompt'] / self.results['Total Responses Parsed']
+            
+            if self.wandb_run:
+                self.wandb_run.log({
+                    f"Reasoning Strategy - {self.filename}/Percent Enumeration": self.results["Percent Enumeration"],
+                    f"Reasoning Strategy - {self.filename}/Percent Tree Search": self.results["Percent Tree Search"],
+                    f"Reasoning Strategy - {self.filename}/Percent Backtracking": self.results["Percent Backtracking"],
+                    f"Reasoning Strategy - {self.filename}/Percent Self Correction": self.results["Percent Self Correction"],
+                    f"Reasoning Strategy - {self.filename}/Percent Subgoal Setting": self.results["Percent Subgoal Setting"],
+                    f"Reasoning Strategy - {self.filename}/Percent Verification": self.results["Percent Verification"],
+                    f"Reasoning Strategy - {self.filename}/Percent Reprompts": self.results["Percent Reprompts"],
+                })
+
+        return self.results
+
+
+    # =================================================
+    # Internal helper functions
+    # =================================================
+    def _instantiate_dict(self):
+        if self.task_type == "hallucination":
+            return {
+                "Filename": self.filename,
+                "Total Responses Parsed": 0,
+                "Total Moves": 0,
+                "Count: Correct Moves": 0,
+                "Count: Hallucinations": 0,
+                "Error: Reprompt": 0,
+                "Error: Parsing Move": 0,
+                "Error: Other": 0
+            }
+        elif self.task_type == "reasoning_strategy":
+            return {
+                "Filename": self.filename,
+                "Total Responses Parsed": 0,
+                "Count: Enumeration": 0,
+                "Count: Tree Search": 0,
+                "Count: Backtracking": 0,
+                "Count: Self Correction": 0,
+                "Count: Subgoal Setting": 0,
+                "Count: Verification": 0,
+                "Error: Reprompt": 0,
+                "Error: Other": 0,
+            }
+        else:
+            raise ValueError(f"Undefined task type: {self.task_type}")
+
+    def _safe_div(self, x, y, default=0): 
+        return x / y if y else default
+    

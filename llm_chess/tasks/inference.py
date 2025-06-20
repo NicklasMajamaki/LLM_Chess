@@ -34,7 +34,7 @@ def parse_args():
     
     # Various run details 
     parser.add_argument("--experiment_name", type=str, default='my-experiment', help="Give name for experiment for s3 bucket saving organization.")
-    parser.add_argument("--run_type", type=str, default='eval', help="Specify which task you're doing (e.g., 'eval', 'rejsampling').")
+    parser.add_argument("--run_type", type=str, default='eval', help="Specify which task you're doing (e.g., 'eval', 'rejsampling', 'hallucination', 'reasoning_strategy').")
     parser.add_argument("--batch_size", type=int, default=4, help="Number of samples to pass into vLLM in each batch.")
     parser.add_argument("--max_samples", type=none_or_int, default=None, help="If set to None, use all your data in your --data-files; if set to int, use that as max number of samples to test on.")
     
@@ -102,11 +102,11 @@ def main():
         print(f"Completed {args.run_type}.\n\nFinal Results:\n{results}")
     
     # For cases where we want the LLM to parse existing responses to extract more nuanced info (e.g., hallucinations, reasoning methods used)
-    if args.run_type == "llm_parse":
+    if args.run_type in ['hallucination', 'reasoning_strategy']:
         llm_parser = utils.LLMParser(
             args = args,
             task_map = TASK_MAP,
-            wandb_run = wandb_run
+            wandb_run = wandb_run,
         )
         print(f"Starting {args.run_type}...")
         results = llm_parser.evaluate(client, verbose=False, save_verbose=args.save_verbose)
@@ -116,6 +116,9 @@ def main():
     cmd = f"aws s3 cp {args.data_dir}/saved_data s3://llm-chess/saved_data/{args.experiment_name} --recursive"
     print(f"S3 save command: {cmd}")
     subprocess.run(cmd.split())
+
+    # Remove all files after saving (in case running multiple calls in same cluster command)
+    subprocess.run(["powershell", "-Command", "Get-ChildItem", f"{args.data_dir}/saved_data", "-File", "|", "Remove-Item", "-Force"])
 
 if __name__ == "__main__":
     main()
