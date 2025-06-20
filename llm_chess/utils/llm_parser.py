@@ -93,6 +93,7 @@ class LLMParser:
                         cur_raw = (
                             await _chat(
                                 [
+                                    f"Your initial generation encountered errors -- please fix and return in the correct format as speicified below."
                                     f"ERROR: {e}\n\nInitial Prompt:\n{prompt_txt}\n\n"
                                     f"Model Response:\n{cur_raw}"
                                 ]
