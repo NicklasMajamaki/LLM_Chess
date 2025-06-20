@@ -5,28 +5,24 @@ import asyncio
 from typing import List, Any
 
 from .results_dict import ParserResultsDict
-from .dataclass import JSONLDataClass
+from .dataclass import JSONLFolderDataClass
 from .parsing import coerce_response
 from .exceptions import ParseException
 
 
-RUNTYPE_SYSPROMPT_MAPPING = {
-    'hallucination': 'hallucinations_sysprompt.txt', 
-    'reasoning_strategy': 'reasoning_strategies_sysprompt.txt'
-}
 
 
 class LLMParser():
     """ Wrapper that structures using an LLM to parse previous model generations to extract more nuanced information (e.g., # hallucinations, reasoning strategies used). """
 
-    def __init__(self, args, task_map, wandb_run):
+    def __init__(self, args, runtype_mapping, wandb_run):
         """ Given a set of eval_files instantiate an evaluator object to analyze the evals. """
         self.args = args
-        self.task_map = task_map
+        self.runtype_mapping = runtype_mapping
         self.wandb_run = wandb_run
         
         # Load in our various data files
-        self.dataclasses = [JSONLDataClass(args.data_dir, filename, task_map, args.model_version, sys_prompt=RUNTYPE_SYSPROMPT_MAPPING[args.run_type], data_format="model_response") for filename in args.data_files]
+        self.dataclasses = [JSONLFolderDataClass(args.data_dir, foldername, args.model_version, sys_prompt=runtype_mapping[args.run_type], data_format="model_response") for foldername in args.data_files]
         # Data will be in format "prompt, response, info" for the keys
 
         # Setup various vals just once
@@ -88,12 +84,12 @@ class LLMParser():
             batch_sz  = self.args.batch_size
             run_type  = self.args.run_type
 
-            print(f"{'='*50}\n Evaluating: {dataclass.trimmed_filename} "
+            print(f"{'='*50}\n Evaluating: {dataclass.trimmed_foldername} "
                   f"for {max_len} samples\n{'='*50}")
 
             results = ParserResultsDict(
                 task_type = run_type,
-                filename  = dataclass.filename,
+                filename  = dataclass.trimmed_foldername,
                 wandb_run = self.wandb_run
             )
 
@@ -151,7 +147,7 @@ class LLMParser():
             results = results.get_final_dict(run_type)
             results_dicts.append(results)
 
-            print(f"{'-'*50}\nResults for {dataclass.filename}:")
+            print(f"{'-'*50}\nResults for {dataclass.trimmed_foldername}:")
             for k, v in results.items():
                 print(f"{k}: {v}")
             print(f"{'-'*50}\n")
@@ -160,7 +156,7 @@ class LLMParser():
                 path = os.path.join(
                     dataclass.data_dir,
                     "saved_data",
-                    f"{dataclass.trimmed_filename}_{self.args.run_type}_{self.timestamp}.json",
+                    f"{dataclass.trimmed_foldername}_{self.args.run_type}_{self.timestamp}.json",
                 )
                 with open(path, "w") as f:
                     json.dump(verbose_generations, f, indent=4)

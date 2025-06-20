@@ -13,6 +13,11 @@ TASK_MAP = {
     'predictmove': "predict_singlemove"
 }
 
+RUNTYPE_SYSPROMPT_MAPPING = {
+    'hallucination': 'hallucinations_sysprompt.txt', 
+    'reasoning_strategy': 'reasoning_strategies_sysprompt.txt'
+}
+
 
 # ======================================
 # Arg parsing
@@ -105,7 +110,7 @@ def main():
     if args.run_type in ['hallucination', 'reasoning_strategy']:
         llm_parser = utils.LLMParser(
             args = args,
-            task_map = TASK_MAP,
+            runtype_mapping = RUNTYPE_SYSPROMPT_MAPPING,
             wandb_run = wandb_run,
         )
         print(f"Starting {args.run_type}...")
