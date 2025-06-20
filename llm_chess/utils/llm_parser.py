@@ -63,7 +63,7 @@ class LLMParser():
                 except Exception as e:
                     if isinstance(e, ParseException):
                         async with results_lock:
-                            results['Error: Reprompt'] += 1
+                            result_dict.results['Error: Reprompt'] += 1
                         if attempts > max_retry:
                             raise
                         reprompt = (
@@ -73,7 +73,7 @@ class LLMParser():
                         attempts += 1
                     else:
                         async with results_lock:
-                            results['Error: Other'] += 1
+                            result_dict.results['Error: Other'] += 1
 
         # --------------------------------------------------------------------
         results_dicts = []
@@ -87,7 +87,7 @@ class LLMParser():
             print(f"{'='*50}\n Evaluating: {dataclass.trimmed_foldername} "
                   f"for {max_len} samples\n{'='*50}")
 
-            results = ParserResultsDict(
+            result_dict = ParserResultsDict(
                 task_type = run_type,
                 filename  = dataclass.trimmed_foldername,
                 wandb_run = self.wandb_run
@@ -113,16 +113,16 @@ class LLMParser():
                         except Exception as e:
                             if isinstance(e, ParseException):
                                 async with results_lock:
-                                    results['Error: Reprompt'] += 1
+                                    result_dict.results['Error: Reprompt'] += 1
                                 parsed, raw_fixed, _ = await _parse_with_retry(prompt_txt, run_type)
                                 raw = raw_fixed
                             else:
                                 async with results_lock:
-                                    results['Error: Other'] += 1
+                                    result_dict.results['Error: Other'] += 1
                                 return
 
                         async with results_lock:
-                            results.add_result(parsed)
+                            result_dict.add_result(parsed)
 
                         if save_verbose:
                             async with verbose_lock:
@@ -144,11 +144,11 @@ class LLMParser():
                 await asyncio.gather(*tasks)
 
             # ------- wrap-up per dataclass -------
-            results = results.get_final_dict()
-            results_dicts.append(results)
+            final_result_dict = result_dict.get_final_dict()
+            results_dicts.append(final_result_dict)
 
             print(f"{'-'*50}\nResults for {dataclass.trimmed_foldername}:")
-            for k, v in results.items():
+            for k, v in final_result_dict.items():
                 print(f"{k}: {v}")
             print(f"{'-'*50}\n")
 
