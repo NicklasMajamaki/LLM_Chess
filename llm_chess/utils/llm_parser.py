@@ -55,7 +55,9 @@ class LLMParser:
             # ----------------------------------------
             async def _chat(prompts: list[str]) -> list[str]:
                 """Always go through the same chat entry point."""
-                return await model.chat(prompts)
+                chat = await model.chat(prompts)
+                print(chat)
+                return chat
 
             # ----------------------------------------
             async def _stream_parse(datum, raw_resp, max_retry=1):
