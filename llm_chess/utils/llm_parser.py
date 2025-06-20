@@ -55,9 +55,7 @@ class LLMParser:
             # ----------------------------------------
             async def _chat(prompts: list[str]) -> list[str]:
                 """Always go through the same chat entry point."""
-                chat = await model.chat(prompts)
-                print(f"\n\nPROMPT:\n{prompts[0]}\n\nRESPONSE:{chat[0]}")
-                return chat
+                return await model.chat(prompts)
 
             # ----------------------------------------
             async def _stream_parse(datum, raw_resp, max_retry=1):
@@ -93,9 +91,11 @@ class LLMParser:
                         cur_raw = (
                             await _chat(
                                 [
-                                    f"Your initial generation encountered errors -- please fix and return in the correct format as speicified below."
-                                    f"ERROR: {e}\n\nInitial Prompt:\n{prompt_txt}\n\n"
-                                    f"Model Response:\n{cur_raw}"
+                                    f"Your initial generation encountered errors -- please fix and return in the correct format as specified below.\n\n"
+                                    f"ERROR: {e}\n\n"
+                                    f"Original Prompt:\n{prompt_txt}\n\n"
+                                    f"Your Previous Response:\n{cur_raw}\n\n"
+                                    f"Please provide a corrected response that follows the required format."
                                 ]
                             )
                         )[0]
