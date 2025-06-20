@@ -12,14 +12,12 @@ The goal is to understand which reasoning strategies are employed by the model d
 You should think deeply before providing a response, then you must return a dictionary within answer tags (e.g., <answer> reasoning_dict </answer>) in the following format:
 
 <answer>
-{
-    'Enumeration': (is_present: bool, specific_instance_of_use: str),
-    'Tree Search': ...,
-    'Backtracking': ...,
-    'Self Correction': ...,
-    'Subgoal Setting': ...,
-    'Verification': ...
-}
+{'Enumeration': (is_present: bool, specific_instance_of_use: str),
+'Tree Search': ...,
+'Backtracking': ...,
+'Self Correction': ...,
+'Subgoal Setting': ...,
+'Verification': ...}
 </answer>
 
 Ensure the dict is provided in Python format -- do not include Python tags as we'll directly call ast.literal_eval on this -- or it will be rejected. Ensure your answer is between answer tags or it will be rejected. You should ensure for every time you have 'is_present=True' you accompany this with a specific quote the model made that clearly displays this behavior. If it is a longer quote, just include the first couple words followed by ellipses. Only include once instance -- the most clear instance -- if there are multiple.
