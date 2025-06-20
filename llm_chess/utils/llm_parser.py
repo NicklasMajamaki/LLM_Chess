@@ -35,130 +35,104 @@ class LLMParser():
             self._evaluate_async(model, verbose=verbose, save_verbose=save_verbose)
         )
 
-    # =========================================================
-    # Async Helper
-    # =========================================================
-    async def _evaluate_async(
-        self, model, verbose: bool=False, save_verbose: bool=True
-    ) -> List[dict[str, Any]]:
-        """True async implementation - can be awaited or called via evaluate()."""
+    # ---------------------------------------------------------------------
+    # Core async evaluation
+    # ---------------------------------------------------------------------
+    async def _evaluate_async(self, model, *, verbose: bool, save_verbose: bool):
+        results_all: List[dict[str, Any]] = []
+        for dc in self.dataclasses:
+            print(f"{'='*60}\n Evaluating {dc.trimmed_foldername}\n{'='*60}")
+            rd   = ParserResultsDict(self.runtype, dc.trimmed_foldername, self.wandb_run)
+            lock = asyncio.Lock()        # protect shared rd / verbose list
 
-        # --------------------------------------------------------------------
-        # Locks to protect shared mutable state
-        # --------------------------------------------------------------------
-        results_lock = asyncio.Lock()
-        verbose_lock = asyncio.Lock()
-
-        # --------------------------- Internal Helpers ---------------------------
-        async def _ask_llm(prompt: str) -> str:
-            """Send a single prompt; unwrap the list that vLLM returns."""
-            return (await model.chat([prompt]))[0]
-
-        async def _parse_with_retry(prompt: str, run_type: str, max_retry: int = 1):
-            raw_response = await _ask_llm(prompt)
-            attempts = 1
-            while True:
-                try:
-                    return coerce_response(raw_response, run_type), raw_response, attempts
-                except Exception as e:
-                    if isinstance(e, ParseException):
-                        async with results_lock:
-                            result_dict.results['Error: Reprompt'] += 1
-                        if attempts > max_retry:
-                            raise
-                        reprompt = (
-                            f"ERROR: {e}\n\nInitial Prompt:\n{prompt}\n\nModel Response:\n{raw_response}"
-                        )
-                        raw_response = await _ask_llm(reprompt)
-                        attempts += 1
-                    else:
-                        async with results_lock:
-                            result_dict.results['Error: Other'] += 1
-
-        # --------------------------------------------------------------------
-        results_dicts = []
-        for dataclass in self.dataclasses:
-            verbose_generations = []
-            data      = dataclass.data
-            max_len   = len(data) if self.args.max_samples is None else min(len(data), self.args.max_samples)
-            batch_sz  = self.args.batch_size
-            run_type  = self.args.run_type
-
-            print(f"{'='*50}\n Evaluating: {dataclass.trimmed_foldername} "
-                  f"for {max_len} samples\n{'='*50}")
-
-            result_dict = ParserResultsDict(
-                task_type = run_type,
-                filename  = dataclass.trimmed_foldername,
-                wandb_run = self.wandb_run
+            max_samples = (
+                len(dc.data)
+                if self.args.max_samples is None
+                else min(len(dc.data), self.args.max_samples)
             )
+            batch_size  = self.args.batch_size
+            batches     = range(0, max_samples, batch_size)
 
-            # -------- MAIN LOOP (batched async) --------
-            for start in range(0, max_len, batch_sz):
-                chunk     = data[start : start + batch_sz]
-                prompts   = [d["prompt"] for d in chunk]
+            #        prompt | raw | parsed | info
+            verbose_store: list[dict[str, Any]] = []
 
-                batch_raw = await model.chat(prompts)
-                tasks = []
+            # ----------------------------------------
+            async def _chat(prompts: list[str]) -> list[str]:
+                """Always go through the same chat entry point."""
+                return await model.chat(prompts)
 
-                for i, datum in enumerate(chunk):
-                    raw_resp = batch_raw[i]
-
-                    async def _handle(idx=i, d=datum, raw=raw_resp):
-                        prompt_txt  = d["prompt"]
-                        info        = d["info"]
-
-                        try:
-                            parsed = coerce_response(raw, run_type, info=info)
-                        except Exception as e:
-                            if isinstance(e, ParseException):
-                                async with results_lock:
-                                    result_dict.results['Error: Reprompt'] += 1
-                                parsed, raw_fixed, _ = await _parse_with_retry(prompt_txt, run_type)
-                                raw = raw_fixed
-                            else:
-                                async with results_lock:
-                                    result_dict.results['Error: Other'] += 1
-                                return
-
-                        async with results_lock:
-                            result_dict.add_result(parsed)
-
-                        if save_verbose:
-                            async with verbose_lock:
-                                verbose_generations.append(
+            # ----------------------------------------
+            async def _stream_parse(datum, raw_resp, max_retry=1):
+                """Parse a single datum, reprompting on ParseException."""
+                prompt_txt = datum["prompt"]
+                info       = datum["info"]
+                attempts   = 0
+                cur_raw    = raw_resp
+                while True:
+                    try:
+                        parsed = coerce_response(cur_raw, self.runtype, info=info)
+                        async with lock:
+                            rd.add_result(parsed)
+                            if save_verbose:
+                                verbose_store.append(
                                     {
                                         "prompt": prompt_txt,
-                                        "model_response": raw,
+                                        "model_response": cur_raw,
                                         "parsed_response": parsed,
                                         "info": info,
                                     }
                                 )
+                        if verbose:  # avoid big lock for prints
+                            print(f"{'-'*12}\nPrompt:\n{prompt_txt}\n\n"
+                                  f"Raw:\n{cur_raw}\n\nParsed:\n{parsed}\n")
+                        return  # success
+                    except ParseException as e:
+                        async with lock:
+                            rd.results["Error: Reprompt"] += 1
+                        attempts += 1
+                        if attempts > max_retry:
+                            return  # give up – counted already
+                        cur_raw = (
+                            await _chat(
+                                [
+                                    f"ERROR: {e}\n\nInitial Prompt:\n{prompt_txt}\n\n"
+                                    f"Model Response:\n{cur_raw}"
+                                ]
+                            )
+                        )[0]
+                    except Exception:        # any other unexpected failure
+                        async with lock:
+                            rd.results["Error: Other"] += 1
+                        return
 
-                        if verbose:
-                            print(f"{'-'*10}\nOriginal Prompt:\n{prompt_txt}\n"
-                                  f"Model Response:\n{raw}\n\nParsed Response:\n{parsed}\n")
+            # ----------------------------------------
+            for start in batches:
+                chunk        = dc.data[start : start + batch_size]
+                raw_responses = await _chat([d["prompt"] for d in chunk])
 
-                    tasks.append(asyncio.create_task(_handle()))
+                # fire-and-forget parsing tasks
+                await asyncio.gather(
+                    *(
+                        _stream_parse(d, raw_responses[i], max_retry=self.args.max_retry)
+                        for i, d in enumerate(chunk)
+                    )
+                )
 
-                await asyncio.gather(*tasks)
-
-            # ------- wrap-up per dataclass -------
-            final_result_dict = result_dict.get_final_dict()
-            results_dicts.append(final_result_dict)
-
-            print(f"{'-'*50}\nResults for {dataclass.trimmed_foldername}:")
-            for k, v in final_result_dict.items():
+            # -------- per-folder wrap-up --------
+            final = rd.get_final_dict()
+            results_all.append(final)
+            print(f"{'-'*48}\nResults ({dc.trimmed_foldername}):")
+            for k, v in final.items():
                 print(f"{k}: {v}")
-            print(f"{'-'*50}\n")
+            print(f"{'-'*48}\n")
 
             if save_verbose:
                 path = os.path.join(
-                    dataclass.data_dir,
+                    dc.data_dir,
                     "saved_data",
-                    f"{dataclass.trimmed_foldername}_{self.args.run_type}_{self.timestamp}.json",
+                    f"{dc.trimmed_foldername}_{self.runtype}_{self.timestamp}.json",
                 )
                 with open(path, "w") as f:
-                    json.dump(verbose_generations, f, indent=4)
+                    json.dump(verbose_store, f, indent=2)
 
-        return results_dicts
+        return results_all
