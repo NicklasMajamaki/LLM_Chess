@@ -208,10 +208,10 @@ class ParserResultsDict():
             
             if self.wandb_run:
                 self.wandb_run.log({
-                    f"Hallucination - {self.filename}/Hallucination Percent": self.results["Hallucination Percent"],
-                    f"Hallucination - {self.filename}/Ave. Moves Per Response": self.results["Ave. Moves Per Response"],
-                    f"Hallucination - {self.filename}/Parsing Moves Error Rate": self.results["Parsing Moves Error Rate"],
-                    f"Hallucination - {self.filename}/Percent Reprompts": self.results["Percent Reprompts"]                
+                    f"Hallucination / Hallucination Percent": self.results["Hallucination Percent"],
+                    f"Hallucination / Ave. Moves Per Response": self.results["Ave. Moves Per Response"],
+                    f"Hallucination / Parsing Moves Error Rate": self.results["Parsing Moves Error Rate"],
+                    f"Hallucination / Percent Reprompts": self.results["Percent Reprompts"]                
                 })
         
         elif self.task_type == "reasoning_strategy":
@@ -225,13 +225,13 @@ class ParserResultsDict():
             
             if self.wandb_run:
                 self.wandb_run.log({
-                    f"Reasoning Strategy - {self.filename}/Percent Enumeration": self.results["Percent Enumeration"],
-                    f"Reasoning Strategy - {self.filename}/Percent Tree Search": self.results["Percent Tree Search"],
-                    f"Reasoning Strategy - {self.filename}/Percent Backtracking": self.results["Percent Backtracking"],
-                    f"Reasoning Strategy - {self.filename}/Percent Self Correction": self.results["Percent Self Correction"],
-                    f"Reasoning Strategy - {self.filename}/Percent Subgoal Setting": self.results["Percent Subgoal Setting"],
-                    f"Reasoning Strategy - {self.filename}/Percent Verification": self.results["Percent Verification"],
-                    f"Reasoning Strategy - {self.filename}/Percent Reprompts": self.results["Percent Reprompts"],
+                    f"Reasoning Strategy / Percent Enumeration": self.results["Percent Enumeration"],
+                    f"Reasoning Strategy / Percent Tree Search": self.results["Percent Tree Search"],
+                    f"Reasoning Strategy / Percent Backtracking": self.results["Percent Backtracking"],
+                    f"Reasoning Strategy / Percent Self Correction": self.results["Percent Self Correction"],
+                    f"Reasoning Strategy / Percent Subgoal Setting": self.results["Percent Subgoal Setting"],
+                    f"Reasoning Strategy / Percent Verification": self.results["Percent Verification"],
+                    f"Reasoning Strategy / Percent Reprompts": self.results["Percent Reprompts"],
                 })
 
         return self.results
