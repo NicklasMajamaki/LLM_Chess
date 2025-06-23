@@ -1,4 +1,4 @@
-import os, time, json, asyncio
+import os, time, json, wandb, asyncio
 from typing import List, Any
 
 from .results_dict import ParserResultsDict
@@ -11,10 +11,10 @@ class LLMParser:
     """Parse model generations with an LLM, counting hallucinations etc."""
 
     # --------------------------------------------------------------------- #
-    def __init__(self, args, runtype_mapping, wandb_run):
+    def __init__(self, args, runtype_mapping):
         self.args          = args
         self.runtype       = args.run_type
-        self.wandb_run     = wandb_run
+        self.wandb_run     = None
         self.max_retry     = 1
         self.sys_prompt    = runtype_mapping[self.runtype]
         self.dataclasses   = [
@@ -24,6 +24,25 @@ class LLMParser:
 
         os.makedirs(os.path.join(args.data_dir, "saved_data"), exist_ok=True)
         self.timestamp = time.strftime("%Y%m%d-%H%M%S")
+
+    def _setup_wandb(self, experiment_name):
+        # Start by closing out of old run if exists
+        if self.wandb_run:
+            self.wandb_run.finish()
+        if self.args.use_wandb:
+            self.wandb_run = wandb.init(
+                name = experiment_name,
+                config={
+                    "model": self.args.model,
+                    "temperature": self.args.temperature,
+                    "top_p": self.args.top_p,
+                    "min_p": self.args.min_p,
+                    "top_k": self.args.top_k,
+                    "repetition_penalty": self.args.repetition_penalty,
+                }
+            )
+        else:
+            self.wandb_run = None
 
     # --------------------------------------------------------------------- #
     # Public sync wrapper
@@ -38,6 +57,7 @@ class LLMParser:
         results_all: List[dict[str, Any]] = []
         for dc in self.dataclasses:
             print(f"{'='*60}\n Evaluating {dc.trimmed_foldername}\n{'='*60}")
+            self._setup_wandb(dc.trimmed_foldername)
             rd   = ParserResultsDict(self.runtype, dc.trimmed_foldername, self.wandb_run)
             lock = asyncio.Lock()        # protect shared rd / verbose list
 

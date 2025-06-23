@@ -1,6 +1,7 @@
 import os
 import time
 import json
+import wandb
 import asyncio
 
 from .results_dict import ResultsDict
@@ -8,11 +9,11 @@ from .dataclass import JSONLDataClass
 
 
 class Evaluator():
-    def __init__(self, args, task_map, wandb_run):
+    def __init__(self, args, task_map):
         """ Given a set of eval_files instantiate an evaluator object to analyze the evals. """
         self.args = args
         self.task_map = task_map
-        self.wandb_run = wandb_run
+        self._setup_wandb()
         
         # Load in our various data files
         self.dataclasses = [JSONLDataClass(args.data_dir, filename, task_map, args.model_version) for filename in args.data_files]
@@ -20,8 +21,7 @@ class Evaluator():
         # Setup various vals just once
         os.makedirs(os.path.join(args.data_dir, 'saved_data'), exist_ok=True)
         self.timestamp = time.strftime("%Y%m%d-%H%M%S")
-                
-
+                    
     def evaluate(self, model, verbose=False, save_verbose=True):
         """ 
         Evaluate the model on the eval files. 
@@ -93,3 +93,24 @@ class Evaluator():
                     json.dump(verbose_generations, f, indent=4)
 
         return result_dicts
+
+    # ============================
+    # Setup Helpers
+    # ============================
+
+    def _setup_wandb(self):
+        # Set up wandb logger
+        if self.args.use_wandb:
+            self.wandb_run = wandb.init(
+                name = self.args.experiment_name,
+                config={
+                    "model": self.args.model,
+                    "temperature": self.args.temperature,
+                    "top_p": self.args.top_p,
+                    "min_p": self.args.min_p,
+                    "top_k": self.args.top_k,
+                    "repetition_penalty": self.args.repetition_penalty,
+                }
+            )
+        else:
+            self.wandb_run = None

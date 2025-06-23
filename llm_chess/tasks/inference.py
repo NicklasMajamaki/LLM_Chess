@@ -66,21 +66,6 @@ def parse_args():
 def main():
     args = parse_args()
 
-    # Set up wandb logger
-    if args.use_wandb:
-        wandb_run = wandb.init(
-            config={
-                "model": args.model,
-                "temperature": args.temperature,
-                "top_p": args.top_p,
-                "min_p": args.min_p,
-                "top_k": args.top_k,
-                "repetition_penalty": args.repetition_penalty,
-            }
-        )
-    else:
-        wandb_run = None
-
     # VLLM client
     client = utils.vLLMClient(
         model=args.model,
@@ -99,8 +84,7 @@ def main():
     if args.run_type in ["eval", "rejsampling"]:
         evaluator = utils.Evaluator(
             args = args,
-            task_map = TASK_MAP,
-            wandb_run = wandb_run
+            task_map = TASK_MAP
         )
         print(f"Starting {args.run_type}...")
         results = evaluator.evaluate(client, verbose=False, save_verbose=args.save_verbose)
@@ -110,8 +94,7 @@ def main():
     if args.run_type in ['hallucination', 'reasoning_strategy']:
         llm_parser = utils.LLMParser(
             args = args,
-            runtype_mapping = RUNTYPE_SYSPROMPT_MAPPING,
-            wandb_run = wandb_run,
+            runtype_mapping = RUNTYPE_SYSPROMPT_MAPPING
         )
         print(f"Starting {args.run_type}...")
         results = llm_parser.evaluate(client, verbose=False, save_verbose=args.save_verbose)
