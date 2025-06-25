@@ -10,7 +10,8 @@ TASK_MAP = {
     'bestmove': "choose_from_n",
     'worstmove': "choose_from_n",
     'legalmoves': "produce_list",
-    'predictmove': "predict_singlemove"
+    'predictmove': "predict_singlemove",
+    'blunder_explanations': "blunder_explanations"
 }
 
 RUNTYPE_SYSPROMPT_MAPPING = {
@@ -90,6 +91,16 @@ def main():
         results = evaluator.evaluate(client, verbose=False, save_verbose=args.save_verbose)
         print(f"Completed {args.run_type}.\n\nFinal Results:\n{results}")
     
+    # For cases where we just want to generate data
+    if args.run_type in ["generate"]:
+        generator = utils.Generator(
+            args = args,
+            task_map = TASK_MAP
+        )
+        print(f"Starting {args.run_type}...")
+        generator.generate(client, verbose=False, save_verbose=args.save_verbose)
+        print(f"Completed {args.run_type}.")
+
     # For cases where we want the LLM to parse existing responses to extract more nuanced info (e.g., hallucinations, reasoning methods used)
     if args.run_type in ['hallucination', 'reasoning_strategy']:
         llm_parser = utils.LLMParser(
