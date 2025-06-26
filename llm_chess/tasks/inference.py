@@ -11,7 +11,8 @@ TASK_MAP = {
     'worstmove': "choose_from_n",
     'legalmoves': "produce_list",
     'predictmove': "predict_singlemove",
-    'blunder_explanations': "blunder_explanations"
+    'blunder_explanations': "synthetic_generation",
+    'good_move_explanations': "synthetic_generation",
 }
 
 RUNTYPE_SYSPROMPT_MAPPING = {
