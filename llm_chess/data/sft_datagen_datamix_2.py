@@ -10,29 +10,29 @@ from llm_chess.prompts.chat_to_prompt import ChatProcessor
 
 # Main args to adjust
 MAX_SAMPLES = 15000
-LLAMA_VERSION = "llama3"    # {'llama4', 'llama3'}
+LLAMA_VERSION = "qwen25"    # {'llama4', 'llama3'}
 OUTPUT_FOLDER = "llm_chess/data/"
 DATA_FOLDER = "llm_chess/data/cleaned/train_data"
 DATASET_CONFIG = [
     {
         "name": "magpie",
         "files": ["magpieclean_20k.jsonl"],
-        "weight": 0.5
+        "weight": 0.25
     },
     {
         "name": "chess_explainer",
         "files": ["combined_chessexplainer_5k.jsonl"],
-        "weight": 0.15
-    },
-    {
-        "name": "rejsampling1",
-        "files": ["rejsampling_clean_1630.jsonl", "rejsampling_clean_1988.jsonl", "rejsampling_clean_3269.jsonl"],
-        "weight": 0.15
-    },
-    {
-        "name": "rejsampling2",
-        "files": ["rejsampling_clean_1988.jsonl"],
         "weight": 0.2
+    },
+    {
+        "name": "rejsampling",
+        "files": ["rejsampling_clean_1630.jsonl", "rejsampling_clean_1988.jsonl", "rejsampling_clean_3269.jsonl"],
+        "weight": 0.45
+    },
+    {
+        "name": "synthetic_moves",
+        "files": ["syntheticmoves_blunders_1000.jsonl", "syntheticmoves_good_300.jsonl"],
+        "weight": 0.1
     },
 ]
 
