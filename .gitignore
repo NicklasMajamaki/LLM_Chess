@@ -32,6 +32,7 @@ llm_chess/data/programmatic_explanations/stockfish/
 llm_chess/data/raw/magpie_data/
 llm_chess/data/raw/processed_data/
 llm_chess/data/raw/rej_sampling_outputs/
+llm_chess/data/raw/model_outputs/
 
 # Because of the Mac losers
 .DS_Store
