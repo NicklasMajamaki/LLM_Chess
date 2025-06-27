@@ -11,10 +11,10 @@ from llm_chess.prompts.chat_to_prompt import ChatProcessor
 # Hyperparams
 # =================================
 CUR_DIR = "llm_chess/data"
-MODEL_VERSION = "qwen25"
+MODEL_VERSION = "llama3"
 OUTPUT_FOLDER = f"{CUR_DIR}/cleaned/verl_tasks"
 TASKS = [
-    {"task": "predictmove", "split": "train", "samples": 8192, "data_source": f'{CUR_DIR}/raw/deepmind_data/train_20k.csv'},
+    {"task": "predictmove", "split": "train", "samples": 4096, "data_source": f'{CUR_DIR}/raw/deepmind_data/train_20k.csv'},
     {"task": "predictmove", "split": "eval", "samples": 256, "data_source": f'{CUR_DIR}/raw/deepmind_data/evals_1k.csv'},
 ]
 GENERATOR_ARGS = {
